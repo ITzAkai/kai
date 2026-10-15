@@ -30,10 +30,53 @@ export function switchProfile(id) {
   window.location.reload();
 }
 
-export function createProfile(name) {
-  const p = store.addProfile(name);
-  session(SESSION_NEW, p.id);
-  switchProfile(p.id);
+// Pede o nome do perfil num modal (no TV o teclado virtual abre ao confirmar no campo).
+export function askProfileName(title, initial, okLabel, onOk, onCancel) {
+  const err = h('div.modal-text.err-text');
+  const input = h('input.input', { type: 'text', value: initial || '', placeholder: 'Ex.: Ana, Pedro, Sala', maxlength: '20', focusable: true, 'data-autofocus': '' });
+  const submit = () => {
+    const name = String(input.value || '').trim();
+    if (!name) {
+      err.textContent = 'Digite um nome para o perfil.';
+      nav.focus(input);
+      return;
+    }
+    const dup = store.profiles().some((p) => p.name.toLowerCase() === name.toLowerCase() && p.name !== initial);
+    if (dup) {
+      err.textContent = 'Já existe um perfil com esse nome.';
+      nav.focus(input);
+      return;
+    }
+    close();
+    onOk(name);
+  };
+  input.__submit = submit;
+  const box = h('div.modal-box.center', null, [
+    h('h3', { text: title }),
+    h('div.modal-text', null, input),
+    err,
+    h('div.modal-actions', { 'data-group': '' }, [
+      h('div.btn.primary', { focusable: true, text: okLabel || 'Continuar', onSelect: submit }),
+      h('div.btn', { focusable: true, text: 'Cancelar', onSelect: () => (close(), onCancel && onCancel()) }),
+    ]),
+  ]);
+  const modal = h('div.modal', null, box);
+  document.getElementById('app').appendChild(modal);
+  const layer = nav.pushLayer(modal, { onBack: () => (close(), onCancel && onCancel()) });
+  nav.focusFirst(modal);
+  function close() {
+    nav.popLayer(layer);
+    if (modal.parentNode) modal.parentNode.removeChild(modal);
+  }
+}
+
+// Novo perfil: primeiro o nome (não existe nome padrão), depois o app troca para ele e pede a conta.
+export function createProfile() {
+  askProfileName('Nome do novo perfil', '', 'Criar perfil', (name) => {
+    const p = store.addProfile(name);
+    session(SESSION_NEW, p.id);
+    switchProfile(p.id);
+  });
 }
 
 // Perfil recém-criado ainda sem conta: o app abre o login logo na entrada.

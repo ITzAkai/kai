@@ -10,7 +10,7 @@ import * as stremio from '../api/stremio.js';
 import * as server from '../api/server.js';
 import * as addons from '../api/addons.js';
 import * as hero from '../api/hero.js';
-import { topbar, toast, menu, confirmDialog } from '../ui.js';
+import { topbar, toast, menu, confirmDialog, refreshProfileChips } from '../ui.js';
 import * as router from '../router.js';
 import { openLogin } from './login.js';
 import { avatar, switchProfile, createProfile } from './profiles.js';
@@ -122,6 +122,7 @@ export function SettingsView() {
       const name = v.trim();
       if (!name) return;
       store.updateProfile(prof.id, { name: name });
+      refreshProfileChips();
       toast('Nome do perfil salvo');
       render();
     };
@@ -139,6 +140,7 @@ export function SettingsView() {
           {
             onPick: (c) => {
               store.updateProfile(prof.id, { color: c });
+              refreshProfileChips();
               render();
             },
           }

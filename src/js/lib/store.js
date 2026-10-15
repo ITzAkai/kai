@@ -35,7 +35,8 @@ function ensureProfiles() {
   const id = 'p' + Date.now().toString(36);
   const oldAuth = rawGet('auth', null);
   const email = oldAuth && oldAuth.user && oldAuth.user.email;
-  list = [{ id: id, name: email ? email.split('@')[0] : 'Perfil 1', color: COLORS[0] }];
+  // Instalação nova: o assistente pede o nome (unnamed). Quem já usava: nome vem do e-mail da conta.
+  list = [email ? { id: id, name: email.split('@')[0], color: COLORS[0] } : { id: id, name: 'Perfil 1', color: COLORS[0], unnamed: true }];
   ['auth', 'addons', 'library'].forEach((k) => {
     const v = rawGet(k, null);
     if (v !== null) rawSet(profileKey(id, k), v);

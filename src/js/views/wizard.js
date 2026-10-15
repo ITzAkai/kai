@@ -5,7 +5,7 @@ import * as store from '../lib/store.js';
 import * as stremio from '../api/stremio.js';
 import * as server from '../api/server.js';
 import * as addons from '../api/addons.js';
-import { toast } from '../ui.js';
+import { toast, refreshProfileChips } from '../ui.js';
 import * as router from '../router.js';
 import { openLogin } from './login.js';
 
@@ -38,9 +38,11 @@ function WizardView() {
     return h('div.btn', { focusable: true, cls: primary ? 'primary' : '', text: label, onSelect: fn });
   }
 
+  // Instalação nova: o primeiro passo é dar nome ao perfil.
+  const steps = (store.activeProfile().unnamed ? [stepName] : []).concat([stepAccount, stepServer, stepSubs]);
+
   function render() {
     clear(card);
-    const steps = [stepAccount, stepServer, stepSubs];
     card.appendChild(h('div.wizard-step', { text: 'PASSO ' + (step + 1) + ' DE ' + steps.length }));
     steps[step]();
     nav.focusFirst(card);
@@ -48,8 +50,29 @@ function WizardView() {
 
   function next() {
     step++;
-    if (step > 2) finish();
+    if (step >= steps.length) finish();
     else render();
+  }
+
+  function stepName() {
+    card.appendChild(h('h1', { text: 'Bem-vindo! Quem vai usar este perfil?' }));
+    card.appendChild(h('p', { text: 'Dê um nome ao perfil. Depois você pode criar outros perfis, cada um com a própria conta Stremio e histórico.' }));
+    const err = h('div.err-text');
+    const input = h('input.input', { type: 'text', placeholder: 'Ex.: Ana, Pedro, Sala', maxlength: '20', focusable: true, 'data-autofocus': '' });
+    const save = () => {
+      const name = String(input.value || '').trim();
+      if (!name) {
+        err.textContent = 'Digite um nome para o perfil.';
+        return;
+      }
+      store.updateProfile(store.activeProfile().id, { name: name, unnamed: false });
+      refreshProfileChips();
+      next();
+    };
+    input.__submit = save;
+    card.appendChild(input);
+    card.appendChild(err);
+    card.appendChild(h('div.actions', { 'data-group': '' }, [btn('Continuar', true, save)]));
   }
 
   function stepAccount() {

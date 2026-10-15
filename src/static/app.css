@@ -306,3 +306,6 @@ body.oled .details-shade { background: linear-gradient(to right, #000 25%, rgba(
 .profile-card.focused .avatar { border-color: #fff; -webkit-transform: scale(1.08); transform: scale(1.08); }
 .profile-card.focused .profile-name { color: #fff; }
 .profile-hint { margin-top: 70px; font-size: 22px; color: rgba(255,255,255,0.45); }
+.modal-text .input { width: 100%; }
+.err-text { color: #ff8a8a; min-height: 34px; padding-bottom: 6px; font-size: 21px; }
+.wizard .input { width: 100%; margin-bottom: 14px; }

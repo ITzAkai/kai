@@ -108,8 +108,21 @@ export function topbar(activeId, onTab) {
 
 // Avatar do perfil ativo na barra superior: troca rápida de perfil.
 function profileButton(onTab) {
+  const chip = h('div.profile-chip', { focusable: true, onSelect: () => profileMenu(onTab) });
+  fillChip(chip);
+  return chip;
+}
+
+function fillChip(chip) {
   const p = store.activeProfile();
-  return h('div.profile-chip', { focusable: true, onSelect: () => profileMenu(onTab) }, [avatar(p, 'small'), h('span', { text: p.name })]);
+  clear(chip);
+  chip.appendChild(avatar(p, 'small'));
+  chip.appendChild(h('span', { text: p.name }));
+}
+
+// Atualiza o avatar/nome em todas as barras (depois de renomear ou trocar a cor).
+export function refreshProfileChips() {
+  Array.prototype.forEach.call(document.querySelectorAll('.profile-chip'), fillChip);
 }
 
 function profileMenu(onTab) {
