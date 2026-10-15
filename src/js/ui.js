@@ -2,6 +2,8 @@
 import { h, clear } from './lib/dom.js';
 import * as nav from './lib/nav.js';
 import { smallPoster, smallBackground } from './lib/img.js';
+import * as store from './lib/store.js';
+import { avatar, switchProfile, createProfile } from './views/profiles.js';
 
 let toastTimer = null;
 export function toast(msg, ms) {
@@ -97,10 +99,31 @@ export function topbar(activeId, onTab) {
       })
     ),
     h('div.spacer'),
+    profileButton(onTab),
     clock,
   ]);
   bar.__destroy = () => clearInterval(timer);
   return bar;
+}
+
+// Avatar do perfil ativo na barra superior: troca rápida de perfil.
+function profileButton(onTab) {
+  const p = store.activeProfile();
+  return h('div.profile-chip', { focusable: true, onSelect: () => profileMenu(onTab) }, [avatar(p, 'small'), h('span', { text: p.name })]);
+}
+
+function profileMenu(onTab) {
+  const active = store.activeProfile();
+  const opts = store.profiles().map((p) => ({ label: p.name, sub: p.id === active.id ? 'Perfil atual' : 'Trocar para este perfil', value: p.id, checked: p.id === active.id }));
+  opts.push({ label: '+ Adicionar perfil', sub: 'Com outra conta Stremio (histórico separado)', value: '__add' });
+  opts.push({ label: 'Gerenciar perfis', sub: 'Nome, cor, apagar', value: '__manage' });
+  menu('Perfis', opts, {
+    onPick: (v) => {
+      if (v === '__add') createProfile();
+      else if (v === '__manage') onTab('settings');
+      else if (v !== active.id) switchProfile(v);
+    },
+  });
 }
 
 export function timeHM(d) {

@@ -17,12 +17,13 @@ import { maybeShowWizard } from './views/wizard.js';
 import { openPlayer } from './views/player.js';
 import * as update from './api/update.js';
 import { toast } from './ui.js';
+import * as profiles from './views/profiles.js';
+import { openLogin } from './views/login.js';
 
 function boot() {
   const s = store.settings();
   if (s.devlogUrl) log.setRemote(s.devlogUrl);
   log.info('Iniciando', navigator.userAgent);
-  if (s.oled) document.body.classList.add('oled');
 
   nav.install();
   // Imagens e fileiras sob demanda depois que a rolagem para (segurar a seta não recalcula a cada passo).
@@ -43,6 +44,33 @@ function boot() {
   router.registerTab('settings', SettingsView);
   router.registerTab('calendar', CalendarView);
 
+  // "Quem está assistindo?" (com mais de um perfil) antes de carregar a conta.
+  if (profiles.needsPicker()) {
+    const bootEl = document.getElementById('boot');
+    if (bootEl) bootEl.style.display = 'none';
+    profiles.showPicker(() => {
+      if (bootEl) bootEl.style.display = '';
+      start();
+    });
+  } else start();
+
+  // Ao voltar do segundo plano, revalida o servidor do PC.
+  document.addEventListener('webOSRelaunch', () => {
+    server.check();
+    devLaunch();
+  });
+  document.addEventListener('visibilitychange', () => {
+    if (!document.hidden) server.check();
+  });
+}
+
+// Carrega o perfil escolhido: conta, biblioteca, addons e a tela inicial.
+function start() {
+  stremio.reloadProfile();
+  const s = store.settings();
+  document.body.classList.toggle('oled', !!s.oled);
+  log.info('Perfil', store.activeProfile().name);
+
   // Atualiza a conta em segundo plano; a tela inicial abre com o cache.
   if (stremio.isLoggedIn()) {
     stremio.refreshUser().catch(() => {});
@@ -53,7 +81,16 @@ function boot() {
     const bootEl = document.getElementById('boot');
     if (bootEl) bootEl.parentNode.removeChild(bootEl);
     router.goTab('home');
-    maybeShowWizard();
+    if (profiles.isNewProfilePendingLogin() && !stremio.isLoggedIn()) {
+      // Perfil novo: entra na conta Stremio deste perfil (para ter o histórico próprio).
+      profiles.clearNewProfileFlag();
+      openLogin(() => {
+        Promise.all([stremio.refreshUser().catch(() => {}), addons.load(true), stremio.getLibrary()]).then(() => {
+          const home = router.tabView('home');
+          if (home && home.reload) home.reload();
+        });
+      });
+    } else maybeShowWizard();
     devLaunch();
     // Aviso de versão nova (no máximo uma vez por dia).
     if (update.shouldAutoCheck()) {
@@ -64,15 +101,6 @@ function boot() {
           .catch(() => {});
       }, 8000);
     }
-  });
-
-  // Ao voltar do segundo plano, revalida o servidor do PC.
-  document.addEventListener('webOSRelaunch', () => {
-    server.check();
-    devLaunch();
-  });
-  document.addEventListener('visibilitychange', () => {
-    if (!document.hidden) server.check();
   });
 }
 

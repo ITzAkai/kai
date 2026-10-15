@@ -6,7 +6,13 @@ import { log } from '../lib/log.js';
 const API = 'https://api.strem.io/api/';
 const LINK = 'https://link.stremio.com/api/v2/';
 
-let auth = store.get('auth', null); // { authKey, user }
+let auth = store.get('auth', null); // { authKey, user } do perfil ativo
+
+// Recarrega conta e biblioteca do perfil ativo (chamado ao escolher o perfil na abertura).
+export function reloadProfile() {
+  auth = store.get('auth', null);
+  libMem = null;
+}
 
 function call(method, body) {
   return postJSON(API + method, body).then((res) => {

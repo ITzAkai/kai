@@ -13,6 +13,7 @@ import * as hero from '../api/hero.js';
 import { topbar, toast, menu, confirmDialog } from '../ui.js';
 import * as router from '../router.js';
 import { openLogin } from './login.js';
+import { avatar, switchProfile, createProfile } from './profiles.js';
 
 const SUB_LANGS = [
   { label: 'Português (BR) e Português', value: ['pob', 'por', 'pt', 'pt-br'] },
@@ -111,6 +112,68 @@ export function SettingsView() {
     const keep = nav.current();
     const keepIndex = keep ? Array.prototype.indexOf.call(body.querySelectorAll('.set-row'), keep) : -1;
     clear(body);
+
+    // ---- Perfil (cada perfil tem sua conta Stremio, histórico e preferências) ----
+    const prof = store.activeProfile();
+    const allProfiles = store.profiles();
+    body.appendChild(h('div.set-section', { text: 'Perfil' }));
+    const nameInput = h('input.input', { type: 'text', value: prof.name });
+    nameInput.__submit = (v) => {
+      const name = v.trim();
+      if (!name) return;
+      store.updateProfile(prof.id, { name: name });
+      toast('Nome do perfil salvo');
+      render();
+    };
+    body.appendChild(
+      h('div.set-row', { focusable: true, onSelect: () => nav.select(nameInput) }, [
+        h('div.label', null, [avatar(prof, 'small'), ' Nome do perfil', h('small', { text: 'Este perfil usa a conta Stremio abaixo' })]),
+        nameInput,
+      ])
+    );
+    body.appendChild(
+      row('Cor do perfil', '', '', () =>
+        menu(
+          'Cor do perfil',
+          store.COLORS.map((c, i) => ({ label: ['Roxo', 'Rosa', 'Verde-água', 'Laranja', 'Azul', 'Vermelho', 'Verde', 'Cinza'][i], value: c, checked: c === prof.color })),
+          {
+            onPick: (c) => {
+              store.updateProfile(prof.id, { color: c });
+              render();
+            },
+          }
+        ),
+        h('div.avatar.small', { style: { backgroundColor: prof.color }, text: ' ' })
+      )
+    );
+    if (allProfiles.length > 1) {
+      body.appendChild(
+        row('Trocar de perfil', allProfiles.length + ' perfis nesta TV', '', () =>
+          menu(
+            'Trocar de perfil',
+            allProfiles.map((p) => ({ label: p.name, value: p.id, checked: p.id === prof.id })),
+            { onPick: (id) => id !== prof.id && switchProfile(id) }
+          )
+        )
+      );
+    }
+    body.appendChild(row('Adicionar perfil', 'Para outra pessoa, com outra conta Stremio', '', () => createProfile()));
+    if (allProfiles.length > 1) {
+      body.appendChild(
+        row('Perguntar "Quem está assistindo?" ao abrir', '', '', () => {
+          store.saveSettings({ askProfile: !store.settings().askProfile });
+          render();
+        }, toggle(s.askProfile))
+      );
+      body.appendChild(
+        row('Apagar este perfil', 'Remove deste aparelho a conta e as preferências do perfil (a conta Stremio continua existindo)', '', () =>
+          confirmDialog('Apagar o perfil "' + prof.name + '" desta TV?', 'Apagar', () => {
+            store.removeProfile(prof.id);
+            switchProfile(store.activeProfile().id);
+          })
+        )
+      );
+    }
 
     body.appendChild(h('div.set-section', { text: 'Conta Stremio' }));
     if (stremio.isLoggedIn()) {

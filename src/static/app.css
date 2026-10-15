@@ -287,3 +287,22 @@ body.oled .details-shade { background: linear-gradient(to right, #000 25%, rgba(
 .wizard p { font-size: 23px; color: rgba(255,255,255,0.72); margin-bottom: 36px; }
 .wizard .actions { display: -webkit-flex; display: flex; }
 .wizard .opts .opt { border-radius: 12px; margin-bottom: 8px; background: rgba(255,255,255,0.05); }
+
+/* ---------- Perfis ---------- */
+.avatar { display: inline-block; vertical-align: middle; width: 48px; height: 48px; line-height: 48px; border-radius: 50%; text-align: center; font-weight: 800; font-size: 24px; color: #fff; }
+.avatar.small { width: 40px; height: 40px; line-height: 40px; font-size: 20px; }
+.avatar.big { width: 200px; height: 200px; line-height: 200px; font-size: 92px; border-radius: 28px; border: 5px solid transparent; }
+.avatar.add { background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.7); font-weight: 400; }
+.profile-chip { display: -webkit-flex; display: flex; -webkit-align-items: center; align-items: center; padding: 6px 18px 6px 6px; margin-right: 28px; border-radius: 30px; border: 3px solid transparent; font-size: 21px; font-weight: 600; color: rgba(255,255,255,0.8); }
+.profile-chip span { margin-left: 12px; max-width: 220px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.profile-chip.focused { background: #7b5bf5; border-color: #c9bbff; color: #fff; }
+.set-row .label .avatar { margin-right: 10px; }
+.profile-picker { display: -webkit-flex; display: flex; -webkit-flex-direction: column; flex-direction: column; -webkit-align-items: center; align-items: center; -webkit-justify-content: center; justify-content: center; }
+.profile-picker .boot-logo { font-size: 44px; margin-bottom: 40px; }
+.profile-picker h1 { font-size: 56px; font-weight: 700; margin-bottom: 70px; }
+.profile-row { display: -webkit-flex; display: flex; }
+.profile-card { width: 240px; margin: 0 24px; text-align: center; border: 0; }
+.profile-card .profile-name { margin-top: 20px; font-size: 28px; font-weight: 600; color: rgba(255,255,255,0.65); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.profile-card.focused .avatar { border-color: #fff; -webkit-transform: scale(1.08); transform: scale(1.08); }
+.profile-card.focused .profile-name { color: #fff; }
+.profile-hint { margin-top: 70px; font-size: 22px; color: rgba(255,255,255,0.45); }
