@@ -27,6 +27,10 @@ fs.mkdirSync(out, { recursive: true });
 execFileSync(process.execPath, [path.join(root, 'tools', 'build.mjs')], { stdio: 'inherit', env });
 
 const bundle = fs.readFileSync(path.join(root, 'dist', 'app.js'), 'utf8');
+// O webOS abre o app via file://, e o Chromium 38 não considera isso 'self' na CSP (tela preta na 1.0.0).
+const html = fs.readFileSync(path.join(root, 'dist', 'index.html'), 'utf8');
+const csp = (html.match(/Content-Security-Policy" content="([^"]*)/) || [])[1] || '';
+if (csp && !/script-src[^;]*file:/.test(csp)) throw new Error('A CSP precisa liberar file: em script-src (senão a TV abre com tela preta).');
 // Procura IPs de rede local reais (o texto de exemplo dos Ajustes é ignorado).
 const leftover = bundle.replace(/ex\.: 192\.168\.\d+\.\d+/g, '').match(/\b192\.168\.\d+\.\d+|\b10\.\d+\.\d+\.\d+:\d+/);
 if (leftover) {
