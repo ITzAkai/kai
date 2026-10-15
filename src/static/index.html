@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=1920, height=1080">
+  <!-- Só o código do próprio app roda; dados de addons/APIs nunca viram script. -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src * data: blob:; media-src * blob: data:; connect-src *; font-src 'self'; object-src 'none'; frame-src 'none'">
+  <meta name="referrer" content="no-referrer">
+  <title>Stremio Kai</title>
+  <link rel="stylesheet" href="app.css">
+</head>
+<body>
+  <div id="app">
+    <div id="boot" class="boot">
+      <div class="boot-logo">Stremio <b>Kai</b></div>
+      <div class="spinner"></div>
+    </div>
+  </div>
+  <div id="toast" class="toast"></div>
+  <script src="app.js"></script>
+</body>
+</html>
