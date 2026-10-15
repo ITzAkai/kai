@@ -1,6 +1,6 @@
 {
   "name": "stremio-kai-timeworn",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "private": true,
   "description": "Stremio Kai for old LG webOS TVs (webOS 3.x, Chromium 38), without the AI plugins",
   "license": "GPL-3.0",
