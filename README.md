@@ -8,6 +8,11 @@ Os plugins de IA do Kai (SVP, VapourSynth, Anime4K) ficam de fora porque a TV n�
 
 > Projeto **não oficial**, sem ligação com o Stremio, o Stremio Kai ou a LG. O app não hospeda nenhum conteúdo: ele só mostra o que os addons da **sua** conta Stremio entregam.
 
+> [!IMPORTANT]
+> **Para torrents, você precisa de um PC na mesma rede com o [stremio-service](https://github.com/Stremio/stremio-service/releases) aberto.**
+> A TV não consegue rodar o motor de torrent do Stremio: ela tem só ~200 MB de espaço livre e ~180 MB de memória sobrando, e o sistema é antigo demais para o servidor do Stremio. O PC baixa e a TV assiste. Por isso o PC precisa ficar ligado enquanto você assiste.
+> Links diretos (por exemplo, de um serviço de debrid na sua conta) tocam sem o PC.
+
 ![Tela inicial na TV](docs/screenshot-home.png)
 
 ## Funções
@@ -18,9 +23,9 @@ Os plugins de IA do Kai (SVP, VapourSynth, Anime4K) ficam de fora porque a TV n�
   - tema escuro ou OLED;
   - fonte Montserrat;
   - notas de várias fontes (IMDb, AniList; Rotten Tomatoes e Metacritic com chave MDBList);
-  - sinopses em português e elenco com fotos (com chave TMDB).
+  - sinopses no idioma do app e elenco com fotos (com chave TMDB).
 - **Lista de fontes como no Kai do PC:**
-  - Debrid (RD) primeiro, depois Torrentio, depois os outros;
+  - links diretos (debrid) primeiro, depois os demais addons;
   - filtro por addon;
   - contador de addons carregando;
   - etiquetas 4K, HDR, Dolby Vision, REMUX e estimativa de Mbps.
@@ -32,6 +37,8 @@ Os plugins de IA do Kai (SVP, VapourSynth, Anime4K) ficam de fora porque a TV n�
   - relógio com "termina às";
   - próximo episódio na mesma fonte;
   - reconexão automática se o vídeo travar.
+- **Perfis:** tela "Quem está assistindo?", com cada perfil na própria conta Stremio (histórico, biblioteca e preferências separados).
+- **Português e inglês:** segue o idioma da TV ou é escolhido em Ajustes → Idioma / Language.
 - **Calendário de animes** da semana (AniList).
 - **Feito para a TV:** navegação pelo controle e pelo ponteiro do Magic Remote, e cuidado com a pouca memória (imagens pequenas, carregamento sob demanda).
 - **Atualização pelo próprio app:** Ajustes → Procurar atualização. Em TVs com Homebrew Channel, instala sozinho.
@@ -47,8 +54,12 @@ Os plugins de IA do Kai (SVP, VapourSynth, Anime4K) ficam de fora porque a TV n�
 
 ## Como os vídeos chegam na TV
 
-- **Debrid (Real-Debrid, AllDebrid etc.):** com o Torrentio configurado com debrid na sua conta, os links são diretos e tocam sem PC.
-- **Torrent:** a TV não roda o motor de torrent do Stremio. Deixe o [stremio-service](https://github.com/Stremio/stremio-service/releases) aberto num PC da mesma rede. Na TV, use **Ajustes → Servidor → Procurar na rede**.
+| Tipo de fonte | Precisa do PC? | Como funciona |
+|---|---|---|
+| **Torrent** | **Sim** | O [stremio-service](https://github.com/Stremio/stremio-service/releases) roda num PC da mesma rede, baixa o vídeo e entrega para a TV. Na TV, use **Ajustes → Servidor → Procurar na rede**. O PC precisa ficar ligado. |
+| **Link direto** (debrid ou HTTP) | Não | Se a sua conta usa um serviço de debrid (download em nuvem), os addons entregam links HTTP diretos, que a TV toca sozinha. |
+
+**Por que a TV não roda torrent sozinha?** A TV tem ~200 MB de armazenamento livre e ~180 MB de memória sobrando. Um torrent precisa guardar pedaços do vídeo, e o motor do Stremio precisa de um Node.js moderno que o webOS 3.x não tem. No PC isso é trivial; na TV, impossível.
 
 ## Instalação na TV
 
@@ -85,8 +96,9 @@ As próximas versões são instaladas pela própria TV, em **Ajustes → Procura
 
 ### Primeiro uso
 
-1. Abra o app. Um assistente pede para entrar na conta Stremio (mais fácil pelo código no celular), procura o servidor do PC e pergunta o idioma da legenda.
-2. Em **Ajustes**, ajuste a fonte e o tamanho da legenda, o Hero Banner e o tema OLED. Pelo próprio app você pode instalar o **Anime Kitsu** e o **OpenSubtitles**, além de colar chaves TMDB e MDBList (opcionais, gratuitas).
+1. Abra o app. Um assistente pede o nome do perfil, a entrada na conta Stremio (mais fácil pelo código no celular) e procura o servidor do PC. Também pergunta o idioma da legenda.
+2. No PC, deixe o **stremio-service** aberto sempre que for assistir torrents.
+3. Em **Ajustes**, ajuste a fonte e o tamanho da legenda, o Hero Banner e o tema OLED. Pelo próprio app você pode instalar o **Anime Kitsu** e o **OpenSubtitles**, além de colar chaves TMDB e MDBList (opcionais, gratuitas).
 
 ## Privacidade e segurança
 
