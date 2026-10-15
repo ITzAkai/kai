@@ -3,6 +3,7 @@
 import { getJSON } from '../lib/http.js';
 import { luna, hasLuna } from '../lib/luna.js';
 import * as store from '../lib/store.js';
+import { t } from '../lib/i18n.js';
 
 export const REPO = 'creachec/Stremio-Kai-Timeworn';
 export const REPO_URL = 'https://github.com/' + REPO;
@@ -59,7 +60,7 @@ export function canSelfUpdate() {
 // Instala pelo Homebrew Channel; onStatus recebe "Baixando 40%", "Instalando..." etc.
 export function install(info, onStatus) {
   return new Promise((resolve, reject) => {
-    if (!info.sha256) return reject(new Error('Release sem hash SHA-256'));
+    if (!info.sha256) return reject(new Error(t('Release sem hash SHA-256')));
     const bridge = new window.PalmServiceBridge();
     bridge.onservicecallback = (msg) => {
       let r = {};
@@ -68,12 +69,12 @@ export function install(info, onStatus) {
       } catch (e) {
         return;
       }
-      if (r.returnValue === false) return reject(new Error(r.errorText || 'Falha na instalação'));
+      if (r.returnValue === false) return reject(new Error(r.errorText || t('Falha na instalação')));
       const st = String(r.statusText || '');
       if (onStatus) {
-        if (/Download/i.test(st)) onStatus('Baixando' + (isFinite(r.progress) ? ' ' + Math.round(r.progress) + '%' : '...'));
-        else if (/Verif/i.test(st)) onStatus('Conferindo o arquivo...');
-        else if (/Install/i.test(st)) onStatus('Instalando...');
+        if (/Download/i.test(st)) onStatus(t('Baixando') + (isFinite(r.progress) ? ' ' + Math.round(r.progress) + '%' : '...'));
+        else if (/Verif/i.test(st)) onStatus(t('Conferindo o arquivo...'));
+        else if (/Install/i.test(st)) onStatus(t('Instalando...'));
       }
       if (r.finished || /succeeded|Nothing changed/i.test(st)) resolve(st);
     };

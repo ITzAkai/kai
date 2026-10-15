@@ -4,6 +4,7 @@
 import { getJSON, postJSON, cachedJSON } from '../lib/http.js';
 import * as store from '../lib/store.js';
 import { getJSONViaProxy } from './server.js';
+import { t, apiLang } from '../lib/i18n.js';
 
 const TMDB = 'https://api.themoviedb.org/3/';
 const TMDB_IMG = 'https://image.tmdb.org/t/p/';
@@ -31,10 +32,10 @@ function tmdb(path, params) {
 // IMDb → { id, type: 'movie' | 'tv', overview, title } em PT-BR.
 export function tmdbFind(imdb) {
   if (!tmdbKey() || !imdb) return Promise.resolve(null);
-  return tmdb('find/' + imdb, { external_source: 'imdb_id', language: 'pt-BR' }).then((r) => {
+  return tmdb('find/' + imdb, { external_source: 'imdb_id', language: apiLang() }).then((r) => {
     const m = (r.movie_results || [])[0];
-    const t = (r.tv_results || [])[0];
-    const hit = m || t;
+    const tv = (r.tv_results || [])[0];
+    const hit = m || tv;
     if (!hit) return null;
     return { id: hit.id, type: m ? 'movie' : 'tv', overview: hit.overview || '', title: hit.title || hit.name || '' };
   });
@@ -54,7 +55,7 @@ export function localized(meta) {
   const imdb = imdbOf(meta.id);
   return tmdbFind(imdb).then((f) => {
     if (!f) return null;
-    return tmdb(f.type + '/' + f.id, { language: 'pt-BR', append_to_response: 'credits,images', include_image_language: 'pt,en,null' }).then((d) => ({
+    return tmdb(f.type + '/' + f.id, { language: apiLang(), append_to_response: 'credits,images', include_image_language: 'pt,en,null' }).then((d) => ({
       tmdbId: f.id,
       tmdbType: f.type,
       title: d.title || d.name || f.title,
@@ -73,7 +74,7 @@ export function localized(meta) {
 // Episódios de uma temporada em PT-BR: { [número]: { name, overview, still } }
 export function seasonPt(tmdbId, season) {
   if (!tmdbKey()) return Promise.resolve({});
-  return tmdb('tv/' + tmdbId + '/season/' + season, { language: 'pt-BR' }).then((r) => {
+  return tmdb('tv/' + tmdbId + '/season/' + season, { language: apiLang() }).then((r) => {
     const map = {};
     (r.episodes || []).forEach((e) => {
       map[e.episode_number] = { name: e.name, overview: e.overview, still: e.still_path ? TMDB_IMG + 'w300' + e.still_path : null };
@@ -96,7 +97,7 @@ function mdblist(meta) {
         if (v === null || v === undefined || v === 0) return;
         const src = String(r.source || '').toLowerCase();
         if (src === 'tomatoes') out.push({ cls: 'rt', label: 'RT', value: v + '%' });
-        else if (src === 'popcorn' || src === 'tomatoesaudience') out.push({ cls: 'rt', label: 'Público', value: v + '%' });
+        else if (src === 'popcorn' || src === 'tomatoesaudience') out.push({ cls: 'rt', label: t('Público'), value: v + '%' });
         else if (src === 'metacritic') out.push({ cls: 'mc', label: 'MC', value: String(v) });
         else if (src === 'trakt') out.push({ cls: 'trakt', label: 'Trakt', value: v + '%' });
         else if (src === 'letterboxd') out.push({ cls: 'lb', label: 'LB', value: Number(v).toFixed(1) });

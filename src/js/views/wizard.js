@@ -8,6 +8,7 @@ import * as addons from '../api/addons.js';
 import { toast, refreshProfileChips } from '../ui.js';
 import * as router from '../router.js';
 import { openLogin } from './login.js';
+import { t, current as currentLang } from '../lib/i18n.js';
 
 export function maybeShowWizard() {
   const s = store.settings();
@@ -43,7 +44,7 @@ function WizardView() {
 
   function render() {
     clear(card);
-    card.appendChild(h('div.wizard-step', { text: 'PASSO ' + (step + 1) + ' DE ' + steps.length }));
+    card.appendChild(h('div.wizard-step', { text: t('PASSO {n} DE {total}', { n: step + 1, total: steps.length }) }));
     steps[step]();
     nav.focusFirst(card);
   }
@@ -55,14 +56,14 @@ function WizardView() {
   }
 
   function stepName() {
-    card.appendChild(h('h1', { text: 'Bem-vindo! Quem vai usar este perfil?' }));
-    card.appendChild(h('p', { text: 'Dê um nome ao perfil. Depois você pode criar outros perfis, cada um com a própria conta Stremio e histórico.' }));
+    card.appendChild(h('h1', { text: t('Bem-vindo! Quem vai usar este perfil?') }));
+    card.appendChild(h('p', { text: t('Dê um nome ao perfil. Depois você pode criar outros perfis, cada um com a própria conta Stremio e histórico.') }));
     const err = h('div.err-text');
-    const input = h('input.input', { type: 'text', placeholder: 'Ex.: Ana, Pedro, Sala', maxlength: '20', focusable: true, 'data-autofocus': '' });
+    const input = h('input.input', { type: 'text', placeholder: t('Ex.: Ana, Pedro, Sala'), maxlength: '20', focusable: true, 'data-autofocus': '' });
     const save = () => {
       const name = String(input.value || '').trim();
       if (!name) {
-        err.textContent = 'Digite um nome para o perfil.';
+        err.textContent = t('Digite um nome para o perfil.');
         return;
       }
       store.updateProfile(store.activeProfile().id, { name: name, unnamed: false });
@@ -72,69 +73,68 @@ function WizardView() {
     input.__submit = save;
     card.appendChild(input);
     card.appendChild(err);
-    card.appendChild(h('div.actions', { 'data-group': '' }, [btn('Continuar', true, save)]));
+    card.appendChild(h('div.actions', { 'data-group': '' }, [btn(t('Continuar'), true, save)]));
   }
 
   function stepAccount() {
-    card.appendChild(h('h1', { text: 'Bem-vindo ao Stremio Kai' }));
+    card.appendChild(h('h1', { text: t('Bem-vindo ao Stremio Kai') }));
     if (stremio.isLoggedIn()) {
-      card.appendChild(h('p', { text: 'Você já está conectado à sua conta Stremio. Seus addons e sua biblioteca já estão aqui.' }));
-      card.appendChild(h('div.actions', { 'data-group': '' }, [btn('Continuar', true, next)]));
+      card.appendChild(h('p', { text: t('Você já está conectado à sua conta Stremio. Seus addons e sua biblioteca já estão aqui.') }));
+      card.appendChild(h('div.actions', { 'data-group': '' }, [btn(t('Continuar'), true, next)]));
       return;
     }
-    card.appendChild(h('p', { text: 'Entre com a sua conta Stremio para trazer seus addons (Torrentio, debrid, Anime Kitsu...) e a biblioteca.' }));
+    card.appendChild(h('p', { text: t('Entre com a sua conta Stremio para trazer seus addons (Torrentio, debrid, Anime Kitsu...) e a biblioteca.') }));
     card.appendChild(
       h('div.actions', { 'data-group': '' }, [
-        btn('Entrar na conta', true, () =>
+        btn(t('Entrar na conta'), true, () =>
           openLogin(() => {
             Promise.all([stremio.refreshUser().catch(() => {}), addons.load(true), stremio.getLibrary()]).then(next, next);
           })
         ),
-        btn('Pular', false, next),
+        btn(t('Pular'), false, next),
       ])
     );
   }
 
   function stepServer() {
-    card.appendChild(h('h1', { text: 'Servidor de torrents no PC' }));
+    card.appendChild(h('h1', { text: t('Servidor de torrents no PC') }));
     const status = h('p', {
       text: server.isAvailable()
-        ? 'Servidor conectado em ' + server.baseUrl() + '. Torrents liberados.'
-        : 'Para tocar torrents, deixe o stremio-service aberto num PC da rede. Links de debrid funcionam sem ele.',
+        ? t('Servidor conectado em {url}. Torrents liberados.', { url: server.baseUrl() })
+        : t('Para tocar torrents, deixe o stremio-service aberto num PC da rede. Links de debrid funcionam sem ele.'),
     });
     card.appendChild(status);
     card.appendChild(
       h('div.actions', { 'data-group': '' }, [
-        btn('Procurar na rede', true, () => {
-          status.textContent = 'Procurando o servidor na rede...';
+        btn(t('Procurar na rede'), true, () => {
+          status.textContent = t('Procurando o servidor na rede...');
           server
-            .scan((done, total) => (status.textContent = 'Procurando o servidor na rede... ' + Math.round((done / total) * 100) + '%'))
+            .scan((done, total) => (status.textContent = t('Procurando o servidor na rede...') + ' ' + Math.round((done / total) * 100) + '%'))
             .then((ip) => {
               if (!ip) {
-                status.textContent = 'Nenhum servidor encontrado. Você pode configurar depois em Ajustes.';
+                status.textContent = t('Nenhum servidor encontrado. Você pode configurar depois em Ajustes.');
                 return;
               }
               store.saveSettings({ serverUrl: ip });
               return server.check().then(() => {
-                status.textContent = 'Servidor encontrado em ' + ip + '!';
-                toast('Servidor do PC conectado');
+                status.textContent = t('Servidor encontrado em {ip}', { ip: ip }) + '!';
+                toast(t('Servidor do PC conectado'));
               });
             })
-            .catch(() => (status.textContent = 'Não foi possível procurar. Configure depois em Ajustes.'));
+            .catch(() => (status.textContent = t('Não foi possível procurar. Configure depois em Ajustes.')));
         }),
-        btn(server.isAvailable() ? 'Continuar' : 'Pular', false, next),
+        btn(server.isAvailable() ? t('Continuar') : t('Pular'), false, next),
       ])
     );
   }
 
   function stepSubs() {
-    card.appendChild(h('h1', { text: 'Legendas' }));
-    card.appendChild(h('p', { text: 'Em qual idioma o app deve ligar a legenda sozinho quando o áudio não for no seu idioma?' }));
-    const choices = [
-      { label: 'Português (BR)', value: ['pob', 'por', 'pt', 'pt-br'] },
-      { label: 'Inglês', value: ['eng', 'en'] },
-      { label: 'Não ligar sozinho', value: [] },
-    ];
+    card.appendChild(h('h1', { text: t('Legendas') }));
+    card.appendChild(h('p', { text: t('Em qual idioma o app deve ligar a legenda sozinho quando o áudio não for no seu idioma?') }));
+    const pt = { label: t('Português (BR)'), value: ['pob', 'por', 'pt', 'pt-br'] };
+    const en = { label: t('Inglês'), value: ['eng', 'en'] };
+    // O idioma do app vem primeiro.
+    const choices = (currentLang() === 'en' ? [en, pt] : [pt, en]).concat([{ label: t('Não ligar sozinho'), value: [] }]);
     card.appendChild(
       h(
         'div.opts',

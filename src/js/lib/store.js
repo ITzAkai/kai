@@ -1,6 +1,8 @@
 // localStorage com JSON e tolerância a falhas, separado por PERFIL.
 // Cada perfil tem sua conta Stremio (histórico/biblioteca), addons e preferências pessoais.
 // O que é da TV (servidor do PC, chaves de API, rolagem) fica compartilhado entre os perfis.
+import { current } from './i18n.js';
+
 const PREFIX = 'kai.';
 
 function rawGet(key, fallback) {
@@ -112,7 +114,7 @@ export function set(key, value) {
 
 // ---------- Preferências ----------
 // Da TV (iguais para todos os perfis):
-const DEVICE_KEYS = ['serverUrl', 'tmdbKey', 'mdblistKey', 'smoothScroll', 'devlogUrl', 'lastUpdateCheck', 'askProfile', 'wizardDone'];
+const DEVICE_KEYS = ['serverUrl', 'tmdbKey', 'mdblistKey', 'smoothScroll', 'devlogUrl', 'lastUpdateCheck', 'askProfile', 'wizardDone', 'language'];
 
 const DEFAULT_SETTINGS = {
   // TV
@@ -121,6 +123,7 @@ const DEFAULT_SETTINGS = {
   mdblistKey: typeof __KAI_MDBLIST__ !== 'undefined' ? __KAI_MDBLIST__ : '',
   smoothScroll: false, // rolagem animada (mais bonita, mais pesada na TV)
   devlogUrl: typeof __KAI_DEVLOG__ !== 'undefined' ? __KAI_DEVLOG__ : '',
+  language: 'auto', // 'auto' (idioma da TV) | 'pt' | 'en'
   askProfile: true, // "Quem está assistindo?" ao abrir, se houver mais de um perfil
   wizardDone: false,
   // Perfil
@@ -140,7 +143,9 @@ const DEFAULT_SETTINGS = {
 };
 
 export function settings() {
-  return Object.assign({}, DEFAULT_SETTINGS, rawGet('device', {}), get('settings', {}));
+  // Legenda automática padrão segue o idioma do app (quem já escolheu, mantém a escolha).
+  const base = Object.assign({}, DEFAULT_SETTINGS, current() === 'en' ? { subtitleLangs: ['eng', 'en'] } : null);
+  return Object.assign(base, rawGet('device', {}), get('settings', {}));
 }
 
 export function saveSettings(patch) {

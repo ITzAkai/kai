@@ -11,6 +11,7 @@ import { openPlayer } from './player.js';
 import * as extras from '../api/extras.js';
 import { smallThumb } from '../lib/img.js';
 import { isAnime } from '../api/skip.js';
+import { t } from '../lib/i18n.js';
 
 export function openDetails(type, id, opts) {
   router.push(DetailsView(type, id, opts || {}));
@@ -30,7 +31,7 @@ export function sortedVideos(meta) {
 function DetailsView(type, id, opts) {
   const el = h('div.view');
   const bg = h('img.details-bg', { alt: '' });
-  const info = h('div.details-info', null, spinnerLine('Carregando...'));
+  const info = h('div.details-info', null, spinnerLine(t('Carregando...')));
   const panel = h('div.details-panel');
   el.appendChild(bg);
   el.appendChild(h('div.details-shade'));
@@ -77,7 +78,7 @@ function DetailsView(type, id, opts) {
     if (meta.runtime) parts.push(meta.runtime);
     if (isSeries()) {
       const seasons = uniqueSeasons().filter((s) => s !== 0);
-      if (seasons.length) parts.push(seasons.length + (seasons.length > 1 ? ' temporadas' : ' temporada'));
+      if (seasons.length) parts.push(t(seasons.length > 1 ? '{n} temporadas' : '{n} temporada', { n: seasons.length }));
     }
     const metaLine = h('div.details-meta', { text: parts.join('  ·  ') });
     const ratingsEl = h('div.ratings');
@@ -92,9 +93,9 @@ function DetailsView(type, id, opts) {
     const director = (meta.director || []).slice(0, 2);
     // Texto vindo do addon entra como texto, nunca como HTML (um addon malicioso não injeta código).
     const castLine = h('div.details-cast', null, [
-      director.length ? h('b', { text: 'Direção: ' }) : null,
+      director.length ? h('b', { text: t('Direção: ') }) : null,
       director.length ? director.join(', ') + '   ' : null,
-      cast.length ? h('b', { text: 'Elenco: ' }) : null,
+      cast.length ? h('b', { text: t('Elenco: ') }) : null,
       cast.length ? cast.join(', ') : null,
     ]);
 
@@ -176,13 +177,13 @@ function DetailsView(type, id, opts) {
 
   function updateButtons() {
     const li = stremio.libraryItem(meta.id);
-    let label = 'Assistir';
+    let label = t('Assistir');
     if (li && li.state && li.state.timeOffset > 0) {
       const ep = isSeries() ? sortedVideos(meta).find((v) => v.id === li.state.video_id) : null;
-      label = 'Continuar' + (ep ? ' T' + ep.season + 'E' + ep.episode : '');
+      label = t('Continuar') + (ep ? ' T' + ep.season + 'E' + ep.episode : '');
     }
     watchBtn.innerHTML = '<span class="ico">▶</span>' + label;
-    libBtn.innerHTML = stremio.isInLibrary(meta.id) ? '<span class="ico">✓</span>Na biblioteca' : '<span class="ico">＋</span>Biblioteca';
+    libBtn.innerHTML = stremio.isInLibrary(meta.id) ? '<span class="ico">✓</span>' + t('Na biblioteca') : '<span class="ico">＋</span>' + t('Biblioteca');
   }
 
   function onWatch() {
@@ -198,7 +199,7 @@ function DetailsView(type, id, opts) {
     const inLib = stremio.isInLibrary(meta.id);
     stremio.setInLibrary(meta, !inLib).then(() => {
       updateButtons();
-      toast(inLib ? 'Removido da biblioteca' : 'Adicionado à biblioteca');
+      toast(inLib ? t('Removido da biblioteca') : t('Adicionado à biblioteca'));
     });
   }
 
@@ -220,7 +221,7 @@ function DetailsView(type, id, opts) {
       const nu = nextUpVideo();
       season = nu ? nu.season || 0 : seasons[0];
     }
-    panel.appendChild(h('div.panel-head', null, h('h2', { text: 'Episódios' })));
+    panel.appendChild(h('div.panel-head', null, h('h2', { text: t('Episódios') })));
     const chips = h(
       'div.seasons',
       { 'data-scroll-x': '', 'data-group': '', 'data-pad': '60' },
@@ -228,7 +229,7 @@ function DetailsView(type, id, opts) {
         h('div.chip', {
           focusable: true,
           cls: s === season ? 'active' : '',
-          text: s === 0 ? 'Especiais' : 'Temporada ' + s,
+          text: s === 0 ? t('Especiais') : t('Temporada {n}', { n: s }),
           onSelect: () => {
             season = s;
             showEpisodes();
@@ -253,14 +254,14 @@ function DetailsView(type, id, opts) {
           im.onerror = () => (im.style.display = 'none');
           thumb.appendChild(im);
         }
-        let sub = 'Episódio ' + (v.episode || '?');
+        let sub = t('Episódio {n}', { n: v.episode || '?' });
         if (v.released) sub += ' · ' + formatDate(v.released);
         const inProgress = li && li.state && li.state.video_id === v.id && li.state.timeOffset > 0;
-        if (inProgress) sub += ' · parou em ' + fmtTime(li.state.timeOffset / 1000);
+        if (inProgress) sub += ' · ' + t('parou em {time}', { time: fmtTime(li.state.timeOffset / 1000) });
         const row = h('div.episode', { focusable: true, onSelect: () => showStreams(v, true) }, [
           thumb,
           h('div.ep-info', null, [
-            h('div.ep-title', { text: (v.episode ? v.episode + '. ' : '') + (v.name || v.title || 'Episódio') }),
+            h('div.ep-title', { text: (v.episode ? v.episode + '. ' : '') + (v.name || v.title || t('Episódio')) }),
             h('div.ep-sub', { text: sub }),
             h('div.ep-desc', { text: v.overview || v.description || '' }),
           ]),
@@ -314,8 +315,8 @@ function DetailsView(type, id, opts) {
     mode = 'streams';
     streamsVideo = video;
     clear(panel);
-    const head = isSeries() ? 'T' + video.season + 'E' + video.episode + ' · ' + (video.name || video.title || '') : 'Fontes';
-    const filterBtn = h('div.btn.small', { focusable: true, text: 'Todos ▾', onSelect: () => filterMenu() });
+    const head = isSeries() ? 'T' + video.season + 'E' + video.episode + ' · ' + (video.name || video.title || '') : t('Fontes');
+    const filterBtn = h('div.btn.small', { focusable: true, text: t('Todos ▾'), onSelect: () => filterMenu() });
     panel.appendChild(h('div.panel-head', { 'data-group': '' }, [h('h2', { text: head }), filterBtn]));
     const sub = h('div.panel-sub');
     const barFill = h('i');
@@ -330,7 +331,7 @@ function DetailsView(type, id, opts) {
       .sort((x, y) => addonRank(x.a) - addonRank(y.a) || x.i - y.i)
       .map((x) => x.a);
     if (!srcs.length) {
-      list.appendChild(h('div.loading-line', { text: 'Nenhum addon de streams instalado (ex.: Torrentio). Instale pela sua conta Stremio.' }));
+      list.appendChild(h('div.loading-line', { text: t('Nenhum addon de streams instalado (ex.: Torrentio). Instale pela sua conta Stremio.') }));
       return;
     }
     // Um grupo por addon, já na ordem de prioridade; os streams entram no grupo certo ao chegar.
@@ -339,7 +340,7 @@ function DetailsView(type, id, opts) {
       list.appendChild(el);
       return { addon: a, el: el, count: 0, done: false };
     });
-    const loadingLine = spinnerLine('Buscando fontes nos addons...');
+    const loadingLine = spinnerLine(t('Buscando fontes nos addons...'));
     list.appendChild(loadingLine);
     let filter = 'all';
     let pendingCount = srcs.length;
@@ -348,11 +349,11 @@ function DetailsView(type, id, opts) {
     let serverOk = server.isAvailable();
 
     function status() {
-      const srv = serverOk ? 'Servidor do PC conectado' : 'Servidor do PC não conectado: só links diretos';
-      sub.textContent = srv + (pendingCount > 0 ? '  ·  ' + pendingCount + ' addon(s) ainda carregando' : '  ·  ' + all.length + ' fontes');
+      const srv = serverOk ? t('Servidor do PC conectado') : t('Servidor do PC não conectado: só links diretos');
+      sub.textContent = srv + (pendingCount > 0 ? '  ·  ' + t('{n} addon(s) ainda carregando', { n: pendingCount }) : '  ·  ' + t('{n} fontes', { n: all.length }));
       barFill.style.width = Math.round(((srcs.length - pendingCount) / srcs.length) * 100) + '%';
       const g = groups.find((x) => x.addon.transportUrl === filter);
-      filterBtn.textContent = (g ? g.addon.manifest.name : 'Todos') + ' ▾';
+      filterBtn.textContent = (g ? g.addon.manifest.name : t('Todos')) + ' ▾';
     }
 
     function firstVisibleItem() {
@@ -370,15 +371,15 @@ function DetailsView(type, id, opts) {
     }
 
     function filterMenu() {
-      const opts = [{ label: 'Todos', sub: all.length + ' fontes', value: 'all', checked: filter === 'all' }].concat(
+      const opts = [{ label: t('Todos'), sub: t('{n} fontes', { n: all.length }), value: 'all', checked: filter === 'all' }].concat(
         groups.map((g) => ({
           label: g.addon.manifest.name || g.addon.manifest.id,
-          sub: g.done ? g.count + ' fontes' : 'carregando...',
+          sub: g.done ? t('{n} fontes', { n: g.count }) : t('carregando...'),
           value: g.addon.transportUrl,
           checked: filter === g.addon.transportUrl,
         }))
       );
-      menu('Mostrar fontes de', opts, {
+      menu(t('Mostrar fontes de'), opts, {
         onPick: (v) => {
           filter = v;
           applyFilter();
@@ -412,7 +413,7 @@ function DetailsView(type, id, opts) {
           }
           if (pendingCount <= 0) {
             if (loadingLine.parentNode) list.removeChild(loadingLine);
-            if (!all.length) list.appendChild(h('div.loading-line', { text: 'Nenhuma fonte encontrada.' }));
+            if (!all.length) list.appendChild(h('div.loading-line', { text: t('Nenhuma fonte encontrada.') }));
           }
           status();
         });
@@ -425,9 +426,9 @@ function DetailsView(type, id, opts) {
     const needs = server.needsServer(s);
     const disabled = !playableType || (needs && !serverOk);
     const tags = [];
-    if (!playableType) tags.push(h('span.s-tag.warn', { text: 'Não suportado na TV' }));
-    else if (needs) tags.push(h('span.s-tag', { cls: serverOk ? '' : 'warn', text: serverOk ? 'Torrent · via PC' : 'Torrent · precisa do PC' }));
-    else tags.push(h('span.s-tag.ok', { text: 'Direto' }));
+    if (!playableType) tags.push(h('span.s-tag.warn', { text: t('Não suportado na TV') }));
+    else if (needs) tags.push(h('span.s-tag', { cls: serverOk ? '' : 'warn', text: serverOk ? t('Torrent · via PC') : t('Torrent · precisa do PC') }));
+    else tags.push(h('span.s-tag.ok', { text: t('Direto') }));
     streamBadges(s).forEach((b) => tags.push(h('span.s-tag', { cls: b.warn ? 'warn' : '', text: b.t })));
     return h(
       'div.stream',
@@ -435,8 +436,8 @@ function DetailsView(type, id, opts) {
         focusable: true,
         cls: disabled ? 'disabled' : '',
         onSelect: () => {
-          if (!playableType) return toast('Esse tipo de fonte não abre na TV.');
-          if (needs && !serverOk) return toast('Torrent precisa do stremio-service rodando no PC. Configure em Ajustes.', 5000);
+          if (!playableType) return toast(t('Esse tipo de fonte não abre na TV.'));
+          if (needs && !serverOk) return toast(t('Torrent precisa do stremio-service rodando no PC. Configure em Ajustes.'), 5000);
           play(video, s, all);
         },
       },
@@ -450,13 +451,13 @@ function DetailsView(type, id, opts) {
   function play(video, stream, all) {
     const li = stremio.libraryItem(meta.id);
     const resumeMs = li && li.state && li.state.video_id === video.id ? li.state.timeOffset : 0;
-    const start = (t) => openPlayer({ meta: meta, video: video, stream: stream, streams: all, startTime: t, isSeries: isSeries() });
+    const start = (ms) => openPlayer({ meta: meta, video: video, stream: stream, streams: all, startTime: ms, isSeries: isSeries() });
     if (resumeMs > 30000) {
       menu(
-        'Continuar de onde parou?',
+        t('Continuar de onde parou?'),
         [
-          { label: 'Continuar de ' + fmtTime(resumeMs / 1000), value: resumeMs, checked: true },
-          { label: 'Começar do início', value: 0 },
+          { label: t('Continuar de {time}', { time: fmtTime(resumeMs / 1000) }), value: resumeMs, checked: true },
+          { label: t('Começar do início'), value: 0 },
         ],
         { center: true, onPick: (v) => start(v) }
       );
@@ -503,9 +504,9 @@ function DetailsView(type, id, opts) {
     })
     .catch((e) => {
       clear(info);
-      info.appendChild(h('div.details-title', { text: 'Não foi possível abrir' }));
+      info.appendChild(h('div.details-title', { text: t('Não foi possível abrir') }));
       info.appendChild(h('div.details-desc', { text: e.message }));
-      info.appendChild(h('div.btn', { focusable: true, 'data-autofocus': '', text: 'Voltar', onSelect: () => router.pop() }));
+      info.appendChild(h('div.btn', { focusable: true, 'data-autofocus': '', text: t('Voltar'), onSelect: () => router.pop() }));
       nav.focusFirst(el);
     });
 

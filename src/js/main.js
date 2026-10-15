@@ -1,6 +1,7 @@
 // Ponto de entrada do Stremio Kai para webOS.
 import './polyfills.js';
 import { log } from './lib/log.js';
+import { t, init as initI18n } from './lib/i18n.js';
 import * as nav from './lib/nav.js';
 import { loadVisibleImages } from './lib/dom.js';
 import * as store from './lib/store.js';
@@ -22,6 +23,7 @@ import { openLogin } from './views/login.js';
 
 function boot() {
   const s = store.settings();
+  initI18n(s.language);
   if (s.devlogUrl) log.setRemote(s.devlogUrl);
   log.info('Iniciando', navigator.userAgent);
 
@@ -97,7 +99,7 @@ function start() {
       setTimeout(() => {
         update
           .check()
-          .then((info) => info && toast('Versão ' + info.version + ' disponível: Ajustes → Procurar atualização', 7000))
+          .then((info) => info && toast(t('Versão {v} disponível: Ajustes → Procurar atualização', { v: info.version }), 7000))
           .catch(() => {});
       }, 8000);
     }

@@ -3,6 +3,7 @@ import { cachedJSON, getJSON } from '../lib/http.js';
 import * as stremio from './stremio.js';
 import * as store from '../lib/store.js';
 import { log } from '../lib/log.js';
+import { t } from '../lib/i18n.js';
 
 export const CINEMETA = 'https://v3-cinemeta.strem.io/manifest.json';
 export const OPENSUBTITLES = 'https://opensubtitles-v3.strem.io/manifest.json';
@@ -112,7 +113,7 @@ export function searchCatalogs() {
 }
 
 export function catalogTitle(entry) {
-  const typeName = { movie: 'Filmes', series: 'Séries', anime: 'Animes', channel: 'Canais', tv: 'TV' }[entry.catalog.type] || entry.catalog.type;
+  const typeName = { movie: t('Filmes'), series: t('Séries'), anime: t('Animes'), channel: t('Canais'), tv: 'TV' }[entry.catalog.type] || entry.catalog.type;
   const name = entry.catalog.name || entry.catalog.id;
   return name + ' · ' + typeName;
 }
@@ -126,11 +127,11 @@ export function fetchCatalog(entry, extra) {
 
 export function fetchMeta(type, id) {
   const sources = withResource('meta', type, id);
-  if (!sources.length) return Promise.reject(new Error('Nenhum addon fornece detalhes para ' + id));
+  if (!sources.length) return Promise.reject(new Error(t('Nenhum addon fornece detalhes para {id}', { id: id })));
   // Tenta na ordem de instalação; o primeiro que responder com meta vence.
   let i = 0;
   const next = () => {
-    if (i >= sources.length) throw new Error('Detalhes não encontrados');
+    if (i >= sources.length) throw new Error(t('Detalhes não encontrados'));
     const a = sources[i++];
     return cachedJSON(url(a, 'meta', type, id), 30 * 60000)
       .then((r) => {

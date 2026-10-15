@@ -8,6 +8,7 @@ import * as hero from '../api/hero.js';
 import { topbar, card, spinnerLine } from '../ui.js';
 import * as router from '../router.js';
 import { openDetails } from './details.js';
+import { t } from '../lib/i18n.js';
 
 const ROTATE_MS = 8000;
 
@@ -34,7 +35,7 @@ export function HomeView() {
       return;
     }
     cwRow.style.display = '';
-    cwRow.appendChild(h('div.row-title', { text: 'Continuar assistindo' }));
+    cwRow.appendChild(h('div.row-title', { text: t('Continuar assistindo') }));
     const track = h('div.row-track', { 'data-scroll-x': '', 'data-group': '' });
     items.forEach((it) => {
       const s = it.state;
@@ -87,19 +88,19 @@ export function HomeView() {
     loadedBoard = true;
     pending = [];
     clear(rows);
-    rows.appendChild(spinnerLine('Carregando catálogos...'));
+    rows.appendChild(spinnerLine(t('Carregando catálogos...')));
     addons
       .load()
       .then(() => {
         clear(rows);
         const cats = addons.boardCatalogs();
-        if (!cats.length) rows.appendChild(h('div.row-empty', { text: 'Nenhum catálogo. Entre na sua conta em Ajustes.' }));
+        if (!cats.length) rows.appendChild(h('div.row-empty', { text: t('Nenhum catálogo. Entre na sua conta em Ajustes.') }));
         pending = cats.map((c) => Object.assign(buildRow(c, rows), { state: 'idle' }));
         loadNearby();
       })
       .catch((e) => {
         clear(rows);
-        rows.appendChild(h('div.row-empty', { text: 'Erro ao carregar addons: ' + e.message }));
+        rows.appendChild(h('div.row-empty', { text: t('Erro ao carregar addons: {msg}', { msg: e.message }) }));
       });
   }
 
@@ -145,7 +146,7 @@ const ROW_LIMIT = 20;
 function buildRow(entry, parent) {
   const row = h('div.row', { 'data-anchor': '30' });
   const title = h('div.row-title', null, [entry.catalog.name || entry.catalog.id, h('small', { text: typeLabel(entry.catalog.type) + ' · ' + (entry.addon.manifest.name || '') })]);
-  const track = h('div.row-track.pending', { 'data-scroll-x': '', 'data-group': '' }, spinnerLine('Carregando...'));
+  const track = h('div.row-track.pending', { 'data-scroll-x': '', 'data-group': '' }, spinnerLine(t('Carregando...')));
   row.appendChild(title);
   row.appendChild(track);
   parent.appendChild(row);
@@ -174,8 +175,8 @@ function buildRow(entry, parent) {
   return { row: row, load: load };
 }
 
-function typeLabel(t) {
-  return { movie: 'Filmes', series: 'Séries', anime: 'Animes', channel: 'Canais', tv: 'TV' }[t] || t;
+function typeLabel(type) {
+  return { movie: t('Filmes'), series: t('Séries'), anime: t('Animes'), channel: t('Canais'), tv: 'TV' }[type] || type;
 }
 
 // ---------- Hero Banner ----------
@@ -188,8 +189,8 @@ function buildHero() {
   const meta = h('div.hero-meta');
   const desc = h('div.hero-desc');
   const dots = h('div.hero-dots');
-  const watchBtn = h('div.btn.primary', { focusable: true, html: '<span class="ico">▶</span>Assistir', onSelect: () => open(true) });
-  const infoBtn = h('div.btn', { focusable: true, html: '<span class="ico">ⓘ</span>Detalhes', onSelect: () => open(false) });
+  const watchBtn = h('div.btn.primary', { focusable: true, html: '<span class="ico">▶</span>' + t('Assistir'), onSelect: () => open(true) });
+  const infoBtn = h('div.btn', { focusable: true, html: '<span class="ico">ⓘ</span>' + t('Detalhes'), onSelect: () => open(false) });
   const buttons = h('div.hero-buttons', { 'data-group': '' }, [watchBtn, infoBtn]);
   buttons.__last = watchBtn; // entrar no banner sempre pelo "Assistir"
   const el = h('div.hero', { 'data-anchor': '0' }, [

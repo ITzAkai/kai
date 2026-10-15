@@ -5,12 +5,13 @@ import * as addons from '../api/addons.js';
 import { topbar, card, spinnerLine } from '../ui.js';
 import * as router from '../router.js';
 import { openDetails } from './details.js';
+import { t } from '../lib/i18n.js';
 
 export function SearchView() {
   const el = h('div.view');
   const scroller = h('div.scroll-y', { 'data-scroll-y': '' });
   const bar = topbar('search', router.goTab);
-  const input = h('input.input', { type: 'text', placeholder: 'Buscar filmes e séries...', focusable: true, 'data-autofocus': '' });
+  const input = h('input.input', { type: 'text', placeholder: t('Buscar filmes e séries...'), focusable: true, 'data-autofocus': '' });
   const results = h('div.rows');
   scroller.appendChild(bar);
   scroller.appendChild(h('div.search-box', null, input));
@@ -24,16 +25,16 @@ export function SearchView() {
     const query = (q || '').trim();
     clear(results);
     if (query.length < 2) {
-      results.appendChild(h('div.hint', { text: 'Digite pelo menos 2 letras e confirme no teclado.' }));
+      results.appendChild(h('div.hint', { text: t('Digite pelo menos 2 letras e confirme no teclado.') }));
       return;
     }
     const my = ++token;
-    results.appendChild(spinnerLine('Buscando "' + query + '"...'));
+    results.appendChild(spinnerLine(t('Buscando "{q}"...', { q: query })));
     addons.load().then(() => {
       if (my !== token) return;
       clear(results);
       const cats = addons.searchCatalogs();
-      if (!cats.length) results.appendChild(h('div.hint', { text: 'Nenhum addon com busca instalado.' }));
+      if (!cats.length) results.appendChild(h('div.hint', { text: t('Nenhum addon com busca instalado.') }));
       let found = 0;
       let pending = cats.length;
       cats.forEach((entry) => {
@@ -53,7 +54,7 @@ export function SearchView() {
           .catch(() => {})
           .then(() => {
             pending--;
-            if (my === token && pending === 0 && !found) results.appendChild(h('div.hint', { text: 'Nada encontrado para "' + query + '".' }));
+            if (my === token && pending === 0 && !found) results.appendChild(h('div.hint', { text: t('Nada encontrado para "{q}".', { q: query }) }));
           });
       });
     });

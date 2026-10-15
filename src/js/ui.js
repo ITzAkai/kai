@@ -4,6 +4,7 @@ import * as nav from './lib/nav.js';
 import { smallPoster, smallBackground } from './lib/img.js';
 import * as store from './lib/store.js';
 import { avatar, switchProfile, createProfile } from './views/profiles.js';
+import { t } from './lib/i18n.js';
 
 let toastTimer = null;
 export function toast(msg, ms) {
@@ -36,7 +37,7 @@ export function menu(title, options, opts) {
       )
     );
   });
-  if (!options.length) list.appendChild(h('div.modal-text', { text: o.empty || 'Nada por aqui.' }));
+  if (!options.length) list.appendChild(h('div.modal-text', { text: o.empty || t('Nada por aqui.') }));
   const box = h('div.modal-box', { cls: o.center ? 'center' : '' }, [h('h3', { text: title }), list]);
   const modal = h('div.modal', null, box);
   document.getElementById('app').appendChild(modal);
@@ -61,7 +62,7 @@ export function confirmDialog(text, okLabel, onOk) {
     h('h3', { text: text }),
     h('div.modal-actions', null, [
       h('div.btn.primary', { focusable: true, 'data-autofocus': '', text: okLabel || 'OK', onSelect: () => (close(), onOk && onOk()) }),
-      h('div.btn', { focusable: true, text: 'Cancelar', onSelect: () => close() }),
+      h('div.btn', { focusable: true, text: t('Cancelar'), onSelect: () => close() }),
     ]),
   ]);
   const modal = h('div.modal', null, box);
@@ -90,12 +91,12 @@ export function topbar(activeId, onTab) {
   const timer = setInterval(tick, 20000);
   const bar = h('div.topbar', { 'data-group': '' }, [
     h('div.brand', { html: 'Stremio <b>Kai</b>' }),
-    TABS.map((t) =>
+    TABS.map((tab) =>
       h('div.tab', {
         focusable: true,
-        cls: t.id === activeId ? 'active' : '',
-        text: t.label,
-        onSelect: () => onTab(t.id),
+        cls: tab.id === activeId ? 'active' : '',
+        text: t(tab.label),
+        onSelect: () => onTab(tab.id),
       })
     ),
     h('div.spacer'),
@@ -127,10 +128,10 @@ export function refreshProfileChips() {
 
 function profileMenu(onTab) {
   const active = store.activeProfile();
-  const opts = store.profiles().map((p) => ({ label: p.name, sub: p.id === active.id ? 'Perfil atual' : 'Trocar para este perfil', value: p.id, checked: p.id === active.id }));
-  opts.push({ label: '+ Adicionar perfil', sub: 'Com outra conta Stremio (histórico separado)', value: '__add' });
-  opts.push({ label: 'Gerenciar perfis', sub: 'Nome, cor, apagar', value: '__manage' });
-  menu('Perfis', opts, {
+  const opts = store.profiles().map((p) => ({ label: p.name, sub: p.id === active.id ? t('Perfil atual') : t('Trocar para este perfil'), value: p.id, checked: p.id === active.id }));
+  opts.push({ label: t('+ Adicionar perfil'), sub: t('Com outra conta Stremio (histórico separado)'), value: '__add' });
+  opts.push({ label: t('Gerenciar perfis'), sub: t('Nome, cor, apagar'), value: '__manage' });
+  menu(t('Perfis'), opts, {
     onPick: (v) => {
       if (v === '__add') createProfile();
       else if (v === '__manage') onTab('settings');

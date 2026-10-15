@@ -3,6 +3,7 @@ import * as nav from './lib/nav.js';
 import { platformBack } from './lib/luna.js';
 import { confirmDialog } from './ui.js';
 import { loadVisibleImages, unloadImages } from './lib/dom.js';
+import { t } from './lib/i18n.js';
 
 const stack = [];
 const app = () => document.getElementById('app');
@@ -64,7 +65,7 @@ export function back() {
     goTab('home');
     return;
   }
-  confirmDialog('Sair do Stremio Kai?', 'Sair', () => platformBack());
+  confirmDialog(t('Sair do Stremio Kai?'), t('Sair'), () => platformBack());
 }
 
 // Troca de aba principal: limpa a pilha e mostra a aba (mantida viva).

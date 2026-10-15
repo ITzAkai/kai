@@ -5,6 +5,7 @@ import * as stremio from '../api/stremio.js';
 import { topbar, card, spinnerLine } from '../ui.js';
 import * as router from '../router.js';
 import { openDetails } from './details.js';
+import { t } from '../lib/i18n.js';
 
 const FILTERS = [
   { id: 'all', label: 'Tudo' },
@@ -32,7 +33,7 @@ export function LibraryView() {
         h('div.chip', {
           focusable: true,
           cls: f.id === filter ? 'active' : '',
-          text: f.label,
+          text: t(f.label),
           onSelect: () => {
             filter = f.id;
             renderFilters();
@@ -51,7 +52,7 @@ export function LibraryView() {
       .filter((it) => !it.removed && (filter === 'all' || it.type === filter))
       .sort((a, b) => String(b._mtime || '').localeCompare(String(a._mtime || '')));
     if (!items.length) {
-      grid.appendChild(h('div.hint', { text: stremio.isLoggedIn() ? 'Sua biblioteca está vazia.' : 'Entre na sua conta em Ajustes para ver a biblioteca.' }));
+      grid.appendChild(h('div.hint', { text: stremio.isLoggedIn() ? t('Sua biblioteca está vazia.') : t('Entre na sua conta em Ajustes para ver a biblioteca.') }));
       return;
     }
     items.forEach((it) => grid.appendChild(card({ name: it.name, poster: it.poster }, { onSelect: () => openDetails(it.type, it._id) })));
@@ -59,7 +60,7 @@ export function LibraryView() {
   }
 
   renderFilters();
-  grid.appendChild(spinnerLine('Carregando biblioteca...'));
+  grid.appendChild(spinnerLine(t('Carregando biblioteca...')));
 
   return {
     el: el,

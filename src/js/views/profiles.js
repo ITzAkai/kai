@@ -3,6 +3,7 @@
 import { h } from '../lib/dom.js';
 import * as nav from '../lib/nav.js';
 import * as store from '../lib/store.js';
+import { t } from '../lib/i18n.js';
 
 const SESSION_PICKED = 'kai.profilePicked';
 const SESSION_NEW = 'kai.newProfile';
@@ -33,17 +34,17 @@ export function switchProfile(id) {
 // Pede o nome do perfil num modal (no TV o teclado virtual abre ao confirmar no campo).
 export function askProfileName(title, initial, okLabel, onOk, onCancel) {
   const err = h('div.modal-text.err-text');
-  const input = h('input.input', { type: 'text', value: initial || '', placeholder: 'Ex.: Ana, Pedro, Sala', maxlength: '20', focusable: true, 'data-autofocus': '' });
+  const input = h('input.input', { type: 'text', value: initial || '', placeholder: t('Ex.: Ana, Pedro, Sala'), maxlength: '20', focusable: true, 'data-autofocus': '' });
   const submit = () => {
     const name = String(input.value || '').trim();
     if (!name) {
-      err.textContent = 'Digite um nome para o perfil.';
+      err.textContent = t('Digite um nome para o perfil.');
       nav.focus(input);
       return;
     }
     const dup = store.profiles().some((p) => p.name.toLowerCase() === name.toLowerCase() && p.name !== initial);
     if (dup) {
-      err.textContent = 'Já existe um perfil com esse nome.';
+      err.textContent = t('Já existe um perfil com esse nome.');
       nav.focus(input);
       return;
     }
@@ -56,8 +57,8 @@ export function askProfileName(title, initial, okLabel, onOk, onCancel) {
     h('div.modal-text', null, input),
     err,
     h('div.modal-actions', { 'data-group': '' }, [
-      h('div.btn.primary', { focusable: true, text: okLabel || 'Continuar', onSelect: submit }),
-      h('div.btn', { focusable: true, text: 'Cancelar', onSelect: () => (close(), onCancel && onCancel()) }),
+      h('div.btn.primary', { focusable: true, text: okLabel || t('Continuar'), onSelect: submit }),
+      h('div.btn', { focusable: true, text: t('Cancelar'), onSelect: () => (close(), onCancel && onCancel()) }),
     ]),
   ]);
   const modal = h('div.modal', null, box);
@@ -72,7 +73,7 @@ export function askProfileName(title, initial, okLabel, onOk, onCancel) {
 
 // Novo perfil: primeiro o nome (não existe nome padrão), depois o app troca para ele e pede a conta.
 export function createProfile() {
-  askProfileName('Nome do novo perfil', '', 'Criar perfil', (name) => {
+  askProfileName(t('Nome do novo perfil'), '', t('Criar perfil'), (name) => {
     const p = store.addProfile(name);
     session(SESSION_NEW, p.id);
     switchProfile(p.id);
@@ -110,14 +111,14 @@ export function showPicker(onPicked) {
   cards.push(
     h('div.profile-card', { focusable: true, onSelect: () => createProfile() }, [
       h('div.avatar.big.add', { text: '+' }),
-      h('div.profile-name', { text: 'Adicionar perfil' }),
+      h('div.profile-name', { text: t('Adicionar perfil') }),
     ])
   );
   const el = h('div.view.profile-picker', null, [
     h('div.boot-logo', { html: 'Stremio <b>Kai</b>' }),
-    h('h1', { text: 'Quem está assistindo?' }),
+    h('h1', { text: t('Quem está assistindo?') }),
     h('div.profile-row', { 'data-group': '' }, cards),
-    h('p.profile-hint', { text: 'Cada perfil tem sua própria conta Stremio, com histórico e biblioteca separados.' }),
+    h('p.profile-hint', { text: t('Cada perfil tem sua própria conta Stremio, com histórico e biblioteca separados.') }),
   ]);
   document.getElementById('app').appendChild(el);
   const layer = nav.pushLayer(el, { onBack: () => pick(active.id) });

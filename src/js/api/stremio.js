@@ -2,6 +2,7 @@
 import { postJSON, getJSON } from '../lib/http.js';
 import * as store from '../lib/store.js';
 import { log } from '../lib/log.js';
+import { t } from '../lib/i18n.js';
 
 const API = 'https://api.strem.io/api/';
 const LINK = 'https://link.stremio.com/api/v2/';
@@ -17,7 +18,7 @@ export function reloadProfile() {
 function call(method, body) {
   return postJSON(API + method, body).then((res) => {
     if (res && res.error) {
-      const err = new Error(res.error.message || 'Erro da API Stremio');
+      const err = new Error(res.error.message || t('Erro da API Stremio'));
       err.code = res.error.code;
       throw err;
     }
@@ -50,7 +51,7 @@ export function login(email, password) {
 // Login por código: o usuário abre link.stremio.com no celular e digita o código.
 export function createLinkCode() {
   return getJSON(LINK + 'create?type=Create').then((res) => {
-    if (!res || !res.result || !res.result.code) throw new Error('Não foi possível gerar o código');
+    if (!res || !res.result || !res.result.code) throw new Error(t('Não foi possível gerar o código'));
     return res.result;
   });
 }
@@ -100,13 +101,13 @@ export function getAddonCollection() {
 
 // Instala um addon na conta (mesmo formato do app oficial: a coleção inteira é regravada).
 export function installAddon(transportUrl) {
-  if (!isLoggedIn()) return Promise.reject(new Error('Entre na conta primeiro'));
+  if (!isLoggedIn()) return Promise.reject(new Error(t('Entre na conta primeiro')));
   return getJSON(transportUrl).then((manifest) => {
-    if (!manifest || !manifest.id) throw new Error('Manifest inválido');
+    if (!manifest || !manifest.id) throw new Error(t('Manifest inválido'));
     return call('addonCollectionGet', { type: 'AddonCollectionGet', authKey: auth.authKey, update: true }).then((r) => {
       const list = (r && r.addons) || [];
       if (list.some((a) => a.transportUrl === transportUrl || (a.manifest && a.manifest.id === manifest.id))) {
-        throw new Error('Esse addon já está instalado');
+        throw new Error(t('Esse addon já está instalado'));
       }
       const next = list.concat([{ transportUrl: transportUrl, transportName: 'http', manifest: manifest, flags: { official: false, protected: false } }]);
       return call('addonCollectionSet', { type: 'AddonCollectionSet', authKey: auth.authKey, addons: next }).then(() => {

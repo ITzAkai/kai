@@ -3,6 +3,7 @@
 import { getJSON, postJSON } from '../lib/http.js';
 import * as store from '../lib/store.js';
 import { getTvIp } from '../lib/luna.js';
+import { t } from '../lib/i18n.js';
 
 let status = { ok: false, checkedAt: 0, url: '' };
 
@@ -75,8 +76,8 @@ function parseMagnet(uri) {
   let hash = m[1];
   if (hash.length === 32) hash = base32ToHex(hash);
   const trackers = [];
-  uri.replace(/[?&]tr=([^&]+)/g, (_, t) => {
-    trackers.push('tracker:' + decodeURIComponent(t));
+  uri.replace(/[?&]tr=([^&]+)/g, (_, tracker) => {
+    trackers.push('tracker:' + decodeURIComponent(tracker));
     return '';
   });
   return { infoHash: hash.toLowerCase(), sources: trackers };
@@ -167,9 +168,9 @@ export function toPlayable(stream, seriesInfo) {
   const base = baseUrl();
   if (typeof stream.url === 'string') {
     if (stream.url.indexOf('magnet:') === 0) {
-      if (!base) return Promise.reject(new Error('Este link é torrent: configure o servidor do PC'));
+      if (!base) return Promise.reject(new Error(t('Este link é torrent: configure o servidor do PC')));
       const mg = parseMagnet(stream.url);
-      if (!mg) return Promise.reject(new Error('Magnet inválido'));
+      if (!mg) return Promise.reject(new Error(t('Magnet inválido')));
       return createTorrent(base, mg.infoHash, null, mg.sources, seriesInfo).then((u) => ({ url: u, viaServer: true }));
     }
     const ph = stream.behaviorHints && stream.behaviorHints.proxyHeaders;
@@ -179,13 +180,13 @@ export function toPlayable(stream, seriesInfo) {
     return Promise.resolve({ url: stream.url, viaServer: false });
   }
   if (typeof stream.infoHash === 'string') {
-    if (!base) return Promise.reject(new Error('Este link é torrent: configure o servidor do PC'));
+    if (!base) return Promise.reject(new Error(t('Este link é torrent: configure o servidor do PC')));
     return createTorrent(base, stream.infoHash.toLowerCase(), stream.fileIdx, stream.sources || [], seriesInfo).then((u) => ({
       url: u,
       viaServer: true,
     }));
   }
-  return Promise.reject(new Error('Tipo de link não suportado na TV'));
+  return Promise.reject(new Error(t('Tipo de link não suportado na TV')));
 }
 
 // Faixas embutidas (áudio/legenda) do arquivo, lidas pelo servidor com ffprobe.
@@ -195,8 +196,8 @@ export function tracks(mediaUrl) {
   return getJSON(base + 'tracks/' + encodeURIComponent(mediaUrl), { timeout: 20000, quiet: true }).then((list) => {
     const arr = Array.isArray(list) ? list : [];
     return {
-      audio: arr.filter((t) => t && t.type === 'audio'),
-      subs: arr.filter((t) => t && t.type === 'text'),
+      audio: arr.filter((tk) => tk && tk.type === 'audio'),
+      subs: arr.filter((tk) => tk && tk.type === 'text'),
     };
   });
 }

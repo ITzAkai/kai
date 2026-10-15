@@ -1,5 +1,6 @@
 // XHR com Promise: o Chromium 38 não tem fetch().
 import { log } from './log.js';
+import { t } from './i18n.js';
 
 export function request(method, url, body, opts) {
   const o = opts || {};
@@ -15,21 +16,21 @@ export function request(method, url, body, opts) {
         try {
           resolve(xhr.responseText ? JSON.parse(xhr.responseText) : null);
         } catch (e) {
-          reject(new Error('JSON inválido de ' + url));
+          reject(new Error(t('JSON inválido de {url}', { url: url })));
         }
       } else {
-        const err = new Error('HTTP ' + xhr.status + ' em ' + url);
+        const err = new Error(t('HTTP {code} em {url}', { code: xhr.status, url: url }));
         err.status = xhr.status;
         reject(err);
       }
     };
     xhr.onerror = () => {
-      const err = new Error('Falha de rede em ' + url);
+      const err = new Error(t('Falha de rede em {url}', { url: url }));
       err.status = 0;
       reject(err);
     };
     xhr.ontimeout = () => {
-      const err = new Error('Tempo esgotado em ' + url);
+      const err = new Error(t('Tempo esgotado em {url}', { url: url }));
       err.status = 0;
       err.timeout = true;
       reject(err);

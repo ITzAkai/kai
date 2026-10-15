@@ -15,6 +15,7 @@ import * as skip from '../api/skip.js';
 import { menu, toast, fmtTime, timeHM } from '../ui.js';
 import * as router from '../router.js';
 import { sortedVideos, openDetails } from './details.js';
+import { t } from '../lib/i18n.js';
 
 const HIDE_MS = 5000;
 const SAVE_MS = 15000;
@@ -26,8 +27,9 @@ const LANG_NAMES = {
 };
 
 function langName(code) {
-  if (!code) return 'Desconhecido';
-  return LANG_NAMES[String(code).toLowerCase()] || code;
+  if (!code) return t('Desconhecido');
+  const name = LANG_NAMES[String(code).toLowerCase()];
+  return name ? t(name) : code;
 }
 
 export function openPlayer(opts) {
@@ -52,10 +54,10 @@ function PlayerView(opts) {
   const curTimeEl = h('span');
   const durEl = h('span');
   const playBtn = h('div.btn', { focusable: true, onSelect: () => togglePlay() });
-  const audioBtn = h('div.btn', { focusable: true, html: '<span class="ico">♫</span>Áudio', onSelect: () => audioMenu() });
-  const subsBtn = h('div.btn', { focusable: true, html: '<span class="ico">≡</span>Legendas', onSelect: () => subsMenu() });
-  const srcBtn = h('div.btn', { focusable: true, html: '<span class="ico">⇄</span>Fontes', onSelect: () => sourcesMenu() });
-  const nextBtn = h('div.btn', { focusable: true, html: '<span class="ico">⏭</span>Próximo', onSelect: () => playNext() });
+  const audioBtn = h('div.btn', { focusable: true, html: '<span class="ico">♫</span>' + t('Áudio'), onSelect: () => audioMenu() });
+  const subsBtn = h('div.btn', { focusable: true, html: '<span class="ico">≡</span>' + t('Legendas'), onSelect: () => subsMenu() });
+  const srcBtn = h('div.btn', { focusable: true, html: '<span class="ico">⇄</span>' + t('Fontes'), onSelect: () => sourcesMenu() });
+  const nextBtn = h('div.btn', { focusable: true, html: '<span class="ico">⏭</span>' + t('Próximo'), onSelect: () => playNext() });
   const buttons = h('div.p-buttons', { 'data-group': '' }, [playBtn, audioBtn, subsBtn, srcBtn, nextBtn]);
   const spinner = h('div.p-center', null, h('div.spinner'));
   const msgEl = h('div.p-msg');
@@ -148,11 +150,11 @@ function PlayerView(opts) {
       const forUrl = mediaUrl;
       tracksPromise = server
         .tracks(mediaUrl)
-        .then((t) => {
-          if (!alive || !t || forUrl !== mediaUrl) return null;
-          embedded = t;
-          log.info('Faixas embutidas', JSON.stringify(t));
-          return t;
+        .then((tracks) => {
+          if (!alive || !tracks || forUrl !== mediaUrl) return null;
+          embedded = tracks;
+          log.info('Faixas embutidas', JSON.stringify(tracks));
+          return tracks;
         })
         .catch(() => {
           tracksPromise = null;
@@ -187,7 +189,7 @@ function PlayerView(opts) {
       autoDone.audio = true;
       const already = embedded.audio[0] && prefAudio.indexOf(String(embedded.audio[0].lang).toLowerCase()) >= 0;
       if (!already) {
-        const idx = embedded.audio.findIndex((t) => prefAudio.indexOf(String(t.lang).toLowerCase()) >= 0);
+        const idx = embedded.audio.findIndex((tr) => prefAudio.indexOf(String(tr.lang).toLowerCase()) >= 0);
         if (idx > 0) selectEmbeddedAudio(idx);
       }
     }
@@ -259,8 +261,8 @@ function PlayerView(opts) {
     log.warn('Erro de vídeo', err && err.code, mediaUrl);
     if (!alive) return;
     if (!triedTranscode && server.isAvailable()) {
-      fail('A TV não conseguiu tocar este arquivo diretamente.', true);
-    } else fail('A TV não conseguiu tocar este arquivo (formato ou codec não suportado).');
+      fail(t('A TV não conseguiu tocar este arquivo diretamente.'), true);
+    } else fail(t('A TV não conseguiu tocar este arquivo (formato ou codec não suportado).'));
   });
 
   // ---------- Pular abertura / recapitulação / encerramento ----------
@@ -282,9 +284,9 @@ function PlayerView(opts) {
   }
 
   function segLabel(seg) {
-    if (seg.type === 'intro') return 'Pular abertura';
-    if (seg.type === 'recap') return 'Pular recapitulação';
-    return opts.isSeries && nextVideo() ? 'Próximo episódio' : 'Pular encerramento';
+    if (seg.type === 'intro') return t('Pular abertura');
+    if (seg.type === 'recap') return t('Pular recapitulação');
+    return opts.isSeries && nextVideo() ? t('Próximo episódio') : t('Pular encerramento');
   }
 
   function segKey(seg) {
@@ -293,8 +295,8 @@ function PlayerView(opts) {
 
   function checkSkip() {
     if (!segments.length || seekTarget !== null) return;
-    const t = videoEl.currentTime;
-    const seg = segments.find((x) => t >= x.start && t < x.end - 0.5) || null;
+    const pos = videoEl.currentTime;
+    const seg = segments.find((x) => pos >= x.start && pos < x.end - 0.5) || null;
     if (seg !== activeSeg) {
       activeSeg = seg;
       if (!seg || doneSegs[segKey(seg)]) {
@@ -310,7 +312,7 @@ function PlayerView(opts) {
       skipBox.classList.add('show');
       if (controlsOn) nav.focus(skipBtn, { noScroll: true });
     }
-    if (activeSeg) skipFill.style.width = Math.max(0, Math.min(100, ((t - activeSeg.start) / (activeSeg.end - activeSeg.start)) * 100)) + '%';
+    if (activeSeg) skipFill.style.width = Math.max(0, Math.min(100, ((pos - activeSeg.start) / (activeSeg.end - activeSeg.start)) * 100)) + '%';
   }
 
   function hideSkip() {
@@ -340,7 +342,7 @@ function PlayerView(opts) {
     } catch (e) {
       /* ignore */
     }
-    if (store.settings().skipMode === 'auto') toast(seg.type === 'intro' ? 'Abertura pulada' : seg.type === 'recap' ? 'Recapitulação pulada' : 'Encerramento pulado');
+    if (store.settings().skipMode === 'auto') toast(seg.type === 'intro' ? t('Abertura pulada') : seg.type === 'recap' ? t('Recapitulação pulada') : t('Encerramento pulado'));
   }
 
   // ---------- Diagnóstico e recuperação de travamentos ----------
@@ -384,14 +386,14 @@ function PlayerView(opts) {
     }
   });
 
-  function stuckMenu(t) {
+  function stuckMenu(pos) {
     showSpinner(false);
     menu(
-      'O vídeo parou de carregar',
+      t('O vídeo parou de carregar'),
       [
-        { label: 'Tentar de novo', sub: 'Reabre o vídeo em ' + fmtTime(t), value: 'retry', checked: true },
-        { label: 'Escolher outra fonte', value: 'src' },
-        { label: 'Voltar', value: 'back' },
+        { label: t('Tentar de novo'), sub: t('Reabre o vídeo em {time}', { time: fmtTime(pos) }), value: 'retry', checked: true },
+        { label: t('Escolher outra fonte'), value: 'src' },
+        { label: t('Voltar'), value: 'back' },
       ],
       {
         center: true,
@@ -399,7 +401,7 @@ function PlayerView(opts) {
           if (v === 'retry') {
             gaveUp = false;
             recoveries = 0;
-            reopenAt(t);
+            reopenAt(pos);
           } else if (v === 'src') sourcesMenu();
           else router.pop();
         },
@@ -422,9 +424,9 @@ function PlayerView(opts) {
       stuckSince = 0;
       return;
     }
-    const t = videoEl.currentTime;
-    if (Math.abs(t - lastT) > 0.05) {
-      lastT = t;
+    const pos = videoEl.currentTime;
+    if (Math.abs(pos - lastT) > 0.05) {
+      lastT = pos;
       stuckSince = 0;
       if (Date.now() - lastRecoveryAt > 120000) recoveries = 0;
       return;
@@ -439,20 +441,20 @@ function PlayerView(opts) {
       if (recoveries >= 3) {
         diag('travado-desisti');
         gaveUp = true; // para de vigiar até o usuário escolher (antes reabria o aviso sem parar)
-        stuckMenu(t);
+        stuckMenu(pos);
         return;
       }
       recoveries++;
       lastRecoveryAt = Date.now();
       diag('travado-recuperando#' + recoveries);
-      reopenAt(t);
+      reopenAt(pos);
     }
   }
 
-  function reopenAt(t) {
+  function reopenAt(pos) {
     showSpinner(true);
-    toast('Reconectando ao vídeo...');
-    pendingStart = Math.max(0, t - 1) * 1000;
+    toast(t('Reconectando ao vídeo...'));
+    pendingStart = Math.max(0, pos - 1) * 1000;
     const src = videoEl.currentSrc || mediaUrl;
     try {
       videoEl.pause();
@@ -478,13 +480,13 @@ function PlayerView(opts) {
 
   function fail(text, offerTranscode) {
     showSpinner(false);
-    const box = h('div', null, [text, h('small', { text: 'Tente outra fonte (de preferência MP4/MKV com H.264 ou HEVC e áudio AAC/AC3).' })]);
+    const box = h('div', null, [text, h('small', { text: t('Tente outra fonte (de preferência MP4/MKV com H.264 ou HEVC e áudio AAC/AC3).') })]);
     clear(msgEl);
     msgEl.appendChild(box);
-    const opts2 = [{ label: 'Escolher outra fonte', value: 'src' }];
-    if (offerTranscode) opts2.unshift({ label: 'Converter no PC (experimental)', sub: 'O servidor converte para HLS que a TV aceita', value: 'hls' });
-    opts2.push({ label: 'Voltar', value: 'back' });
-    menu('Problema na reprodução', opts2, {
+    const opts2 = [{ label: t('Escolher outra fonte'), value: 'src' }];
+    if (offerTranscode) opts2.unshift({ label: t('Converter no PC (experimental)'), sub: t('O servidor converte para HLS que a TV aceita'), value: 'hls' });
+    opts2.push({ label: t('Voltar'), value: 'back' });
+    menu(t('Problema na reprodução'), opts2, {
       center: true,
       onPick: (v) => {
         if (v === 'hls') transcode();
@@ -520,17 +522,17 @@ function PlayerView(opts) {
   }
 
   function updatePlayBtn() {
-    playBtn.innerHTML = videoEl.paused ? '<span class="ico">▶</span>Tocar' : '<span class="ico">❚❚</span>Pausar';
+    playBtn.innerHTML = videoEl.paused ? '<span class="ico">▶</span>' + t('Tocar') : '<span class="ico">❚❚</span>' + t('Pausar');
   }
 
   function updateTimes() {
     const d = videoEl.duration;
-    const t = seekTarget !== null ? seekTarget : videoEl.currentTime;
-    const pct = d > 0 && isFinite(d) ? Math.min(100, (t / d) * 100) : 0;
+    const pos = seekTarget !== null ? seekTarget : videoEl.currentTime;
+    const pct = d > 0 && isFinite(d) ? Math.min(100, (pos / d) * 100) : 0;
     posEl.style.width = pct + '%';
     knobEl.style.left = pct + '%';
     seekLabel.style.left = pct + '%';
-    curTimeEl.textContent = fmtTime(t);
+    curTimeEl.textContent = fmtTime(pos);
     durEl.textContent = isFinite(d) ? fmtTime(d) : '--:--';
     try {
       const b = videoEl.buffered;
@@ -548,7 +550,7 @@ function PlayerView(opts) {
     clockEl.appendChild(document.createTextNode(timeHM(now)));
     if (d > 0 && isFinite(d)) {
       const end = new Date(now.getTime() + Math.max(0, d - videoEl.currentTime) * 1000);
-      clockEl.appendChild(h('small', { text: 'Termina às ' + timeHM(end) }));
+      clockEl.appendChild(h('small', { text: t('Termina às {time}', { time: timeHM(end) }) }));
     }
   }
 
@@ -637,10 +639,10 @@ function PlayerView(opts) {
       return;
     }
     const id = mediaId();
-    if (!id || !hasLuna()) return toast('Troca de áudio indisponível agora.');
+    if (!id || !hasLuna()) return toast(t('Troca de áudio indisponível agora.'));
     luna('luna://com.webos.media', 'selectTrack', { mediaId: id, type: 'audio', index: index })
       .then(() => (currentAudio = index))
-      .catch((e) => toast('Falha ao trocar áudio: ' + e.message));
+      .catch((e) => toast(t('Falha ao trocar áudio: {msg}', { msg: e.message })));
   }
 
   // O player da TV às vezes liga sozinho a legenda padrão do MKV; desliga assim que houver mediaId.
@@ -709,7 +711,7 @@ function PlayerView(opts) {
       .then(() => {
         currentSub = { kind: 'embedded', index: index };
       })
-      .catch((e) => toast('Falha na legenda embutida: ' + e.message));
+      .catch((e) => toast(t('Falha na legenda embutida: {msg}', { msg: e.message })));
   }
 
   function disableEmbeddedSubs() {
@@ -727,15 +729,15 @@ function PlayerView(opts) {
       .then((cues) => {
         if (!alive || currentSub.id !== (s.id || s.url)) return;
         renderer.set(cues);
-        if (!silent) toast('Legenda: ' + langName(s.lang));
+        if (!silent) toast(t('Legenda: {lang}', { lang: langName(s.lang) }));
       })
-      .catch(() => toast('Não foi possível baixar a legenda.'));
+      .catch(() => toast(t('Não foi possível baixar a legenda.')));
   }
 
   // Menus de faixas: lê as faixas embutidas só agora, quando o usuário pede.
   function withTracks(open) {
     if (embedded || !server.isAvailable()) return open();
-    toast('Lendo as faixas do arquivo...', 2500);
+    toast(t('Lendo as faixas do arquivo...'), 2500);
     loadEmbeddedTracks().then(() => alive && open());
   }
 
@@ -751,15 +753,15 @@ function PlayerView(opts) {
         list.push({ label: langName(native[i].language) + (native[i].label ? ' · ' + native[i].label : ''), value: i, checked: native[i].enabled });
       }
     } else if (embedded && embedded.audio.length) {
-      list = embedded.audio.map((t, i) => ({
-        label: langName(t.lang) + (t.label ? ' · ' + t.label : ''),
-        sub: [t.codec, t.channels ? t.channels + ' canais' : ''].filter(Boolean).join(' · '),
+      list = embedded.audio.map((tr, i) => ({
+        label: langName(tr.lang) + (tr.label ? ' · ' + tr.label : ''),
+        sub: [tr.codec, tr.channels ? t('{n} canais', { n: tr.channels }) : ''].filter(Boolean).join(' · '),
         value: i,
         checked: currentAudio === null ? i === 0 : currentAudio === i,
       }));
     }
-    menu('Áudio', list, {
-      empty: server.isAvailable() ? 'Só uma faixa de áudio.' : 'Para listar as faixas, conecte o servidor do PC em Ajustes.',
+    menu(t('Áudio'), list, {
+      empty: server.isAvailable() ? t('Só uma faixa de áudio.') : t('Para listar as faixas, conecte o servidor do PC em Ajustes.'),
       onPick: (i) => selectEmbeddedAudio(i),
     });
   }
@@ -769,12 +771,12 @@ function PlayerView(opts) {
   }
 
   function openSubsMenu() {
-    const opts2 = [{ label: 'Desligada', value: { kind: 'off' }, checked: currentSub.kind === 'off' }];
+    const opts2 = [{ label: t('Desligada'), value: { kind: 'off' }, checked: currentSub.kind === 'off' }];
     if (embedded && embedded.subs.length) {
-      embedded.subs.forEach((t, i) =>
-        /PGS|VOBSUB|DVD/i.test(t.codec || '') ? null : opts2.push({
-          label: langName(t.lang) + (t.label ? ' · ' + t.label : ''),
-          sub: 'Embutida no arquivo' + (t.codec ? ' · ' + t.codec : ''),
+      embedded.subs.forEach((tr, i) =>
+        /PGS|VOBSUB|DVD/i.test(tr.codec || '') ? null : opts2.push({
+          label: langName(tr.lang) + (tr.label ? ' · ' + tr.label : ''),
+          sub: t('Embutida no arquivo') + (tr.codec ? ' · ' + tr.codec : ''),
           value: { kind: 'embedded', index: i },
           checked: currentSub.kind === 'embedded' && currentSub.index === i,
         })
@@ -794,10 +796,10 @@ function PlayerView(opts) {
         checked: currentSub.kind === 'addon' && currentSub.id === (s.id || s.url),
       })
     );
-    opts2.push({ label: 'Atraso da legenda: ' + renderer.offset().toFixed(1) + 's', sub: 'Ajustar sincronia', value: { kind: 'delay' } });
-    opts2.push({ label: 'Tamanho: ' + (store.settings().subtitleSize || 100) + '%', value: { kind: 'size' } });
-    menu('Legendas', opts2, {
-      empty: addonSubs === null ? 'Carregando legendas...' : 'Nenhuma legenda.',
+    opts2.push({ label: t('Atraso da legenda: {n}s', { n: renderer.offset().toFixed(1) }), sub: t('Ajustar sincronia'), value: { kind: 'delay' } });
+    opts2.push({ label: t('Tamanho: {n}%', { n: store.settings().subtitleSize || 100 }), value: { kind: 'size' } });
+    menu(t('Legendas'), opts2, {
+      empty: addonSubs === null ? t('Carregando legendas...') : t('Nenhuma legenda.'),
       onPick: (v) => {
         if (v.kind === 'off' || v.kind === 'embedded' || v.kind === 'addon') autoDone.sub = true;
         if (v.kind === 'off') {
@@ -815,8 +817,8 @@ function PlayerView(opts) {
   function delayMenu() {
     const vals = [-5, -3, -2, -1, -0.5, -0.25, 0, 0.25, 0.5, 1, 2, 3, 5];
     menu(
-      'Atraso da legenda',
-      vals.map((v) => ({ label: (v > 0 ? '+' : '') + v + 's', sub: v < 0 ? 'Legenda aparece antes' : v > 0 ? 'Legenda aparece depois' : 'Sem ajuste', value: v, checked: renderer.offset() === v })),
+      t('Atraso da legenda'),
+      vals.map((v) => ({ label: (v > 0 ? '+' : '') + v + 's', sub: v < 0 ? t('Legenda aparece antes') : v > 0 ? t('Legenda aparece depois') : t('Sem ajuste'), value: v, checked: renderer.offset() === v })),
       { onPick: (v) => renderer.setOffset(v) }
     );
   }
@@ -825,7 +827,7 @@ function PlayerView(opts) {
     const vals = [70, 85, 100, 115, 130, 150];
     const cur = store.settings().subtitleSize || 100;
     menu(
-      'Tamanho da legenda',
+      t('Tamanho da legenda'),
       vals.map((v) => ({ label: v + '%', value: v, checked: v === cur })),
       {
         onPick: (v) => {
@@ -844,11 +846,11 @@ function PlayerView(opts) {
       value: i,
       checked: s === stream,
     }));
-    menu('Fontes', list, {
+    menu(t('Fontes'), list, {
       onPick: (i) => {
         const s = opts.streams[i];
         if (!s || s === stream) return;
-        if (server.needsServer(s) && !server.isAvailable()) return toast('Essa fonte precisa do servidor do PC.');
+        if (server.needsServer(s) && !server.isAvailable()) return toast(t('Essa fonte precisa do servidor do PC.'));
         saveProgress();
         pendingStart = videoEl.currentTime * 1000;
         stream = s;
@@ -866,7 +868,7 @@ function PlayerView(opts) {
     saveProgress();
     const group = stream.behaviorHints && stream.behaviorHints.bingeGroup;
     showSpinner(true);
-    message('Procurando o próximo episódio...');
+    message(t('Procurando o próximo episódio...'));
     addons.fetchStreams(meta.type, nv.id).then((list) => {
       if (!alive) return;
       const match = group ? list.find((s) => s.behaviorHints && s.behaviorHints.bingeGroup === group) : null;

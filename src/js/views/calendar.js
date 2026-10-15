@@ -6,6 +6,7 @@ import * as addons from '../api/addons.js';
 import { topbar, card, spinnerLine, toast, timeHM } from '../ui.js';
 import * as router from '../router.js';
 import { openDetails } from './details.js';
+import { t } from '../lib/i18n.js';
 
 const WEEKDAYS = ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'];
 const QUERY =
@@ -45,7 +46,7 @@ function resolve(media) {
       const movieFirst = media.format === 'MOVIE' || (ids && ids.media === 'MOVIE');
       const types = movieFirst ? ['movie', 'series'] : ['series', 'movie'];
       const cands = [];
-      const add = (id) => types.forEach((t) => cands.push({ type: t, id: id }));
+      const add = (id) => types.forEach((type) => cands.push({ type: type, id: id }));
       if (ids && ids.kitsu) add('kitsu:' + ids.kitsu);
       if (ids && ids.imdb) add(ids.imdb);
       add('anilist:' + media.id);
@@ -75,10 +76,10 @@ export function CalendarView() {
   let token = 0;
 
   function label(offset) {
-    if (offset === 0) return 'Hoje';
-    if (offset === 1) return 'Amanhã';
-    if (offset === -1) return 'Ontem';
-    return WEEKDAYS[dayStart(offset).getDay()];
+    if (offset === 0) return t('Hoje');
+    if (offset === 1) return t('Amanhã');
+    if (offset === -1) return t('Ontem');
+    return t(WEEKDAYS[dayStart(offset).getDay()]);
   }
 
   function renderDays() {
@@ -106,13 +107,13 @@ export function CalendarView() {
   function load() {
     const my = ++token;
     clear(grid);
-    grid.appendChild(spinnerLine('Buscando lançamentos...'));
+    grid.appendChild(spinnerLine(t('Buscando lançamentos...')));
     fetchDay(current)
       .then((list) => {
         if (my !== token) return;
         clear(grid);
         if (!list.length) {
-          grid.appendChild(h('div.hint', { text: 'Nenhum episódio neste dia.' }));
+          grid.appendChild(h('div.hint', { text: t('Nenhum episódio neste dia.') }));
           return;
         }
         const now = Date.now() / 1000;
@@ -124,9 +125,9 @@ export function CalendarView() {
             {
               title: name,
               onSelect: () => {
-                toast('Abrindo ' + name + '...', 2000);
+                toast(t('Abrindo {name}...', { name: name }), 2000);
                 resolve(m).then((r) => {
-                  if (!r) return toast('Esse anime não foi encontrado nos seus addons (instale o Anime Kitsu).', 5000);
+                  if (!r) return toast(t('Esse anime não foi encontrado nos seus addons (instale o Anime Kitsu).'), 5000);
                   openDetails(r.type, r.id);
                 });
               },
@@ -142,7 +143,7 @@ export function CalendarView() {
       .catch((e) => {
         if (my !== token) return;
         clear(grid);
-        grid.appendChild(h('div.hint', { text: 'Não foi possível carregar o calendário: ' + e.message }));
+        grid.appendChild(h('div.hint', { text: t('Não foi possível carregar o calendário: {msg}', { msg: e.message }) }));
       });
   }
 
