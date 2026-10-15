@@ -104,6 +104,7 @@ npm install
 npm run build      # gera dist/ (JavaScript ES5 para o Chromium 38)
 npm run serve      # testa no navegador do PC em http://localhost:5173 (1920x1080)
 npm run release    # gera release/: .ipk + manifesto com SHA-256
+npm run ship -- 1.0.1   # publica a versão no GitHub (precisa do gh autenticado)
 ```
 
 Para instalar direto numa TV com root via SSH (chave em `~/.ssh/webos_tv`):

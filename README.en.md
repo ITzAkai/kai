@@ -106,6 +106,7 @@ npm install
 npm run build      # builds dist/ (ES5 JavaScript for Chromium 38)
 npm run serve      # test in a desktop browser at http://localhost:5173 (1920x1080)
 npm run release    # builds release/: .ipk + manifest with SHA-256
+npm run ship -- 1.0.1   # publishes the version on GitHub (needs an authenticated gh)
 ```
 
 To install straight onto a rooted TV over SSH (key at `~/.ssh/webos_tv`):
