@@ -39,7 +39,7 @@ features to Tizen, fully controlled with the Samsung remote.
 
 ## Installing on a Samsung TV
 
-You need a PC on the same Wi-Fi as the TV for steps 1 and 2. After that, the TV works on its own.
+You need a PC on the same Wi-Fi as the TV for steps 1 to 3. After that, the TV works on its own.
 
 ### 1. Turn on Developer Mode
 
@@ -53,18 +53,48 @@ You need a PC on the same Wi-Fi as the TV for steps 1 and 2. After that, the TV 
 5. **Restart the TV**: hold the remote's power button until the TV turns off and back on,
    or unplug it for 30 seconds. Developer Mode only starts after a full restart.
 
-### 2. Install TizenBrew
+### 2. Download TizenBrew Installer
 
-1. On the PC, download the latest **TizenBrew Installer** for your system from
-   [TizenBrewInstaller releases](https://github.com/reisxd/TizenBrewInstaller/releases/latest) and run it.
-2. Make sure the TV is on, then click **Install TizenBrew**. (On Tizen 7 or newer, it asks you
-   to sign in to a Samsung account to create a certificate; follow its steps.)
-3. TizenBrew appears in the TV's **Apps**.
+TizenBrew Installer is a small desktop app that puts TizenBrew on the TV.
+
+1. On the PC, open the
+   [TizenBrew Installer releases page](https://github.com/reisxd/TizenBrewInstaller/releases/latest).
+2. Under **Assets**, download the file for your computer:
+
+   | Computer | File |
+   |---|---|
+   | Windows | `TizenBrewInstaller-win-x64.exe` |
+   | Mac (Apple Silicon, M1 or newer) | `TizenBrewInstaller-macos-arm64` |
+   | Mac (Intel) | `TizenBrewInstaller-macos-x64` |
+   | Linux | `TizenBrewInstaller-linux-x64` |
+
+   Ignore `TizenBrewInstaller.wgt`, which is the TV version.
+3. Run it:
+   - **Windows:** double-click the `.exe`. If Windows SmartScreen says it "protected your PC",
+     click **More info → Run anyway** (the installer isn't signed by Microsoft). If the firewall
+     asks, allow it on **Private networks**.
+   - **Mac / Linux:** open Terminal in the download folder, run
+     `chmod +x TizenBrewInstaller-*`, then run the file (e.g. `./TizenBrewInstaller-macos-arm64`).
+     On a Mac, if it's blocked, allow it in **System Settings → Privacy & Security**.
+
+### 3. Install TizenBrew with the installer
+
+1. Find the **TV's IP address**: on the TV, go to **Settings → General → Network →
+   Network Status → IP Settings** and note the **IP Address** (e.g. `192.168.1.35`).
+2. In TizenBrew Installer, type the TV's IP into the **TV IP** box and click **Connect to TV**.
+   - *"Could not connect to the SDB Daemon"* means the TV is off, the IP is wrong, or the TV
+     wasn't restarted after step 1.
+3. Click **Install TizenBrew**. It shows *Fetching package → Installing package →
+   Package installed*.
+   - **Tizen 7 or newer (2023+ TVs):** it shows **Resigning required**. Click
+     **Sign in to Samsung Account**, sign in, and follow its steps so it can sign TizenBrew
+     for your TV. Older TVs skip this.
+4. **TizenBrew** now appears in the TV's **Apps**. You can close the installer.
 
 See the [TizenBrew install guide](https://github.com/reisxd/TizenBrew/blob/main/docs/README.md)
 for other install methods.
 
-### 3. Point Developer Mode at the TV itself
+### 4. Point Developer Mode at the TV itself
 
 TizenBrew needs this to run:
 
@@ -74,7 +104,7 @@ TizenBrew needs this to run:
 
 Leave Developer Mode on from now on, or TizenBrew won't open.
 
-### 4. Add Stremio Kai
+### 5. Add Stremio Kai
 
 1. Open **TizenBrew** and go to **Module Manager → Add module**.
 2. Choose **GitHub** (not NPM) and enter:
@@ -83,7 +113,7 @@ Leave Developer Mode on from now on, or TizenBrew won't open.
    ```
 3. **Stremio Kai** now appears in TizenBrew. Open it.
 
-### 5. First launch
+### 6. First launch
 
 1. The setup asks for a **torrent server**. If you use debrid, choose **Skip**. For torrents,
    start [stremio-service](https://github.com/Stremio/stremio-service/releases) on a PC on the
