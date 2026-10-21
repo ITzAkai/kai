@@ -1,8 +1,8 @@
 {
-  "name": "stremio-kai-timeworn",
-  "version": "1.2.0",
+  "name": "stremio-kai-tizen",
+  "version": "1.2.0-tizen.1",
   "private": true,
-  "description": "Stremio Kai for old LG webOS TVs (webOS 3.x, Chromium 38), without the AI plugins",
+  "description": "Stremio Kai Timeworn ported to old Samsung Tizen TVs (2017+, Tizen 3.0) as a TizenBrew app module",
   "license": "GPL-3.0",
   "type": "module",
   "scripts": {
@@ -27,6 +27,23 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/creachec/Stremio-Kai-Timeworn.git"
-  }
+    "url": "https://github.com/ITzAkai/stremio-kai-tizen.git"
+  },
+  "packageType": "app",
+  "appName": "Stremio Kai",
+  "appPath": "dist/index.html",
+  "keys": [
+    "MediaPlayPause",
+    "MediaPlay",
+    "MediaPause",
+    "MediaStop",
+    "MediaRewind",
+    "MediaFastForward",
+    "ColorF0Red",
+    "ColorF1Green",
+    "ColorF2Yellow",
+    "ColorF3Blue",
+    "ChannelUp",
+    "ChannelDown"
+  ]
 }
