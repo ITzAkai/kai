@@ -5,9 +5,9 @@ import { EN } from './i18n-en.js';
 
 let lang = 'pt';
 
+// The Samsung build defaults to English; Portuguese is still available in Settings.
 export function detect() {
-  const nav = (window.navigator && (window.navigator.language || window.navigator.userLanguage)) || 'pt';
-  return /^pt/i.test(nav) ? 'pt' : 'en';
+  return 'en';
 }
 
 // setting: 'auto' | 'pt' | 'en'

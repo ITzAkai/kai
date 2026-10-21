@@ -3633,8 +3633,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   // src/js/lib/i18n.js
   var lang = "pt";
   function detect() {
-    var nav = window.navigator && (window.navigator.language || window.navigator.userLanguage) || "pt";
-    return /^pt/i.test(nav) ? "pt" : "en";
+    return "en";
   }
   function init(setting) {
     lang = setting === "pt" || setting === "en" ? setting : detect();
