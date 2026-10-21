@@ -2,6 +2,9 @@
 // Elementos navegáveis têm [data-focus]. Fileiras usam [data-group] para lembrar a última posição.
 // Contêineres com [data-scroll-x] / [data-scroll-y] rolam para manter o foco visível.
 import { $$ } from './dom.js';
+import { isTizen } from './platform.js';
+
+const TIZEN = isTizen();
 
 export const KEY = {
   LEFT: 37,
@@ -9,12 +12,12 @@ export const KEY = {
   RIGHT: 39,
   DOWN: 40,
   ENTER: 13,
-  BACK: 461,
+  BACK: TIZEN ? 10009 : 461, // Samsung Return / LG Back
   ESC: 27,
   BACKSPACE: 8,
   PLAY: 415,
   PAUSE: 19,
-  PLAYPAUSE: 179,
+  PLAYPAUSE: TIZEN ? 10252 : 179,
   STOP: 413,
   FF: 417,
   RW: 412,
@@ -22,8 +25,8 @@ export const KEY = {
   GREEN: 404,
   YELLOW: 405,
   BLUE: 406,
-  CH_UP: 33,
-  CH_DOWN: 34,
+  CH_UP: TIZEN ? 427 : 33,
+  CH_DOWN: TIZEN ? 428 : 34,
 };
 
 const layers = [];

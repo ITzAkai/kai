@@ -20,6 +20,7 @@ import * as update from './api/update.js';
 import { toast } from './ui.js';
 import * as profiles from './views/profiles.js';
 import { openLogin } from './views/login.js';
+import { registerTizenKeys } from './lib/platform.js';
 
 function boot() {
   const s = store.settings();
@@ -27,6 +28,7 @@ function boot() {
   if (s.devlogUrl) log.setRemote(s.devlogUrl);
   log.info('Iniciando', navigator.userAgent);
 
+  registerTizenKeys();
   nav.install();
   // Imagens e fileiras sob demanda depois que a rolagem para (segurar a seta não recalcula a cada passo).
   nav.setSmooth(s.smoothScroll);

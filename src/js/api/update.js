@@ -2,6 +2,7 @@
 // pelo próprio serviço do Homebrew Channel, que confere o SHA-256 antes de instalar.
 import { getJSON } from '../lib/http.js';
 import { luna, hasLuna } from '../lib/luna.js';
+import { isTizen } from '../lib/platform.js';
 import * as store from '../lib/store.js';
 import { t } from '../lib/i18n.js';
 
@@ -43,6 +44,8 @@ export function latest() {
 }
 
 export function check() {
+  // The release feed belongs to the LG build; the Samsung port updates through TizenBrew.
+  if (isTizen()) return Promise.resolve(null);
   return latest().then((info) => {
     store.saveSettings({ lastUpdateCheck: Date.now() });
     return info && isNewer(info.version, VERSION) ? info : null;
