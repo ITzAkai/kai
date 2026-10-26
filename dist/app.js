@@ -4694,12 +4694,14 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   function deviceInfo() {
     var pi = window.webapis && window.webapis.productinfo;
     if (pi) {
-      return Promise.resolve({
-        modelName: pi.getRealModel ? pi.getRealModel() : pi.getModel(),
-        firmwareVersion: pi.getFirmware(),
-        sdkVersion: "",
-        platform: "Tizen"
-      });
+      try {
+        return Promise.resolve({
+          modelName: pi.getRealModel ? pi.getRealModel() : pi.getModel(),
+          firmwareVersion: pi.getFirmware(),
+          sdkVersion: "",
+          platform: "Tizen"
+        });
+      } catch (e) {}
     }
     if (isTizen()) return Promise.resolve({
       modelName: "Samsung",

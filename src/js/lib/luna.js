@@ -55,12 +55,17 @@ export function getTvIp() {
 export function deviceInfo() {
   const pi = window.webapis && window.webapis.productinfo;
   if (pi) {
-    return Promise.resolve({
-      modelName: pi.getRealModel ? pi.getRealModel() : pi.getModel(),
-      firmwareVersion: pi.getFirmware(),
-      sdkVersion: '',
-      platform: 'Tizen',
-    });
+    // A 2018 UN50NU7100 (Tizen 4.0) throws from every Product API call ("check dynamic library of this pepper plugin").
+    try {
+      return Promise.resolve({
+        modelName: pi.getRealModel ? pi.getRealModel() : pi.getModel(),
+        firmwareVersion: pi.getFirmware(),
+        sdkVersion: '',
+        platform: 'Tizen',
+      });
+    } catch (e) {
+      /* fall through */
+    }
   }
   if (isTizen()) return Promise.resolve({ modelName: 'Samsung', firmwareVersion: '', sdkVersion: '' });
   return luna('luna://com.webos.service.tv.systemproperty', 'getSystemInfo', {
