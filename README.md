@@ -30,7 +30,7 @@ through. It prefers direct (debrid) links, your add-ons' order, and files the TV
 skipping Dolby Vision, REMUX and very high bitrates when there's anything else. If a source won't
 start, it moves on to the next best one. **Sources** still shows the full list.
 
-![Watch with Smart Choice, and the Sources button](docs/screenshots/smart-choice.jpg)
+![Details page: Watch with Smart Choice, Sources, Trailer and Library](docs/screenshots/smart-choice.jpg)
 
 ### Phone remote
 Use your phone as the remote, no app to install. Scan the QR code in **Settings → Phone remote**
@@ -83,6 +83,8 @@ theme, subtitle and streaming-server settings, all usable with the remote.
 - With a free [TMDB](https://www.themoviedb.org/settings/api) key in Settings, descriptions,
   titles and biographies appear **in Arabic** when the app is in Arabic (English when TMDB has
   no Arabic text).
+
+![A trailer playing full screen](docs/screenshots/trailer.jpg)
 
 ### And more
 - **In-app updater.** Settings shows the installed and newest version; one press updates.
@@ -198,6 +200,8 @@ Leave Developer Mode on from now on, or TizenBrew won't open.
 **Updating:** open **Settings → Updates**. It shows your installed version and the newest one on
 GitHub with what changed; **Check for update → Update now** installs it and reloads the app. The
 app also checks once a day and tells you when there's something new.
+
+![Updates in Settings](docs/screenshots/updates.jpg)
 
 ### Troubleshooting
 
