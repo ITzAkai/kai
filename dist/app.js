@@ -3268,6 +3268,11 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     "Nada por aqui.": "Nothing here.",
     "Carregando...": "Loading...",
     "Ver tudo": "See all",
+    "Calendário": "Calendar",
+    "Streaming": "Streaming",
+    "As datas de streaming dos filmes vêm do TMDB: coloque sua chave grátis do TMDB em Ajustes.": "Movie streaming dates come from TMDB: add your free TMDB key in Settings.",
+    "Nenhum filme chega ao streaming neste dia.": "No movies arrive on streaming this day.",
+    "Esse filme ainda não tem página no Stremio.": "This movie doesn't have a Stremio page yet.",
     "Escolha inteligente": "Smart Choice",
     "Assistir já toca a melhor fonte; o botão Fontes mostra a lista": "Watch plays the best source right away; the Sources button shows the list",
     "Escolha inteligente: procurando a melhor fonte...": "Smart Choice: finding the best source...",
@@ -3666,7 +3671,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   // src/js/lib/http.js
   function request(method, url2, body, opts) {
     var o = opts || {};
-    return new Promise(function (resolve2, reject) {
+    return new Promise(function (resolve, reject) {
       var xhr = new XMLHttpRequest();
       xhr.open(method, url2, true);
       xhr.timeout = o.timeout || 2e4;
@@ -3674,9 +3679,9 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       if (o.headers) for (var k in o.headers) xhr.setRequestHeader(k, o.headers[k]);
       xhr.onload = function () {
         if (xhr.status >= 200 && xhr.status < 300) {
-          if (o.raw) return resolve2(xhr.responseText);
+          if (o.raw) return resolve(xhr.responseText);
           try {
-            resolve2(xhr.responseText ? JSON.parse(xhr.responseText) : null);
+            resolve(xhr.responseText ? JSON.parse(xhr.responseText) : null);
           } catch (e) {
             reject(new Error(t("JSON inválido de {url}", {
               url: url2
@@ -3802,10 +3807,10 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   function kitsuSmall(info) {
     var key = info.id + ":" + info.kind;
     if (!kitsuCache[key]) {
-      kitsuCache[key] = new Promise(function (resolve2) {
+      kitsuCache[key] = new Promise(function (resolve) {
         (batch[info.id] = batch[info.id] || []).push({
           kind: info.kind,
-          resolve: resolve2
+          resolve: resolve
         });
         if (!batchTimer) batchTimer = setTimeout(flush2, 60);
       });
@@ -4669,7 +4674,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     return typeof window.PalmServiceBridge === "function";
   }
   function luna(service, method, params) {
-    return new Promise(function (resolve2, reject) {
+    return new Promise(function (resolve, reject) {
       if (!hasLuna()) return reject(new Error("Luna indisponível"));
       var bridge = new window.PalmServiceBridge();
       pending.add(bridge);
@@ -4685,7 +4690,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           var err = new Error(service + "/" + method + ": " + (res.errorText || res.errorCode || "falhou"));
           err.result = res;
           reject(err);
-        } else resolve2(res);
+        } else resolve(res);
       };
       bridge.call(service.replace(/\/$/, "") + "/" + method, JSON.stringify(params || {}));
     });
@@ -4733,7 +4738,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     } catch (e) {}
     var RTC = window.RTCPeerConnection || window.webkitRTCPeerConnection;
     if (!RTC) return Promise.reject(new Error("Sem IP"));
-    return new Promise(function (resolve2, reject) {
+    return new Promise(function (resolve, reject) {
       var pc = new RTC({
         iceServers: []
       });
@@ -4750,7 +4755,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         var m = e && e.candidate && /(\d+\.\d+\.\d+\.\d+)/.exec(e.candidate.candidate);
         if (m && !/^(0\.|127\.)/.test(m[1])) {
           clearTimeout(timer);
-          done(resolve2, m[1]);
+          done(resolve, m[1]);
         }
       };
       pc.createDataChannel("ip");
@@ -5497,7 +5502,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     label: "Biblioteca"
   }, {
     id: "calendar",
-    label: "Animes"
+    label: "Calendário"
   }, {
     id: "settings",
     label: "Ajustes"
@@ -5749,6 +5754,32 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     });
     return cachedJSON(TMDB + path + "?" + q.join("&"), 6 * 36e5, {
       quiet: true
+    });
+  }
+  function digitalReleases(ymd2, region) {
+    if (!tmdbKey()) return Promise.resolve(null);
+    return tmdb("discover/movie", {
+      with_release_type: 4,
+      "release_date.gte": ymd2,
+      "release_date.lte": ymd2,
+      region: region,
+      sort_by: "popularity.desc",
+      include_adult: "false",
+      language: apiLang()
+    }).then(function (r) {
+      return (r && r.results || []).map(function (m) {
+        return {
+          tmdb: m.id,
+          name: m.title,
+          poster: m.poster_path ? TMDB_IMG + "w342" + m.poster_path : null,
+          score: m.vote_average ? Math.round(m.vote_average * 10) : 0
+        };
+      });
+    });
+  }
+  function tmdbMovieImdb(tmdbId) {
+    return tmdb("movie/" + tmdbId + "/external_ids", {}).then(function (r) {
+      return r && r.imdb_id || null;
     });
   }
   function tmdbFind(imdb) {
@@ -8883,7 +8914,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     });
   }
   function install2(info, onStatus) {
-    return new Promise(function (resolve2, reject) {
+    return new Promise(function (resolve, reject) {
       if (!info.sha256) return reject(new Error(t("Release sem hash SHA-256")));
       var bridge = new window.PalmServiceBridge();
       bridge.onservicecallback = function (msg) {
@@ -8898,7 +8929,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         if (onStatus) {
           if (/Download/i.test(st)) onStatus(t("Baixando") + (isFinite(r.progress) ? " " + Math.round(r.progress) + "%" : "..."));else if (/Verif/i.test(st)) onStatus(t("Conferindo o arquivo..."));else if (/Install/i.test(st)) onStatus(t("Instalando..."));
         }
-        if (r.finished || /succeeded|Nothing changed/i.test(st)) resolve2(st);
+        if (r.finished || /succeeded|Nothing changed/i.test(st)) resolve(st);
       };
       window.__kaiUpdateBridge = bridge;
       bridge.call("luna://org.webosbrew.hbchannel.service/install", JSON.stringify({
@@ -9663,20 +9694,40 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
 
   // src/js/views/calendar.js
   var WEEKDAYS = ["Domingo", "Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado"];
-  var QUERY = "query($from:Int,$to:Int,$page:Int){Page(page:$page,perPage:50){pageInfo{hasNextPage}airingSchedules(airingAt_greater:$from,airingAt_lesser:$to,sort:TIME){episode airingAt media{id idMal isAdult format countryOfOrigin title{romaji english} coverImage{large} averageScore}}}}";
+  var MODES = [{
+    id: "anime",
+    label: "Animes"
+  }, {
+    id: "series",
+    label: "Séries"
+  }, {
+    id: "movies",
+    label: "Filmes"
+  }];
+  var MOVIE_REGION = "US";
+  var NOT_SERIES = /^(Talk Show|News|Game Show|Variety|Sports|Award Show|Panel Show)$/;
+  var COUNTRY_TAG = {
+    CN: "CN",
+    KR: "KR",
+    TW: "TW"
+  };
+  var ANIME_QUERY = "query($from:Int,$to:Int,$page:Int){Page(page:$page,perPage:50){pageInfo{hasNextPage}airingSchedules(airingAt_greater:$from,airingAt_lesser:$to,sort:TIME){episode airingAt media{id idMal isAdult format countryOfOrigin title{romaji english} coverImage{large} averageScore}}}}";
   function dayStart(offset) {
     var d = /* @__PURE__ */new Date();
     d.setHours(0, 0, 0, 0);
     d.setDate(d.getDate() + offset);
     return d;
   }
-  function fetchDay(offset) {
+  function ymd(d) {
+    return d.getFullYear() + "-" + ("0" + (d.getMonth() + 1)).slice(-2) + "-" + ("0" + d.getDate()).slice(-2);
+  }
+  function animeDay(offset) {
     var from = Math.floor(dayStart(offset).getTime() / 1e3) - 1;
     var to = from + 86400 + 1;
     var all = [];
     var _page = function page(p) {
       return postJSON("https://graphql.anilist.co", {
-        query: QUERY,
+        query: ANIME_QUERY,
         variables: {
           from: from,
           to: to,
@@ -9688,14 +9739,32 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         var pg = r && r.data && r.data.Page;
         if (!pg) return all;
         pg.airingSchedules.forEach(function (s) {
-          if (s.media && !s.media.isAdult && s.media.countryOfOrigin === "JP") all.push(s);
+          if (s.media && !s.media.isAdult) all.push(s);
         });
-        return pg.pageInfo.hasNextPage && p < 4 ? _page(p + 1) : all;
+        return pg.pageInfo.hasNextPage && p < 10 ? _page(p + 1) : all;
       });
     };
-    return _page(1);
+    return _page(1).then(function (list2) {
+      return list2.map(function (s) {
+        var m = s.media;
+        var name = m.title && (m.title.english || m.title.romaji) || "";
+        return {
+          name: name,
+          poster: m.coverImage && m.coverImage.large,
+          at: s.airingAt * 1e3,
+          slot: timeHM(new Date(s.airingAt * 1e3)) + " · Ep " + s.episode,
+          score: m.averageScore,
+          tag: COUNTRY_TAG[m.countryOfOrigin],
+          open: function open() {
+            return resolveAnime(m).then(function (r) {
+              return r ? openDetails(r.type, r.id) : notFound(t("Esse anime não foi encontrado nos seus addons (instale o Anime Kitsu)."));
+            });
+          }
+        };
+      });
+    });
   }
-  function resolve(media) {
+  function resolveAnime(media) {
     return getJSON("https://arm.haglund.dev/api/v2/ids?source=anilist&id=" + media.id, {
       quiet: true
     }).catch(function () {
@@ -9729,21 +9798,90 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       return _next2();
     });
   }
+  function seriesDay(offset) {
+    var date = ymd(dayStart(offset));
+    var opt = {
+      timeout: 15e3,
+      quiet: true
+    };
+    return Promise.all([getJSON("https://api.tvmaze.com/schedule/web?date=" + date, opt).catch(function () {
+      return [];
+    }), getJSON("https://api.tvmaze.com/schedule?country=US&date=" + date, opt).catch(function () {
+      return [];
+    })]).then(function (lists) {
+      var seen = {};
+      var out = [];
+      lists[0].concat(lists[1]).forEach(function (e) {
+        var show2 = e.show || e._embedded && e._embedded.show;
+        if (!show2 || !show2.externals || !show2.externals.imdb || NOT_SERIES.test(show2.type || "")) return;
+        var key = show2.id + ":" + e.season + ":" + e.number;
+        if (seen[key]) return;
+        seen[key] = true;
+        var network = show2.webChannel && show2.webChannel.name || show2.network && show2.network.name || "";
+        var at = e.airstamp ? Date.parse(e.airstamp) : 0;
+        out.push({
+          name: show2.name,
+          poster: show2.image && (show2.image.original || show2.image.medium),
+          at: at,
+          slot: (at ? timeHM(new Date(at)) + " · " : "") + "S" + e.season + " E" + (e.number || "?"),
+          score: show2.rating && show2.rating.average ? Math.round(show2.rating.average * 10) : 0,
+          tag: network,
+          open: function open() {
+            return openDetails("series", show2.externals.imdb);
+          }
+        });
+      });
+      return out.sort(function (a, b) {
+        return a.at - b.at;
+      });
+    });
+  }
+  function moviesDay(offset) {
+    return digitalReleases(ymd(dayStart(offset)), MOVIE_REGION).then(function (list2) {
+      if (list2 === null) return null;
+      return list2.map(function (m) {
+        return {
+          name: m.name,
+          poster: m.poster,
+          slot: t("Streaming"),
+          score: m.score,
+          open: function open() {
+            return tmdbMovieImdb(m.tmdb).then(function (imdb) {
+              return imdb ? openDetails("movie", imdb) : notFound(t("Esse filme ainda não tem página no Stremio."));
+            });
+          }
+        };
+      });
+    });
+  }
+  function notFound(msg) {
+    toast(msg, 5e3);
+  }
+  var FETCH = {
+    anime: animeDay,
+    series: seriesDay,
+    movies: moviesDay
+  };
   function CalendarView() {
     var el = h("div.view");
     var scroller = h("div.scroll-y", {
       "data-scroll-y": ""
     });
     var bar = topbar("calendar", goTab);
+    var modes = h("div.cal-days.cal-modes", {
+      "data-group": ""
+    });
     var days = h("div.cal-days", {
       "data-group": "",
       "data-scroll-x": ""
     });
     var grid = h("div.grid");
     scroller.appendChild(bar);
+    scroller.appendChild(modes);
     scroller.appendChild(days);
     scroller.appendChild(grid);
     el.appendChild(scroller);
+    var mode = "anime";
     var current3 = 0;
     var token = 0;
     function label(offset) {
@@ -9751,6 +9889,22 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       if (offset === 1) return t("Amanhã");
       if (offset === -1) return t("Ontem");
       return t(WEEKDAYS[dayStart(offset).getDay()]);
+    }
+    function renderModes() {
+      clear(modes);
+      MODES.forEach(function (m, i) {
+        return modes.appendChild(h("div.chip", {
+          focusable: true,
+          cls: m.id === mode ? "active" : "",
+          text: t(m.label),
+          onSelect: function onSelect() {
+            mode = m.id;
+            renderModes();
+            focus(modes.children[i]);
+            load4();
+          }
+        }));
+      });
     }
     function renderDays() {
       clear(days);
@@ -9778,41 +9932,45 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       var my = ++token;
       clear(grid);
       grid.appendChild(spinnerLine(t("Buscando lançamentos...")));
-      fetchDay(current3).then(function (list2) {
+      FETCH[mode](current3).then(function (list2) {
         if (my !== token) return;
         clear(grid);
-        if (!list2.length) {
+        if (list2 === null) {
           grid.appendChild(h("div.hint", {
-            text: t("Nenhum episódio neste dia.")
+            text: t("As datas de streaming dos filmes vêm do TMDB: coloque sua chave grátis do TMDB em Ajustes.")
           }));
           return;
         }
-        var now = Date.now() / 1e3;
-        list2.forEach(function (s) {
-          var m = s.media;
-          var name = m.title && (m.title.english || m.title.romaji) || "";
+        if (!list2.length) {
+          grid.appendChild(h("div.hint", {
+            text: mode === "movies" ? t("Nenhum filme chega ao streaming neste dia.") : t("Nenhum episódio neste dia.")
+          }));
+          return;
+        }
+        var now = Date.now();
+        list2.forEach(function (it) {
           var c = card({
-            name: name,
-            poster: m.coverImage && m.coverImage.large
+            name: it.name,
+            poster: it.poster
           }, {
-            title: name,
+            title: it.name,
             onSelect: function onSelect() {
               toast(t("Abrindo {name}...", {
-                name: name
+                name: it.name
               }), 2e3);
-              resolve(m).then(function (r) {
-                if (!r) return toast(t("Esse anime não foi encontrado nos seus addons (instale o Anime Kitsu)."), 5e3);
-                openDetails(r.type, r.id);
-              });
+              it.open();
             }
           });
-          var time = timeHM(new Date(s.airingAt * 1e3));
-          c.querySelector(".poster-wrap").appendChild(h("div.cal-slot", {
-            cls: s.airingAt < now ? "aired" : "",
-            text: time + " · Ep " + s.episode
+          var wrap = c.querySelector(".poster-wrap");
+          wrap.appendChild(h("div.cal-slot", {
+            cls: it.at && it.at < now ? "aired" : "",
+            text: it.slot
           }));
-          if (m.averageScore) c.querySelector(".poster-wrap").appendChild(h("div.badge", {
-            text: m.averageScore + "%"
+          if (it.score) wrap.appendChild(h("div.badge.cal-score", {
+            text: it.score + "%"
+          }));
+          if (it.tag) wrap.appendChild(h("div.cal-tag", {
+            text: it.tag
           }));
           grid.appendChild(c);
         });
@@ -9827,6 +9985,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         }));
       });
     }
+    renderModes();
     renderDays();
     load4();
     return {

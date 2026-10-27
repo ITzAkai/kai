@@ -29,6 +29,31 @@ function tmdb(path, params) {
   return cachedJSON(TMDB + path + '?' + q.join('&'), 6 * 3600000, { quiet: true });
 }
 
+// Movies whose digital (streaming / rent / buy) release in `region` falls on `ymd` (YYYY-MM-DD).
+export function digitalReleases(ymd, region) {
+  if (!tmdbKey()) return Promise.resolve(null);
+  return tmdb('discover/movie', {
+    with_release_type: 4,
+    'release_date.gte': ymd,
+    'release_date.lte': ymd,
+    region: region,
+    sort_by: 'popularity.desc',
+    include_adult: 'false',
+    language: apiLang(),
+  }).then((r) =>
+    ((r && r.results) || []).map((m) => ({
+      tmdb: m.id,
+      name: m.title,
+      poster: m.poster_path ? TMDB_IMG + 'w342' + m.poster_path : null,
+      score: m.vote_average ? Math.round(m.vote_average * 10) : 0,
+    }))
+  );
+}
+
+export function tmdbMovieImdb(tmdbId) {
+  return tmdb('movie/' + tmdbId + '/external_ids', {}).then((r) => (r && r.imdb_id) || null);
+}
+
 // IMDb → { id, type: 'movie' | 'tv', overview, title } em PT-BR.
 export function tmdbFind(imdb) {
   if (!tmdbKey() || !imdb) return Promise.resolve(null);

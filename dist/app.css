@@ -316,3 +316,8 @@ body.oled .details-shade { background: linear-gradient(to right, #000 25%, rgba(
 .see-all-label b { display: block; font-size: 56px; line-height: 1; margin-bottom: 10px; }
 .catalog-title { padding: 60px 96px 0; font-size: 40px; }
 .grid-status { padding: 0 96px 120px; }
+
+/* Calendar: Anime / Series / Movies tabs, and the network or country tag on a card */
+.cal-modes { padding-bottom: 12px; }
+.cal-tag { position: absolute; left: 10px; bottom: 10px; max-width: 180px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; background: rgba(0,0,0,0.8); padding: 2px 10px; border-radius: 8px; font-size: 16px; font-weight: 700; color: #fff; }
+.card .poster-wrap .badge.cal-score { top: auto; bottom: 10px; right: 10px; left: auto; }
