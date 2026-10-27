@@ -24,19 +24,43 @@ on their own as you scroll down, so you never hit the end of a list.
 |---|---|
 | ![See all tile at the end of a row](docs/screenshots/see-all-row.jpg) | ![Full catalog grid](docs/screenshots/see-all-grid.jpg) |
 
+### Smart Choice
+Press **Watch** and the app picks the best source and starts playing, no source list to scroll
+through. It prefers direct (debrid) links, your add-ons' order, and files the TV plays well,
+skipping Dolby Vision, REMUX and very high bitrates when there's anything else. If a source won't
+start, it moves on to the next best one. **Sources** still shows the full list.
+
+![Watch with Smart Choice, and the Sources button](docs/screenshots/smart-choice.jpg)
+
 ### Search across all your add-ons
 Results from every add-on that supports search, grouped by movies and series.
 
 ![Search results](docs/screenshots/search.jpg)
 
-### Anime calendar
-What airs yesterday, today and this week, with air time, episode number and score.
+### Release calendar: anime, series and movies
+A week at a time, day by day:
+- **Anime:** every episode airing that day, including Chinese and Korean titles, with air
+  time, episode and score.
+- **Series:** new episodes from streaming services worldwide and US TV, with the network.
+- **Movies:** the day each film becomes available to stream at home (with a free
+  [TMDB](https://www.themoviedb.org/settings/api) key in Settings).
 
-![Anime release calendar](docs/screenshots/anime-calendar.jpg)
+| Anime | Series |
+|---|---|
+| ![Anime calendar](docs/screenshots/calendar-anime.jpg) | ![Series calendar](docs/screenshots/calendar-series.jpg) |
+
+### English and Arabic
+The whole app in **English** or **Arabic** (Settings → Language / اللغة, or automatic from the
+TV's language). Arabic switches to a right-to-left layout, while titles and synopses keep their
+own direction.
+
+| Home | Details |
+|---|---|
+| ![Arabic home screen](docs/screenshots/arabic-home.jpg) | ![Arabic details screen](docs/screenshots/arabic-details.jpg) |
 
 ### Profiles and settings
-"Who's watching?" profiles, each on its own Stremio account, plus language, theme, subtitle
-and streaming-server settings, all usable with the remote.
+"Who's watching?" profiles, each on its own Stremio account, plus language, Smart Choice,
+theme, subtitle and streaming-server settings, all usable with the remote.
 
 ![Settings](docs/screenshots/settings.jpg)
 
