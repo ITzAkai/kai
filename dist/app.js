@@ -4785,6 +4785,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     "Nada por aqui.": "Nothing here.",
     "Carregando...": "Loading...",
     "Ver tudo": "See all",
+    "Novos episódios": "New episodes",
+    "Séries da sua biblioteca, últimos 7 dias": "Series in your library, last 7 days",
     "Pessoas": "People",
     "Tema de cores": "Colour theme",
     "Cor de destaque do app": "The app's highlight colour",
@@ -5217,6 +5219,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     "Nada por aqui.": "لا يوجد شيء هنا.",
     "Carregando...": "جارٍ التحميل...",
     "Ver tudo": "عرض الكل",
+    "Novos episódios": "حلقات جديدة",
+    "Séries da sua biblioteca, últimos 7 dias": "مسلسلات مكتبتك، آخر 7 أيام",
     "Pessoas": "الأشخاص",
     "Tema de cores": "سمة الألوان",
     "Cor de destaque do app": "لون التمييز في التطبيق",
@@ -5665,6 +5669,9 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       });
     }
     return out;
+  }
+  function epLabel(season, episode) {
+    return lang === "ar" ? "م" + season + " ح" + episode : "S" + season + " E" + episode;
   }
 
   // src/js/lib/http.js
@@ -7085,19 +7092,19 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   function load(force) {
     if (addons && !force) return Promise.resolve(addons);
     if (isLoggedIn()) {
-      var cached = cachedAddons();
+      var cached2 = cachedAddons();
       var fresh = getAddonCollection().then(function (list2) {
         return addons = normalize(list2);
       });
-      if (cached && cached.length && !force) {
-        addons = normalize(cached);
+      if (cached2 && cached2.length && !force) {
+        addons = normalize(cached2);
         fresh.catch(function (e) {
           return log.warn("Addons: usando cache", e.message);
         });
         return Promise.resolve(addons);
       }
       return fresh.catch(function () {
-        addons = normalize(cached || []);
+        addons = normalize(cached2 || []);
         return addons;
       });
     }
@@ -8539,6 +8546,16 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     x.onerror = function () {};
     x.send(JSON.stringify(state || null));
   }
+  function browse(data) {
+    var x = new XMLHttpRequest();
+    x.open("POST", BASE + "/api/browse");
+    x.onerror = function () {};
+    x.send(JSON.stringify(data));
+  }
+  var openHandler = null;
+  function onOpen(fn) {
+    openHandler = fn;
+  }
   var seekHandler = null;
   function onSeek(fn) {
     seekHandler = fn;
@@ -8548,7 +8565,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     searchHandler = fn;
   }
   function handle(ev) {
-    if (ev.type === "key") fireKey(ev.code);else if (ev.type === "text") typeText(ev.text, ev.submit);else if (ev.type === "search" && searchHandler && ev.text) searchHandler(ev.text);else if (ev.type === "seek" && seekHandler) seekHandler(ev.to);
+    if (ev.type === "key") fireKey(ev.code);else if (ev.type === "text") typeText(ev.text, ev.submit);else if (ev.type === "search" && searchHandler && ev.text) searchHandler(ev.text);else if (ev.type === "seek" && seekHandler) seekHandler(ev.to);else if (ev.type === "open" && openHandler && ev.item) openHandler(ev);
   }
   function poll(wait) {
     setTimeout(function () {
@@ -8758,7 +8775,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       clear(titleEl);
       titleEl.appendChild(document.createTextNode(meta.name || ""));
       if (opts.isSeries) titleEl.appendChild(h("small", {
-        text: "T" + video.season + " E" + video.episode + " · " + (video.name || video.title || "")
+        text: epLabel(video.season, video.episode) + " · " + (video.name || video.title || "")
       }));
       nextBtn.style.display = opts.isSeries && nextVideo() ? "" : "none";
     }
@@ -8926,7 +8943,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       var d = videoEl.duration;
       nowPlaying({
         title: meta.name || "",
-        episode: opts.isSeries ? "T" + video.season + " E" + video.episode + (video.name || video.title ? " · " + (video.name || video.title) : "") : "",
+        episode: opts.isSeries ? epLabel(video.season, video.episode) + (video.name || video.title ? " · " + (video.name || video.title) : "") : "",
         poster: meta.poster || "",
         position: Math.floor(videoEl.currentTime || 0),
         duration: d > 0 && isFinite(d) ? Math.floor(d) : 0,
@@ -8963,7 +8980,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       var nv = nextVideo();
       if (!nv || !(d > 300) || !isFinite(d) || videoEl.currentTime < upNextStart()) return;
       hideSkip();
-      upNextTitle.textContent = "T" + nv.season + " E" + nv.episode + (nv.name || nv.title ? " · " + (nv.name || nv.title) : "");
+      upNextTitle.textContent = epLabel(nv.season, nv.episode) + (nv.name || nv.title ? " · " + (nv.name || nv.title) : "");
       upNextLeft = UP_NEXT_COUNT;
       upNextCount.textContent = t("Começa em {n}s", {
         n: upNextLeft
@@ -10000,7 +10017,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     el.appendChild(h("div.trailer-focus", {
       focusable: true
     }));
-    function load4() {
+    function load5() {
       var params = "autoplay=1&controls=0&rel=0&modestbranding=1&playsinline=1&iv_load_policy=3&enablejsapi=1&hl=" + current();
       frame.src = "https://www.youtube-nocookie.com/embed/" + ids[index] + "?" + params;
       playing = true;
@@ -10024,7 +10041,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         return hint.classList.add("faded");
       }, 3e3);
     }
-    load4();
+    load5();
     return {
       el: el,
       onKey: function onKey(e) {
@@ -10037,13 +10054,13 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         }
         if ((k === KEY.RIGHT || k === KEY.FF) && ids.length > 1) {
           index = (index + 1) % ids.length;
-          load4();
+          load5();
           return true;
         }
         if (k === KEY.LEFT || k === KEY.RW) {
           if (ids.length > 1 && k === KEY.LEFT) {
             index = (index - 1 + ids.length) % ids.length;
-            load4();
+            load5();
           }
           return true;
         }
@@ -10274,7 +10291,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         var ep = isSeries() ? sortedVideos(meta).find(function (v) {
           return v.id === li.state.video_id;
         }) : null;
-        label = t("Continuar") + (ep ? " T" + ep.season + "E" + ep.episode : "");
+        label = t("Continuar") + (ep ? " " + epLabel(ep.season, ep.episode) : "");
       }
       watchBtn.innerHTML = '<span class="ico">▶</span>' + label;
       libBtn.innerHTML = isInLibrary(meta.id) ? '<span class="ico">✓</span>' + t("Na biblioteca") : '<span class="ico">＋</span>' + t("Biblioteca");
@@ -10448,7 +10465,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       mode = "streams";
       streamsVideo = video;
       clear(panel);
-      var head = isSeries() ? "T" + video.season + "E" + video.episode + " · " + (video.name || video.title || "") : t("Fontes");
+      var head = isSeries() ? epLabel(video.season, video.episode) + " · " + (video.name || video.title || "") : t("Fontes");
       var filterBtn = h("div.btn.small", {
         focusable: true,
         text: t("Todos ▾"),
@@ -10799,6 +10816,72 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     };
   }
 
+  // src/js/api/newEpisodes.js
+  var DAYS = 7;
+  var CHECK = 25;
+  var PARALLEL = 3;
+  function librarySeries() {
+    return cachedLibrary().filter(function (it) {
+      return it.type === "series" && (!it.removed || it.state && it.state.timeOffset > 0);
+    }).sort(function (a, b) {
+      return String(b._mtime || "").localeCompare(String(a._mtime || ""));
+    }).slice(0, CHECK);
+  }
+  function recent(meta, it) {
+    var now = Date.now();
+    var from = now - DAYS * 864e5;
+    return (meta.videos || []).filter(function (v) {
+      var t2 = Date.parse(v.released);
+      return v.id && v.season && t2 >= from && t2 <= now && !isWatched(v.id);
+    }).map(function (v) {
+      return {
+        seriesId: it._id,
+        type: "series",
+        name: meta.name || it.name,
+        poster: meta.poster || it.poster,
+        background: meta.background,
+        thumbnail: v.thumbnail,
+        videoId: v.id,
+        season: v.season,
+        episode: v.episode,
+        title: v.name || v.title || "",
+        released: Date.parse(v.released)
+      };
+    });
+  }
+  function cached() {
+    return (get("newEpisodes", []) || []).filter(function (e) {
+      return !isWatched(e.videoId) && Date.now() - e.released <= DAYS * 864e5;
+    });
+  }
+  function load4() {
+    return load().then(scan2).then(function (list2) {
+      set("newEpisodes", list2.slice(0, 40));
+      return list2;
+    });
+  }
+  function scan2() {
+    var series = librarySeries();
+    var out = [];
+    var i = 0;
+    var _worker = function worker() {
+      if (i >= series.length) return Promise.resolve();
+      var it = series[i++];
+      return fetchMeta("series", it._id).then(function (meta) {
+        recent(meta, it).forEach(function (e) {
+          return out.push(e);
+        });
+      }).catch(function () {}).then(_worker);
+    };
+    var workers = [];
+    for (var n = 0; n < PARALLEL; n++) workers.push(_worker());
+    return Promise.all(workers).then(function () {
+      return out.sort(function (a, b) {
+        return b.released - a.released;
+      });
+    });
+  }
+
   // src/js/views/catalog.js
   var PER_ROW = 7;
   function canPage(entry) {
@@ -10880,10 +10963,14 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     var cwRow = h("div.row", {
       "data-anchor": "30"
     });
+    var neRow = h("div.row", {
+      "data-anchor": "30"
+    });
     var rows = h("div.rows");
     scroller.appendChild(bar);
     scroller.appendChild(heroUi.el);
     scroller.appendChild(cwRow);
+    scroller.appendChild(neRow);
     scroller.appendChild(rows);
     el.appendChild(scroller);
     var loadedBoard = false;
@@ -10898,12 +10985,120 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         var after = JSON.stringify(continueWatching().map(function (it) {
           return [it._id, it.state.video_id, it.state.timeOffset];
         }));
-        if (after !== before) renderContinue();
+        if (after !== before) {
+          renderContinue();
+          loadNew(true);
+          publishBrowse();
+        }
       }).catch(function () {});
     }
     var syncTimer = setInterval(function () {
       if (!el.classList.contains("hidden")) syncContinue();
     }, 3e5);
+    var newList = cached();
+    var newLoadedAt = 0;
+    function loadNew(force) {
+      if (!force && Date.now() - newLoadedAt < 30 * 6e4) return;
+      newLoadedAt = Date.now();
+      load4().then(function (list2) {
+        newList = list2;
+        renderNew();
+        publishBrowse();
+      }).catch(function () {});
+    }
+    function renderNew() {
+      clear(neRow);
+      if (!newList.length) {
+        neRow.style.display = "none";
+        return;
+      }
+      neRow.style.display = "";
+      neRow.appendChild(h("div.row-title", null, [t("Novos episódios"), h("small", {
+        text: t("Séries da sua biblioteca, últimos 7 dias")
+      })]));
+      var track = h("div.row-track", {
+        "data-scroll-x": "",
+        "data-group": ""
+      });
+      newList.slice(0, 20).forEach(function (e) {
+        var c = card({
+          name: e.name,
+          poster: e.poster
+        }, {
+          wide: true,
+          image: e.thumbnail || e.background || e.poster,
+          title: e.name + " · " + epLabel(e.season, e.episode),
+          onSelect: function onSelect() {
+            return openDetails("series", e.seriesId, {
+              videoId: e.videoId,
+              autoStreams: true
+            });
+          }
+        });
+        c.querySelector(".poster-wrap").appendChild(h("div.badge.new-badge", {
+          text: dayLabel(e.released)
+        }));
+        track.appendChild(c);
+      });
+      neRow.appendChild(track);
+      loadVisibleImages(neRow);
+    }
+    function dayLabel(ms) {
+      var d = new Date(ms);
+      var today = /* @__PURE__ */new Date();
+      today.setHours(0, 0, 0, 0);
+      var day = new Date(d.getTime());
+      day.setHours(0, 0, 0, 0);
+      var diff = Math.round((today - day) / 864e5);
+      if (diff <= 0) return t("Hoje");
+      if (diff === 1) return t("Ontem");
+      return t(["Domingo", "Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado"][d.getDay()]);
+    }
+    function publishBrowse() {
+      var cont = continueWatching().slice(0, 20).map(function (it) {
+        return {
+          type: it.type,
+          id: it._id,
+          video: it.state.video_id,
+          name: it.name,
+          sub: episodeLabel(it.state.video_id, it._id),
+          poster: it.poster,
+          progress: it.state.duration ? Math.round(it.state.timeOffset / it.state.duration * 100) / 100 : 0
+        };
+      });
+      var fresh = newList.slice(0, 20).map(function (e) {
+        return {
+          type: "series",
+          id: e.seriesId,
+          video: e.videoId,
+          name: e.name,
+          sub: epLabel(e.season, e.episode) + (e.title ? " · " + e.title : ""),
+          poster: e.poster
+        };
+      });
+      var lib = cachedLibrary().filter(function (it) {
+        return !it.removed && it.type !== "other" && it.poster;
+      }).sort(function (a, b) {
+        return String(b._mtime || "").localeCompare(String(a._mtime || ""));
+      }).slice(0, 60).map(function (it) {
+        return {
+          type: it.type,
+          id: it._id,
+          name: it.name,
+          poster: it.poster
+        };
+      });
+      browse({
+        continueWatching: cont,
+        newEpisodes: fresh,
+        library: lib,
+        labels: {
+          continueWatching: t("Continuar assistindo"),
+          newEpisodes: t("Novos episódios"),
+          library: t("Biblioteca")
+        }
+      });
+    }
     function renderContinue() {
       clear(cwRow);
       var items = continueWatching().slice(0, 20);
@@ -11002,6 +11197,9 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       onShow: function onShow() {
         renderContinue();
         syncContinue();
+        renderNew();
+        loadNew(false);
+        publishBrowse();
         if (!loadedBoard) renderBoard();
         heroUi.resume();
         loadVisibleImages(el);
@@ -11036,7 +11234,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   function episodeLabel(videoId, metaId) {
     if (!videoId || videoId === metaId) return "";
     var m = String(videoId).match(/:(\d+):(\d+)$/);
-    return m ? "T" + m[1] + " E" + m[2] : "";
+    return m ? epLabel(m[1], m[2]) : "";
   }
   var ROW_LIMIT = 20;
   function buildRow(entry, parent) {
@@ -11053,7 +11251,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     row.appendChild(title);
     row.appendChild(track);
     parent.appendChild(row);
-    var load4 = function load4() {
+    var load5 = function load5() {
       return fetchCatalog(entry).then(function (metas) {
         clear(track);
         track.classList.remove("pending");
@@ -11087,7 +11285,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     };
     return {
       row: row,
-      load: load4
+      load: load5
     };
   }
   function typeLabel(type) {
@@ -11472,7 +11670,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   var REPO = "ITzAkai/stremio-kai-tizen";
   var REPO_URL = "https://github.com/" + REPO;
   var VERSION = "1.2.0";
-  var BUILD = "2026-10-27T15:09:46.454Z";
+  var BUILD = "2026-10-27T15:22:56.492Z";
   var RAW = "https://raw.githubusercontent.com/" + REPO + "/main/";
   var CDN = "https://cdn.jsdelivr.net/gh/" + REPO + "/";
   var PURGE = "https://purge.jsdelivr.net/gh/" + REPO + "/";
@@ -12619,7 +12817,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
             mode = m.id;
             renderModes();
             focus(modes.children[i]);
-            load4();
+            load5();
           }
         }));
       });
@@ -12637,7 +12835,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
             current3 = off;
             renderDays();
             focus(days.children[off + 1]);
-            load4();
+            load5();
           }
         }));
       };
@@ -12646,7 +12844,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       }
       days.__last = days.children[current3 + 1];
     }
-    function load4() {
+    function load5() {
       var my = ++token;
       clear(grid);
       grid.appendChild(spinnerLine(t("Buscando lançamentos...")));
@@ -12705,7 +12903,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
     renderModes();
     renderDays();
-    load4();
+    load5();
     return {
       el: el,
       onShow: function onShow() {
@@ -12917,6 +13115,13 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     log.info("Iniciando", navigator.userAgent);
     registerTizenKeys();
     start();
+    onOpen(function (ev) {
+      goTab("home");
+      openDetails(ev.kind, ev.item, ev.video ? {
+        videoId: ev.video,
+        autoStreams: true
+      } : {});
+    });
     onSearch(function (q) {
       goTab("search");
       var view = currentView();

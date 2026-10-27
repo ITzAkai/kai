@@ -14,6 +14,8 @@ export const EN = {
   'Nada por aqui.': 'Nothing here.',
   'Carregando...': 'Loading...',
   'Ver tudo': 'See all',
+  "Novos episódios": "New episodes",
+  "Séries da sua biblioteca, últimos 7 dias": "Series in your library, last 7 days",
   "Pessoas": "People",
   "Tema de cores": "Colour theme",
   "Cor de destaque do app": "The app's highlight colour",

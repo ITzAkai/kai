@@ -402,3 +402,7 @@ body.oled .details-shade { background: linear-gradient(to right, #000 25%, rgba(
 .person-card .ph { width: 130px; height: 130px; border-radius: 65px; }
 .person-card .nm { font-size: 19px; }
 .person-card.focused .ph { box-shadow: 0 0 0 5px #9d85ff; }
+
+/* New episodes row: release day on the card */
+.card .poster-wrap .badge.new-badge { left: 10px; right: auto; background: #7b5bf5; color: #fff; }
+[dir="rtl"] .card .poster-wrap .badge.new-badge { left: auto; right: 10px; }

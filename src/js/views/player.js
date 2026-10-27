@@ -15,7 +15,7 @@ import * as skip from '../api/skip.js';
 import { menu, toast, fmtTime, timeHM } from '../ui.js';
 import * as router from '../router.js';
 import { sortedVideos, openDetails } from './details.js';
-import { t } from '../lib/i18n.js';
+import { t, epLabel } from '../lib/i18n.js';
 import * as watched from '../lib/watched.js';
 import * as phone from '../lib/phone.js';
 
@@ -112,7 +112,7 @@ function PlayerView(opts) {
   function setTitle() {
     clear(titleEl);
     titleEl.appendChild(document.createTextNode(meta.name || ''));
-    if (opts.isSeries) titleEl.appendChild(h('small', { text: 'T' + video.season + ' E' + video.episode + ' · ' + (video.name || video.title || '') }));
+    if (opts.isSeries) titleEl.appendChild(h('small', { text: epLabel(video.season, video.episode) + ' · ' + (video.name || video.title || '') }));
     nextBtn.style.display = opts.isSeries && nextVideo() ? '' : 'none';
   }
 
@@ -279,7 +279,7 @@ function PlayerView(opts) {
     const d = videoEl.duration;
     phone.nowPlaying({
       title: meta.name || '',
-      episode: opts.isSeries ? 'T' + video.season + ' E' + video.episode + (video.name || video.title ? ' · ' + (video.name || video.title) : '') : '',
+      episode: opts.isSeries ? epLabel(video.season, video.episode) + (video.name || video.title ? ' · ' + (video.name || video.title) : '') : '',
       poster: meta.poster || '',
       position: Math.floor(videoEl.currentTime || 0),
       duration: d > 0 && isFinite(d) ? Math.floor(d) : 0,
@@ -315,7 +315,7 @@ function PlayerView(opts) {
     const nv = nextVideo();
     if (!nv || !(d > 300) || !isFinite(d) || videoEl.currentTime < upNextStart()) return;
     hideSkip();
-    upNextTitle.textContent = 'T' + nv.season + ' E' + nv.episode + (nv.name || nv.title ? ' · ' + (nv.name || nv.title) : '');
+    upNextTitle.textContent = epLabel(nv.season, nv.episode) + (nv.name || nv.title ? ' · ' + (nv.name || nv.title) : '');
     upNextLeft = UP_NEXT_COUNT;
     upNextCount.textContent = t('Começa em {n}s', { n: upNextLeft });
     upNextBox.classList.add('show');

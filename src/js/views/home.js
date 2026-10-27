@@ -8,8 +8,10 @@ import * as hero from '../api/hero.js';
 import { topbar, card, spinnerLine } from '../ui.js';
 import * as router from '../router.js';
 import { openDetails } from './details.js';
+import * as newEpisodes from '../api/newEpisodes.js';
+import * as phone from '../lib/phone.js';
 import { CatalogView, canPage } from './catalog.js';
-import { t } from '../lib/i18n.js';
+import { t, epLabel } from '../lib/i18n.js';
 
 const ROTATE_MS = 8000;
 
@@ -19,10 +21,12 @@ export function HomeView() {
   const bar = topbar('home', router.goTab);
   const heroUi = buildHero();
   const cwRow = h('div.row', { 'data-anchor': '30' });
+  const neRow = h('div.row', { 'data-anchor': '30' });
   const rows = h('div.rows');
   scroller.appendChild(bar);
   scroller.appendChild(heroUi.el);
   scroller.appendChild(cwRow);
+  scroller.appendChild(neRow);
   scroller.appendChild(rows);
   el.appendChild(scroller);
 
@@ -39,7 +43,11 @@ export function HomeView() {
       .getLibrary()
       .then(() => {
         const after = JSON.stringify(stremio.continueWatching().map((it) => [it._id, it.state.video_id, it.state.timeOffset]));
-        if (after !== before) renderContinue();
+        if (after !== before) {
+          renderContinue();
+          loadNew(true);
+          publishBrowse();
+        }
       })
       .catch(() => {});
   }
@@ -47,6 +55,88 @@ export function HomeView() {
   const syncTimer = setInterval(() => {
     if (!el.classList.contains('hidden')) syncContinue();
   }, 300000);
+
+  // ---------- New episodes (series in your library, released this week) ----------
+  let newList = newEpisodes.cached();
+  let newLoadedAt = 0;
+  function loadNew(force) {
+    if (!force && Date.now() - newLoadedAt < 30 * 60000) return;
+    newLoadedAt = Date.now();
+    newEpisodes
+      .load()
+      .then((list) => {
+        newList = list;
+        renderNew();
+        publishBrowse();
+      })
+      .catch(() => {});
+  }
+
+  function renderNew() {
+    clear(neRow);
+    if (!newList.length) {
+      neRow.style.display = 'none';
+      return;
+    }
+    neRow.style.display = '';
+    neRow.appendChild(h('div.row-title', null, [t('Novos episódios'), h('small', { text: t('Séries da sua biblioteca, últimos 7 dias') })]));
+    const track = h('div.row-track', { 'data-scroll-x': '', 'data-group': '' });
+    newList.slice(0, 20).forEach((e) => {
+      const c = card(
+        { name: e.name, poster: e.poster },
+        {
+          wide: true,
+          image: e.thumbnail || e.background || e.poster,
+          title: e.name + ' · ' + epLabel(e.season, e.episode),
+          onSelect: () => openDetails('series', e.seriesId, { videoId: e.videoId, autoStreams: true }),
+        }
+      );
+      c.querySelector('.poster-wrap').appendChild(h('div.badge.new-badge', { text: dayLabel(e.released) }));
+      track.appendChild(c);
+    });
+    neRow.appendChild(track);
+    loadVisibleImages(neRow);
+  }
+
+  function dayLabel(ms) {
+    const d = new Date(ms);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const day = new Date(d.getTime());
+    day.setHours(0, 0, 0, 0);
+    const diff = Math.round((today - day) / 86400000);
+    if (diff <= 0) return t('Hoje');
+    if (diff === 1) return t('Ontem');
+    return t(['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'][d.getDay()]);
+  }
+
+  // ---------- Browse on the phone: what the phone remote's Browse tab shows ----------
+  function publishBrowse() {
+    const cont = stremio.continueWatching().slice(0, 20).map((it) => ({
+      type: it.type,
+      id: it._id,
+      video: it.state.video_id,
+      name: it.name,
+      sub: episodeLabel(it.state.video_id, it._id),
+      poster: it.poster,
+      progress: it.state.duration ? Math.round((it.state.timeOffset / it.state.duration) * 100) / 100 : 0,
+    }));
+    const fresh = newList.slice(0, 20).map((e) => ({
+      type: 'series',
+      id: e.seriesId,
+      video: e.videoId,
+      name: e.name,
+      sub: epLabel(e.season, e.episode) + (e.title ? ' · ' + e.title : ''),
+      poster: e.poster,
+    }));
+    const lib = stremio
+      .cachedLibrary()
+      .filter((it) => !it.removed && it.type !== 'other' && it.poster)
+      .sort((a, b) => String(b._mtime || '').localeCompare(String(a._mtime || '')))
+      .slice(0, 60)
+      .map((it) => ({ type: it.type, id: it._id, name: it.name, poster: it.poster }));
+    phone.browse({ continueWatching: cont, newEpisodes: fresh, library: lib, labels: { continueWatching: t('Continuar assistindo'), newEpisodes: t('Novos episódios'), library: t('Biblioteca') } });
+  }
 
   function renderContinue() {
     clear(cwRow);
@@ -132,6 +222,9 @@ export function HomeView() {
     onShow: () => {
       renderContinue();
       syncContinue();
+      renderNew();
+      loadNew(false);
+      publishBrowse();
       if (!loadedBoard) renderBoard();
       heroUi.resume();
       loadVisibleImages(el);
@@ -161,7 +254,7 @@ export function HomeView() {
 function episodeLabel(videoId, metaId) {
   if (!videoId || videoId === metaId) return '';
   const m = String(videoId).match(/:(\d+):(\d+)$/);
-  return m ? 'T' + m[1] + ' E' + m[2] : '';
+  return m ? epLabel(m[1], m[2]) : '';
 }
 
 const ROW_LIMIT = 20;

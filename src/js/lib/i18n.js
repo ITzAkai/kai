@@ -44,3 +44,8 @@ export function t(text, params) {
   }
   return out;
 }
+
+// "S1 E3" (Arabic: "م1 ح3", season/episode).
+export function epLabel(season, episode) {
+  return lang === 'ar' ? 'م' + season + ' ح' + episode : 'S' + season + ' E' + episode;
+}

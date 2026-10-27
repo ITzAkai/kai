@@ -9,6 +9,7 @@ import * as stremio from './api/stremio.js';
 import * as server from './api/server.js';
 import * as addons from './api/addons.js';
 import * as router from './router.js';
+import { openDetails } from './views/details.js';
 import { HomeView } from './views/home.js';
 import { SearchView } from './views/search.js';
 import { LibraryView } from './views/library.js';
@@ -32,6 +33,11 @@ function boot() {
 
   registerTizenKeys();
   phone.start();
+  // Opened from the phone's Browse tab: the title's page, ready on the episode when there is one.
+  phone.onOpen((ev) => {
+    router.goTab('home');
+    openDetails(ev.kind, ev.item, ev.video ? { videoId: ev.video, autoStreams: true } : {});
+  });
   phone.onSearch((q) => {
     router.goTab('search');
     const view = router.currentView();

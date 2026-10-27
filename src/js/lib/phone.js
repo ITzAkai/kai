@@ -59,6 +59,19 @@ export function nowPlaying(state) {
   x.send(JSON.stringify(state || null));
 }
 
+// Lists for the phone's Browse tab (Continue watching, New episodes, Library).
+export function browse(data) {
+  const x = new XMLHttpRequest();
+  x.open('POST', BASE + '/api/browse');
+  x.onerror = () => {};
+  x.send(JSON.stringify(data));
+}
+
+let openHandler = null;
+export function onOpen(fn) {
+  openHandler = fn;
+}
+
 let seekHandler = null;
 export function onSeek(fn) {
   seekHandler = fn;
@@ -75,6 +88,7 @@ function handle(ev) {
   else if (ev.type === 'text') typeText(ev.text, ev.submit);
   else if (ev.type === 'search' && searchHandler && ev.text) searchHandler(ev.text);
   else if (ev.type === 'seek' && seekHandler) seekHandler(ev.to);
+  else if (ev.type === 'open' && openHandler && ev.item) openHandler(ev);
 }
 
 // Polls forever; when the service isn't running (e.g. outside TizenBrew) it checks again slowly.

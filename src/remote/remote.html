@@ -34,6 +34,24 @@
   .type input:focus { border-color: var(--accent); }
   .type button { padding: 0 20px; background: var(--accent); font-weight: 700; }
   .hint { color: var(--muted); font-size: 13px; text-align: center; margin: -10px 0 0; }
+  .tabs { width: 100%; max-width: 420px; display: flex; gap: 8px; margin-bottom: 18px; }
+  .tabs button { flex: 1; height: 42px; border-radius: 14px; font-weight: 600; }
+  .tabs button.on { background: var(--accent); }
+  body.locked .tabs { display: none; }
+  body.tab-browse main { display: none; }
+  .browse { width: 100%; max-width: 420px; }
+  .browse[hidden] { display: none; }
+  .browse h2 { font-size: 16px; margin: 6px 0 10px; }
+  .browse .strip { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 8px; margin-bottom: 14px; scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch; }
+  .browse .grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+  .browse .grid .item { max-width: none; }
+  .browse .item { flex: 0 0 31%; max-width: 31%; min-width: 0; overflow: hidden; scroll-snap-align: start; background: none; padding: 0; border-radius: 12px; text-align: left; color: var(--text); }
+  .browse .item img, .browse .item .ph { width: 100%; aspect-ratio: 2 / 3; object-fit: cover; border-radius: 12px; background: var(--card); display: block; }
+  .browse .item .t { font-size: 12px; margin-top: 5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .browse .item .s { font-size: 11px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .browse .item .bar { height: 3px; background: #2d2840; border-radius: 2px; margin-top: 4px; }
+  .browse .item .bar i { display: block; height: 100%; background: var(--accent); border-radius: 2px; }
+  .browse .empty { color: var(--muted); font-size: 14px; text-align: center; padding: 40px 0; }
   .now { display: flex; gap: 14px; background: var(--card); border-radius: 18px; padding: 12px; }
   .now[hidden] { display: none; }
   .now img { width: 74px; height: 110px; object-fit: cover; border-radius: 10px; background: #2d2840; flex-shrink: 0; }
@@ -62,6 +80,13 @@
   <input id="pin" inputmode="numeric" maxlength="4" autocomplete="off" placeholder="····">
   <button id="pinGo">Connect</button>
 </section>
+
+<nav class="tabs" id="tabs">
+  <button class="on" data-tab="remote">Remote</button>
+  <button data-tab="browse">Browse</button>
+</nav>
+
+<section class="browse" id="browse" hidden></section>
 
 <main>
   <section class="now" id="now" hidden>
@@ -169,6 +194,49 @@
     if (!input.value) return;
     post('/api/text?submit=1', input.value).then(function () { input.value = ''; });
   };
+
+  // ---- Browse: Continue watching, New episodes and Library from the TV; tap to open on the TV ----
+  var browseEl = document.getElementById('browse');
+  Array.prototype.forEach.call(document.querySelectorAll('[data-tab]'), function (b) {
+    b.onclick = function () {
+      var browse = b.getAttribute('data-tab') === 'browse';
+      document.body.classList.toggle('tab-browse', browse);
+      browseEl.hidden = !browse;
+      Array.prototype.forEach.call(document.querySelectorAll('[data-tab]'), function (x) { x.classList.toggle('on', x === b); });
+      if (browse) loadBrowse();
+    };
+  });
+  function el(tag, cls, text) { var e = document.createElement(tag); if (cls) e.className = cls; if (text) e.textContent = text; return e; }
+  function item(it) {
+    var b = el('button', 'item');
+    if (it.poster) { var im = el('img'); im.loading = 'lazy'; im.alt = ''; im.src = it.poster; b.appendChild(im); } else b.appendChild(el('div', 'ph'));
+    b.appendChild(el('div', 't', it.name));
+    if (it.sub) b.appendChild(el('div', 's', it.sub));
+    if (it.progress) { var bar = el('div', 'bar'), fill = el('i'); fill.style.width = Math.round(it.progress * 100) + '%'; bar.appendChild(fill); b.appendChild(bar); }
+    b.onclick = function () {
+      if (navigator.vibrate) navigator.vibrate(15);
+      post('/api/open?type=' + encodeURIComponent(it.type) + '&id=' + encodeURIComponent(it.id) + (it.video ? '&video=' + encodeURIComponent(it.video) : ''))
+        .then(function () { status('Opening on the TV…', 'ok'); });
+    };
+    return b;
+  }
+  function loadBrowse() {
+    fetch('/api/browse?pin=' + encodeURIComponent(pin)).then(function (r) { return r.json(); }).then(function (d) {
+      browseEl.innerHTML = '';
+      var labels = d.labels || {};
+      var any = false;
+      [['continueWatching', 'strip'], ['newEpisodes', 'strip'], ['library', 'grid']].forEach(function (sec) {
+        var list = d[sec[0]] || [];
+        if (!list.length) return;
+        any = true;
+        browseEl.appendChild(el('h2', '', labels[sec[0]] || sec[0]));
+        var box = el('div', sec[1]);
+        list.forEach(function (it) { box.appendChild(item(it)); });
+        browseEl.appendChild(box);
+      });
+      if (!any) browseEl.appendChild(el('div', 'empty', 'Nothing yet: open the app on the TV and sign in to your Stremio account.'));
+    }).catch(function () { status('TV not reachable', 'bad'); });
+  }
 
   // Volume: the TV's own volume, through the TV.
   Array.prototype.forEach.call(document.querySelectorAll('[data-vol]'), function (b) {

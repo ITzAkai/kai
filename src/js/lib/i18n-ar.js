@@ -14,6 +14,8 @@ export const AR = {
   'Nada por aqui.': 'لا يوجد شيء هنا.',
   'Carregando...': 'جارٍ التحميل...',
   'Ver tudo': 'عرض الكل',
+  "Novos episódios": "حلقات جديدة",
+  "Séries da sua biblioteca, últimos 7 dias": "مسلسلات مكتبتك، آخر 7 أيام",
   "Pessoas": "الأشخاص",
   "Tema de cores": "سمة الألوان",
   "Cor de destaque do app": "لون التمييز في التطبيق",

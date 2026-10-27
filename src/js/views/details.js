@@ -15,7 +15,7 @@ import { trailerIds, openTrailer } from './trailer.js';
 import * as extras from '../api/extras.js';
 import { smallThumb } from '../lib/img.js';
 import { isAnime } from '../api/skip.js';
-import { t } from '../lib/i18n.js';
+import { t, epLabel } from '../lib/i18n.js';
 
 export function openDetails(type, id, opts) {
   router.push(DetailsView(type, id, opts || {}));
@@ -196,7 +196,7 @@ function DetailsView(type, id, opts) {
     let label = t('Assistir');
     if (li && li.state && li.state.timeOffset > 0) {
       const ep = isSeries() ? sortedVideos(meta).find((v) => v.id === li.state.video_id) : null;
-      label = t('Continuar') + (ep ? ' T' + ep.season + 'E' + ep.episode : '');
+      label = t('Continuar') + (ep ? ' ' + epLabel(ep.season, ep.episode) : '');
     }
     watchBtn.innerHTML = '<span class="ico">▶</span>' + label;
     libBtn.innerHTML = stremio.isInLibrary(meta.id) ? '<span class="ico">✓</span>' + t('Na biblioteca') : '<span class="ico">＋</span>' + t('Biblioteca');
@@ -340,7 +340,7 @@ function DetailsView(type, id, opts) {
     mode = 'streams';
     streamsVideo = video;
     clear(panel);
-    const head = isSeries() ? 'T' + video.season + 'E' + video.episode + ' · ' + (video.name || video.title || '') : t('Fontes');
+    const head = isSeries() ? epLabel(video.season, video.episode) + ' · ' + (video.name || video.title || '') : t('Fontes');
     const filterBtn = h('div.btn.small', { focusable: true, text: t('Todos ▾'), onSelect: () => filterMenu() });
     panel.appendChild(h('div.panel-head', { 'data-group': '' }, [h('h2', { text: head }), filterBtn]));
     const sub = h('div.panel-sub');

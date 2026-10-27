@@ -13,6 +13,7 @@ var KEEP = 50; // events kept for late pollers
 var PIN = String(1000 + Math.floor(Math.random() * 9000));
 
 var events = [];
+var browseData = null;
 var nowPlaying = null;
 var nowPlayingAt = 0;
 var nextId = 1;
@@ -62,11 +63,11 @@ function since(id) {
   return events.filter(function (e) { return e.id > id; });
 }
 
-function readBody(req, cb) {
+function readBody(req, cb, limit) {
   var data = '';
   req.on('data', function (c) {
     data += c;
-    if (data.length > 4096) req.destroy();
+    if (data.length > (limit || 4096)) req.destroy();
   });
   req.on('end', function () { cb(data); });
 }
@@ -172,6 +173,18 @@ var server = http.createServer(function (req, res) {
     });
   }
 
+  if (url.pathname === '/api/browse' && req.method === 'POST') {
+    if (!isLocal(req)) return send(res, 403, { error: 'local only' });
+    return readBody(req, function (body) {
+      try {
+        browseData = JSON.parse(body);
+      } catch (e) {
+        /* keep the last good lists */
+      }
+      send(res, 200, { ok: true });
+    }, 500000);
+  }
+
   // ---- Phone side ----
   if (url.pathname === '/' || url.pathname === '/index.html') {
     return send(res, 200, remotePage(), 'text/html; charset=utf-8');
@@ -192,6 +205,16 @@ var server = http.createServer(function (req, res) {
       push({ type: 'search', text: String(text).slice(0, 200) });
       send(res, 200, { ok: true });
     });
+  }
+  if (url.pathname === '/api/browse') {
+    if (q.pin !== PIN) return send(res, 401, { ok: false });
+    return send(res, 200, browseData || { continueWatching: [], newEpisodes: [], library: [] });
+  }
+  if (url.pathname === '/api/open' && req.method === 'POST') {
+    if (q.pin !== PIN) return send(res, 401, { ok: false });
+    if (!q.id || (q.type !== 'movie' && q.type !== 'series')) return send(res, 400, { ok: false });
+    push({ type: 'open', kind: q.type, item: String(q.id).slice(0, 200), video: q.video ? String(q.video).slice(0, 200) : '' });
+    return send(res, 200, { ok: true });
   }
   if (url.pathname === '/api/state') {
     if (q.pin !== PIN) return send(res, 401, { ok: false });

@@ -45,6 +45,11 @@ home network.
 |---|---|
 | <img src="docs/screenshots/phone-remote.jpg" alt="Phone remote page" width="300"> | ![QR code and PIN in Settings](docs/screenshots/phone-remote-qr.jpg) |
 
+**Browse on the phone:** the **Browse** tab shows your Continue watching, New episodes and
+Library as posters; tap one and it opens on the TV, ready on that episode.
+
+<img src="docs/screenshots/phone-browse.jpg" alt="Browse tab on the phone" width="300">
+
 ### Search across all your add-ons
 Results from every add-on that supports search, grouped by movies and series.
 
@@ -87,6 +92,12 @@ theme, subtitle and streaming-server settings, all usable with the remote.
   no Arabic text).
 
 ![A trailer playing full screen](docs/screenshots/trailer.jpg)
+
+### New episodes
+A home-screen row with the episodes released in the last 7 days for the series in your library,
+skipping the ones you've watched. Each opens straight on that episode.
+
+![New episodes row](docs/screenshots/new-episodes.jpg)
 
 ### Watching
 - **Skip intros automatically.** Intros and recaps are skipped on their own (IntroDB and
