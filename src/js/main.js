@@ -103,7 +103,7 @@ function start() {
       setTimeout(() => {
         update
           .check()
-          .then((info) => info && toast(t('Versão {v} disponível: Ajustes → Procurar atualização', { v: info.version }), 7000))
+          .then((info) => info && toast(t('Atualização disponível: Ajustes → Procurar atualização'), 7000))
           .catch(() => {});
       }, 8000);
     }

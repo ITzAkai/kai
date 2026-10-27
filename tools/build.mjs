@@ -9,6 +9,9 @@ const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const src = path.join(root, 'src');
 const dist = path.join(root, 'dist');
 const watch = process.argv.includes('--watch');
+// Build id: the in-app updater compares it with dist/build.json on GitHub.
+const BUILD = new Date().toISOString();
+const APP_VERSION = JSON.parse(fs.readFileSync(path.join(root, 'appinfo.json'), 'utf8')).version;
 
 function copyDir(from, to) {
   fs.mkdirSync(to, { recursive: true });
@@ -45,7 +48,8 @@ const esbuildOptions = {
     __KAI_DEVLOG__: JSON.stringify(process.env.KAI_DEVLOG || ''),
     __KAI_TMDB__: JSON.stringify(process.env.KAI_TMDB || ''),
     __KAI_MDBLIST__: JSON.stringify(process.env.KAI_MDBLIST || ''),
-    __KAI_VERSION__: JSON.stringify(JSON.parse(fs.readFileSync(path.join(root, 'appinfo.json'), 'utf8')).version),
+    __KAI_VERSION__: JSON.stringify(APP_VERSION),
+    __KAI_BUILD__: JSON.stringify(BUILD),
   },
   logLevel: 'warning',
 };
@@ -90,6 +94,7 @@ async function emit(result) {
   const service = fs.readFileSync(path.join(root, 'service', 'remote-service.js'), 'utf8');
   fs.writeFileSync(path.join(dist, 'remote-service.js'), 'var REMOTE_PAGE = ' + JSON.stringify(page) + ';\n' + service);
   console.log('[build] dist/remote-service.js (phone remote service)');
+  fs.writeFileSync(path.join(dist, 'build.json'), JSON.stringify({ build: BUILD, version: APP_VERSION }) + '\n');
 }
 
 if (watch) {

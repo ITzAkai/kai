@@ -1,95 +1,67 @@
-// Atualização pelo GitHub: lê a última release e, em TVs com Homebrew Channel (root), instala o .ipk
-// pelo próprio serviço do Homebrew Channel, que confere o SHA-256 antes de instalar.
+// In-app updater. TizenBrew loads this app from jsDelivr's copy of the GitHub repository, which can
+// lag the repository by hours. Each build writes dist/build.json with its build id; the app compares
+// its own id with the one on GitHub, and "update" clears jsDelivr's copy so a reload gets the new one.
 import { getJSON } from '../lib/http.js';
-import { luna, hasLuna } from '../lib/luna.js';
-import { isTizen } from '../lib/platform.js';
 import * as store from '../lib/store.js';
-import { t } from '../lib/i18n.js';
 
-export const REPO = 'creachec/Stremio-Kai-Timeworn';
+export const REPO = 'ITzAkai/stremio-kai-tizen';
 export const REPO_URL = 'https://github.com/' + REPO;
 export const VERSION = __KAI_VERSION__;
+export const BUILD = __KAI_BUILD__; // ISO time of this build
 
-function parts(v) {
-  return String(v || '0')
-    .replace(/^v/i, '')
-    .split('.')
-    .map((x) => parseInt(x, 10) || 0);
-}
+const RAW = 'https://raw.githubusercontent.com/' + REPO + '/main/';
+const CDN = 'https://cdn.jsdelivr.net/gh/' + REPO + '/';
+const PURGE = 'https://purge.jsdelivr.net/gh/' + REPO + '/';
+// Everything TizenBrew fetches for this module.
+const FILES = ['package.json', 'dist/index.html', 'dist/app.js', 'dist/app.css', 'dist/remote-service.js', 'dist/build.json'];
 
-export function isNewer(remote, local) {
-  const a = parts(remote);
-  const b = parts(local);
-  for (let i = 0; i < Math.max(a.length, b.length); i++) {
-    if ((a[i] || 0) !== (b[i] || 0)) return (a[i] || 0) > (b[i] || 0);
-  }
-  return false;
-}
-
-// { version, notes, ipkUrl, sha256, pageUrl } da última release (ou null se não houver).
+// { build, version, message, date } of the newest build on GitHub.
 export function latest() {
-  return getJSON('https://api.github.com/repos/' + REPO + '/releases/latest', { timeout: 15000, quiet: true }).then((rel) => {
-    const assets = (rel && rel.assets) || [];
-    const manifest = assets.find((a) => /\.manifest\.json$/.test(a.name));
-    const ipk = assets.find((a) => /\.ipk$/.test(a.name));
-    if (!manifest || !ipk) return null;
-    return getJSON(manifest.browser_download_url, { timeout: 15000, quiet: true }).then((m) => ({
-      version: m.version || rel.tag_name,
-      notes: rel.body || '',
-      ipkUrl: m.ipkUrl || ipk.browser_download_url,
-      sha256: m.ipkHash && m.ipkHash.sha256,
-      pageUrl: rel.html_url || REPO_URL + '/releases',
-    }));
+  const bust = '?t=' + Date.now();
+  return Promise.all([
+    getJSON(RAW + 'dist/build.json' + bust, { timeout: 15000, quiet: true }),
+    getJSON('https://api.github.com/repos/' + REPO + '/commits?per_page=1', { timeout: 15000, quiet: true }).catch(() => null),
+  ]).then((r) => {
+    const b = r[0] || {};
+    const c = r[1] && r[1][0] && r[1][0].commit;
+    return {
+      build: b.build,
+      version: b.version || VERSION,
+      message: c ? String(c.message).split('\n')[0] : '',
+      date: (c && c.committer && c.committer.date) || b.build,
+    };
   });
 }
 
+// The newest build when it differs from (and is newer than) the running one, else null.
 export function check() {
-  // The release feed belongs to the LG build; the Samsung port updates through TizenBrew.
-  if (isTizen()) return Promise.resolve(null);
   return latest().then((info) => {
     store.saveSettings({ lastUpdateCheck: Date.now() });
-    return info && isNewer(info.version, VERSION) ? info : null;
+    return info.build && info.build !== BUILD && Date.parse(info.build) > Date.parse(BUILD) ? info : null;
   });
 }
 
-// O Homebrew Channel só existe em TVs com root. Sem ele, a atualização é pelo PC (webOS Dev Manager).
-export function canSelfUpdate() {
-  if (!hasLuna()) return Promise.resolve(false);
-  return luna('luna://org.webosbrew.hbchannel.service', 'getConfiguration', {})
-    .then(() => true)
-    .catch(() => false);
-}
-
-// Instala pelo Homebrew Channel; onStatus recebe "Baixando 40%", "Instalando..." etc.
-export function install(info, onStatus) {
-  return new Promise((resolve, reject) => {
-    if (!info.sha256) return reject(new Error(t('Release sem hash SHA-256')));
-    const bridge = new window.PalmServiceBridge();
-    bridge.onservicecallback = (msg) => {
-      let r = {};
-      try {
-        r = JSON.parse(msg);
-      } catch (e) {
-        return;
-      }
-      if (r.returnValue === false) return reject(new Error(r.errorText || t('Falha na instalação')));
-      const st = String(r.statusText || '');
-      if (onStatus) {
-        if (/Download/i.test(st)) onStatus(t('Baixando') + (isFinite(r.progress) ? ' ' + Math.round(r.progress) + '%' : '...'));
-        else if (/Verif/i.test(st)) onStatus(t('Conferindo o arquivo...'));
-        else if (/Install/i.test(st)) onStatus(t('Instalando...'));
-      }
-      if (r.finished || /succeeded|Nothing changed/i.test(st)) resolve(st);
-    };
-    window.__kaiUpdateBridge = bridge; // mantém a referência viva até o fim
-    bridge.call(
-      'luna://org.webosbrew.hbchannel.service/install',
-      JSON.stringify({ id: 'com.kai.stremio', ipkUrl: info.ipkUrl, ipkHash: info.sha256, subscribe: true })
-    );
+// Clears jsDelivr's cached copy, waits until it serves the new build, then reloads the app.
+// Resolves false if jsDelivr still has the old build after a minute (it can lag a little).
+export function apply(info) {
+  return Promise.all(FILES.map((f) => getJSON(PURGE + f, { timeout: 20000, quiet: true }).catch(() => null))).then(() => {
+    let tries = 0;
+    const poll = () =>
+      getJSON(CDN + 'dist/build.json?t=' + Date.now(), { timeout: 15000, quiet: true })
+        .catch(() => ({}))
+        .then((b) => {
+          if (b.build === info.build) {
+            window.location.reload();
+            return true;
+          }
+          if (++tries >= 6) return false;
+          return new Promise((r) => setTimeout(r, 10000)).then(poll);
+        });
+    return poll();
   });
 }
 
-// Verificação automática no máximo uma vez por dia.
+// Automatic check at most once a day.
 export function shouldAutoCheck() {
   const last = store.settings().lastUpdateCheck || 0;
   return Date.now() - last > 24 * 3600 * 1000;

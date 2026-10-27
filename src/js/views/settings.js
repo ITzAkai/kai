@@ -64,29 +64,25 @@ export function SettingsView() {
     update
       .check()
       .then((info) => {
-        if (!info) return toast(t('Você já está na versão mais nova (v{v}).', { v: update.VERSION }));
-        return update.canSelfUpdate().then((can) => {
-          if (!can) {
-            // Sem Homebrew Channel (só modo desenvolvedor) o app não consegue se instalar sozinho.
-            menu(
-              t('Versão {v} disponível', { v: info.version }),
-              [
-                { label: t('Como atualizar'), sub: t('No PC: webOS Dev Manager → instalar o .ipk da release') },
-                { label: info.pageUrl, sub: t('Página da release') },
-              ],
-              { center: true }
-            );
-            return;
+        if (!info) return toast(t('Você já tem a versão mais nova.'));
+        confirmDialog(
+          t('Atualização disponível ({date}): {msg}', { date: shortDate(info.date), msg: info.message || '' }),
+          t('Atualizar agora'),
+          () => {
+            toast(t('Atualizando... o app vai recarregar.'), 60000);
+            update.apply(info).then((ok) => {
+              if (!ok) toast(t('A atualização ainda está chegando. Tente de novo em alguns minutos.'), 6000);
+            });
           }
-          confirmDialog(t('Instalar a versão {v}? O app vai fechar e reabrir.', { v: info.version }), t('Atualizar'), () => {
-            update
-              .install(info, (st) => toast(st, 8000))
-              .then(() => toast(t('Atualizado! Reabrindo...')))
-              .catch((e) => toast(t('Não foi possível atualizar: {msg}', { msg: e.message }), 6000));
-          });
-        });
+        );
       })
       .catch((e) => toast(t('Não foi possível verificar: {msg}', { msg: e.message }), 5000));
+  }
+
+  function shortDate(iso) {
+    const d = new Date(iso);
+    if (isNaN(d.getTime())) return '';
+    return ('0' + d.getDate()).slice(-2) + '/' + ('0' + (d.getMonth() + 1)).slice(-2) + '/' + d.getFullYear() + ' ' + ('0' + d.getHours()).slice(-2) + ':' + ('0' + d.getMinutes()).slice(-2);
   }
 
   function installFromUrl(url, name) {
@@ -491,10 +487,24 @@ export function SettingsView() {
         logInput,
       ])
     );
-    body.appendChild(row(t('Versão'), device || 'Stremio Kai Timeworn', 'v' + update.VERSION, null));
-    body.appendChild(
-      row(t('Procurar atualização'), t('Baixa a versão nova do GitHub ({repo})', { repo: update.REPO }), '', () => checkForUpdate())
-    );
+    body.appendChild(h('div.set-section', { text: t('Atualizações') }));
+    body.appendChild(row(t('Versão instalada'), device || 'Stremio Kai', shortDate(update.BUILD), null));
+    const latestRow = row(t('Versão mais nova no GitHub'), update.REPO, t('Verificando...'), () => checkForUpdate());
+    body.appendChild(latestRow);
+    update
+      .latest()
+      .then((info) => {
+        const v = latestRow.querySelector('.value');
+        if (!v) return;
+        const newer = info.build && info.build !== update.BUILD && Date.parse(info.build) > Date.parse(update.BUILD);
+        v.textContent = shortDate(info.date) + (newer ? '  ·  ' + t('nova!') : '  ·  ' + t('em dia'));
+        if (info.message) latestRow.querySelector('.label small').textContent = info.message;
+      })
+      .catch(() => {
+        const v = latestRow.querySelector('.value');
+        if (v) v.textContent = t('sem conexão');
+      });
+    body.appendChild(row(t('Procurar atualização'), t('Baixa a versão nova do GitHub ({repo})', { repo: update.REPO }), '', () => checkForUpdate()));
 
     const rows = body.querySelectorAll('.set-row');
     if (keepIndex >= 0 && rows[keepIndex]) nav.focus(rows[keepIndex]);

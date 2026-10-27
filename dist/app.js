@@ -4785,6 +4785,19 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     "Nada por aqui.": "Nothing here.",
     "Carregando...": "Loading...",
     "Ver tudo": "See all",
+    "Você já tem a versão mais nova.": "You're on the newest version.",
+    "Atualização disponível ({date}): {msg}": "Update available ({date}): {msg}",
+    "Atualizar agora": "Update now",
+    "Atualizando... o app vai recarregar.": "Updating... the app will reload.",
+    "A atualização ainda está chegando. Tente de novo em alguns minutos.": "The update is still on its way. Try again in a few minutes.",
+    "Atualizações": "Updates",
+    "Versão instalada": "Installed version",
+    "Versão mais nova no GitHub": "Newest version on GitHub",
+    "Verificando...": "Checking...",
+    "nova!": "new!",
+    "em dia": "up to date",
+    "sem conexão": "no connection",
+    "Atualização disponível: Ajustes → Procurar atualização": "Update available: Settings → Check for updates",
     "Descrições em árabe, perfis de atores, calendário de filmes, logos e elenco com fotos (grátis em themoviedb.org)": "Arabic descriptions, actor profiles, movie calendar, logos and cast photos (free at themoviedb.org)",
     "Trailer": "Trailer",
     "Voltar fecha o trailer": "Back closes the trailer",
@@ -5195,6 +5208,19 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     "Nada por aqui.": "لا يوجد شيء هنا.",
     "Carregando...": "جارٍ التحميل...",
     "Ver tudo": "عرض الكل",
+    "Você já tem a versão mais nova.": "لديك أحدث إصدار.",
+    "Atualização disponível ({date}): {msg}": "يتوفر تحديث ({date}): {msg}",
+    "Atualizar agora": "تحديث الآن",
+    "Atualizando... o app vai recarregar.": "جارٍ التحديث... سيُعاد تحميل التطبيق.",
+    "A atualização ainda está chegando. Tente de novo em alguns minutos.": "التحديث لم يصل بعد. حاول مجددًا بعد بضع دقائق.",
+    "Atualizações": "التحديثات",
+    "Versão instalada": "الإصدار المثبّت",
+    "Versão mais nova no GitHub": "أحدث إصدار على GitHub",
+    "Verificando...": "جارٍ التحقق...",
+    "nova!": "جديد!",
+    "em dia": "محدّث",
+    "sem conexão": "لا يوجد اتصال",
+    "Atualização disponível: Ajustes → Procurar atualização": "يتوفر تحديث: الإعدادات ← البحث عن تحديث",
     "Descrições em árabe, perfis de atores, calendário de filmes, logos e elenco com fotos (grátis em themoviedb.org)": "الأوصاف بالعربية، ملفات الممثلين، تقويم الأفلام، الشعارات وصور طاقم التمثيل (مجانًا من themoviedb.org)",
     "Trailer": "الإعلان",
     "Voltar fecha o trailer": "زر الرجوع يغلق الإعلان",
@@ -5775,10 +5801,10 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
 
   // src/js/lib/dom.js
   function h(tag, props, children) {
-    var parts2 = tag.split(/(?=[.#])/);
-    var el = document.createElement(parts2[0] || "div");
-    for (var i = 1; i < parts2.length; i++) {
-      var p = parts2[i];
+    var parts = tag.split(/(?=[.#])/);
+    var el = document.createElement(parts[0] || "div");
+    for (var i = 1; i < parts.length; i++) {
+      var p = parts[i];
       if (p[0] === ".") el.classList.add(p.slice(1));else if (p[0] === "#") el.id = p.slice(1);
     }
     if (props) {
@@ -6894,14 +6920,14 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   function proxyUrl(base, streamUrl, reqHeaders, resHeaders) {
     var m = streamUrl.match(/^(https?:\/\/[^/?#]+)([^?#]*)(\?[^#]*)?/);
     if (!m) return streamUrl;
-    var parts2 = ["d=" + encodeURIComponent(m[1])];
+    var parts = ["d=" + encodeURIComponent(m[1])];
     Object.keys(reqHeaders || {}).forEach(function (k) {
-      return parts2.push("h=" + encodeURIComponent(k + ":" + reqHeaders[k]));
+      return parts.push("h=" + encodeURIComponent(k + ":" + reqHeaders[k]));
     });
     Object.keys(resHeaders || {}).forEach(function (k) {
-      return parts2.push("r=" + encodeURIComponent(k + ":" + resHeaders[k]));
+      return parts.push("r=" + encodeURIComponent(k + ":" + resHeaders[k]));
     });
-    return base + "proxy/" + parts2.join("&") + (m[2] || "/") + (m[3] || "");
+    return base + "proxy/" + parts.join("&") + (m[2] || "/") + (m[3] || "");
   }
   function corsProxyUrl(url2) {
     var base = isAvailable() ? baseUrl() : "";
@@ -7087,12 +7113,12 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   function url(addon, resource, type, id, extra) {
     var path = "/" + resource + "/" + encodeURIComponent(type) + "/" + encodeURIComponent(id);
     if (extra) {
-      var parts2 = Object.keys(extra).filter(function (k) {
+      var parts = Object.keys(extra).filter(function (k) {
         return extra[k] !== void 0 && extra[k] !== null && extra[k] !== "";
       }).map(function (k) {
         return encodeURIComponent(k) + "=" + encodeURIComponent(extra[k]);
       });
-      if (parts2.length) path += "/" + parts2.join("&");
+      if (parts.length) path += "/" + parts.join("&");
     }
     return addon.base + path + ".json" + addon.query;
   }
@@ -8075,9 +8101,9 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       var j = 0;
       while (j < lines.length && lines[j].indexOf("-->") < 0) j++;
       if (j >= lines.length) continue;
-      var parts2 = lines[j].split("-->");
-      var start3 = toSec(parts2[0]);
-      var end = toSec(parts2[1].trim().split(/\s+/)[0]);
+      var parts = lines[j].split("-->");
+      var start3 = toSec(parts[0]);
+      var end = toSec(parts[1].trim().split(/\s+/)[0]);
       if (!isFinite(start3) || !isFinite(end)) continue;
       var body = lines.slice(j + 1).join("\n").replace(/\{\\[^}]*\}/g, "").trim();
       if (body) cues.push({
@@ -9787,19 +9813,19 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         title.style.display = "";
       };
       logo2.src = meta.logo || logo(meta.id);
-      var parts2 = [];
-      if (meta.releaseInfo || meta.year) parts2.push(meta.releaseInfo || meta.year);
-      if (meta.runtime) parts2.push(meta.runtime);
+      var parts = [];
+      if (meta.releaseInfo || meta.year) parts.push(meta.releaseInfo || meta.year);
+      if (meta.runtime) parts.push(meta.runtime);
       if (isSeries()) {
         var seasons = uniqueSeasons().filter(function (s) {
           return s !== 0;
         });
-        if (seasons.length) parts2.push(t(seasons.length > 1 ? "{n} temporadas" : "{n} temporada", {
+        if (seasons.length) parts.push(t(seasons.length > 1 ? "{n} temporadas" : "{n} temporada", {
           n: seasons.length
         }));
       }
       var metaLine = h("div.details-meta", {
-        text: parts2.join("  ·  ")
+        text: parts.join("  ·  ")
       });
       var ratingsEl = h("div.ratings");
       renderRatings(ratingsEl, meta.imdbRating ? [{
@@ -10807,11 +10833,11 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         title.style.display = "";
       };
       logo2.src = it.logo;
-      var parts2 = [];
-      if (it.year) parts2.push(it.year);
-      if (it.runtime) parts2.push(it.runtime);
-      if (it.genres && it.genres.length) parts2.push(it.genres.slice(0, 3).join(", "));
-      meta.innerHTML = (it.rating ? '<span class="imdb">★ ' + escapeHtml(it.rating) + "</span> · " : "") + escapeHtml(parts2.join(" · "));
+      var parts = [];
+      if (it.year) parts.push(it.year);
+      if (it.runtime) parts.push(it.runtime);
+      if (it.genres && it.genres.length) parts.push(it.genres.slice(0, 3).join(", "));
+      meta.innerHTML = (it.rating ? '<span class="imdb">★ ' + escapeHtml(it.rating) + "</span> · " : "") + escapeHtml(parts.join(" · "));
       desc.textContent = it.description || "";
       clear(dots);
       items.forEach(function (_, i) {
@@ -11072,91 +11098,71 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   }
 
   // src/js/api/update.js
-  var REPO = "creachec/Stremio-Kai-Timeworn";
+  var REPO = "ITzAkai/stremio-kai-tizen";
   var REPO_URL = "https://github.com/" + REPO;
   var VERSION = "1.2.0";
-  function parts(v) {
-    return String(v || "0").replace(/^v/i, "").split(".").map(function (x) {
-      return parseInt(x, 10) || 0;
-    });
-  }
-  function isNewer(remote, local) {
-    var a = parts(remote);
-    var b = parts(local);
-    for (var i = 0; i < Math.max(a.length, b.length); i++) {
-      if ((a[i] || 0) !== (b[i] || 0)) return (a[i] || 0) > (b[i] || 0);
-    }
-    return false;
-  }
+  var BUILD = "2026-10-27T14:46:36.127Z";
+  var RAW = "https://raw.githubusercontent.com/" + REPO + "/main/";
+  var CDN = "https://cdn.jsdelivr.net/gh/" + REPO + "/";
+  var PURGE = "https://purge.jsdelivr.net/gh/" + REPO + "/";
+  var FILES = ["package.json", "dist/index.html", "dist/app.js", "dist/app.css", "dist/remote-service.js", "dist/build.json"];
   function latest() {
-    return getJSON("https://api.github.com/repos/" + REPO + "/releases/latest", {
+    var bust = "?t=" + Date.now();
+    return Promise.all([getJSON(RAW + "dist/build.json" + bust, {
       timeout: 15e3,
       quiet: true
-    }).then(function (rel) {
-      var assets = rel && rel.assets || [];
-      var manifest = assets.find(function (a) {
-        return /\.manifest\.json$/.test(a.name);
-      });
-      var ipk = assets.find(function (a) {
-        return /\.ipk$/.test(a.name);
-      });
-      if (!manifest || !ipk) return null;
-      return getJSON(manifest.browser_download_url, {
-        timeout: 15e3,
-        quiet: true
-      }).then(function (m) {
-        return {
-          version: m.version || rel.tag_name,
-          notes: rel.body || "",
-          ipkUrl: m.ipkUrl || ipk.browser_download_url,
-          sha256: m.ipkHash && m.ipkHash.sha256,
-          pageUrl: rel.html_url || REPO_URL + "/releases"
-        };
-      });
+    }), getJSON("https://api.github.com/repos/" + REPO + "/commits?per_page=1", {
+      timeout: 15e3,
+      quiet: true
+    }).catch(function () {
+      return null;
+    })]).then(function (r) {
+      var b = r[0] || {};
+      var c = r[1] && r[1][0] && r[1][0].commit;
+      return {
+        build: b.build,
+        version: b.version || VERSION,
+        message: c ? String(c.message).split("\n")[0] : "",
+        date: c && c.committer && c.committer.date || b.build
+      };
     });
   }
   function check2() {
-    if (isTizen()) return Promise.resolve(null);
     return latest().then(function (info2) {
       saveSettings({
         lastUpdateCheck: Date.now()
       });
-      return info2 && isNewer(info2.version, VERSION) ? info2 : null;
+      return info2.build && info2.build !== BUILD && Date.parse(info2.build) > Date.parse(BUILD) ? info2 : null;
     });
   }
-  function canSelfUpdate() {
-    if (!hasLuna()) return Promise.resolve(false);
-    return luna("luna://org.webosbrew.hbchannel.service", "getConfiguration", {}).then(function () {
-      return true;
-    }).catch(function () {
-      return false;
-    });
-  }
-  function install2(info2, onStatus) {
-    return new Promise(function (resolve, reject) {
-      if (!info2.sha256) return reject(new Error(t("Release sem hash SHA-256")));
-      var bridge = new window.PalmServiceBridge();
-      bridge.onservicecallback = function (msg) {
-        var r = {};
-        try {
-          r = JSON.parse(msg);
-        } catch (e) {
-          return;
-        }
-        if (r.returnValue === false) return reject(new Error(r.errorText || t("Falha na instalação")));
-        var st = String(r.statusText || "");
-        if (onStatus) {
-          if (/Download/i.test(st)) onStatus(t("Baixando") + (isFinite(r.progress) ? " " + Math.round(r.progress) + "%" : "..."));else if (/Verif/i.test(st)) onStatus(t("Conferindo o arquivo..."));else if (/Install/i.test(st)) onStatus(t("Instalando..."));
-        }
-        if (r.finished || /succeeded|Nothing changed/i.test(st)) resolve(st);
+  function apply2(info2) {
+    return Promise.all(FILES.map(function (f) {
+      return getJSON(PURGE + f, {
+        timeout: 2e4,
+        quiet: true
+      }).catch(function () {
+        return null;
+      });
+    })).then(function () {
+      var tries = 0;
+      var _poll = function poll2() {
+        return getJSON(CDN + "dist/build.json?t=" + Date.now(), {
+          timeout: 15e3,
+          quiet: true
+        }).catch(function () {
+          return {};
+        }).then(function (b) {
+          if (b.build === info2.build) {
+            window.location.reload();
+            return true;
+          }
+          if (++tries >= 6) return false;
+          return new Promise(function (r) {
+            return setTimeout(r, 1e4);
+          }).then(_poll);
+        });
       };
-      window.__kaiUpdateBridge = bridge;
-      bridge.call("luna://org.webosbrew.hbchannel.service/install", JSON.stringify({
-        id: "com.kai.stremio",
-        ipkUrl: info2.ipkUrl,
-        ipkHash: info2.sha256,
-        subscribe: true
-      }));
+      return _poll();
     });
   }
   function shouldAutoCheck() {
@@ -11434,36 +11440,14 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     function checkForUpdate() {
       toast(t("Procurando atualização..."));
       check2().then(function (info2) {
-        if (!info2) return toast(t("Você já está na versão mais nova (v{v}).", {
-          v: VERSION
-        }));
-        return canSelfUpdate().then(function (can) {
-          if (!can) {
-            menu(t("Versão {v} disponível", {
-              v: info2.version
-            }), [{
-              label: t("Como atualizar"),
-              sub: t("No PC: webOS Dev Manager → instalar o .ipk da release")
-            }, {
-              label: info2.pageUrl,
-              sub: t("Página da release")
-            }], {
-              center: true
-            });
-            return;
-          }
-          confirmDialog(t("Instalar a versão {v}? O app vai fechar e reabrir.", {
-            v: info2.version
-          }), t("Atualizar"), function () {
-            install2(info2, function (st) {
-              return toast(st, 8e3);
-            }).then(function () {
-              return toast(t("Atualizado! Reabrindo..."));
-            }).catch(function (e) {
-              return toast(t("Não foi possível atualizar: {msg}", {
-                msg: e.message
-              }), 6e3);
-            });
+        if (!info2) return toast(t("Você já tem a versão mais nova."));
+        confirmDialog(t("Atualização disponível ({date}): {msg}", {
+          date: shortDate(info2.date),
+          msg: info2.message || ""
+        }), t("Atualizar agora"), function () {
+          toast(t("Atualizando... o app vai recarregar."), 6e4);
+          apply2(info2).then(function (ok) {
+            if (!ok) toast(t("A atualização ainda está chegando. Tente de novo em alguns minutos."), 6e3);
           });
         });
       }).catch(function (e) {
@@ -11471,6 +11455,11 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           msg: e.message
         }), 5e3);
       });
+    }
+    function shortDate(iso) {
+      var d = new Date(iso);
+      if (isNaN(d.getTime())) return "";
+      return ("0" + d.getDate()).slice(-2) + "/" + ("0" + (d.getMonth() + 1)).slice(-2) + "/" + d.getFullYear() + " " + ("0" + d.getHours()).slice(-2) + ":" + ("0" + d.getMinutes()).slice(-2);
     }
     function installFromUrl(url2, name) {
       if (!isLoggedIn()) return toast(t("Entre na conta primeiro"));
@@ -12010,7 +11999,24 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       }, [h("div.label", null, [t("Log remoto"), h("small", {
         text: t("npm run logs no PC")
       })]), logInput]));
-      body.appendChild(row(t("Versão"), device || "Stremio Kai Timeworn", "v" + VERSION, null));
+      body.appendChild(h("div.set-section", {
+        text: t("Atualizações")
+      }));
+      body.appendChild(row(t("Versão instalada"), device || "Stremio Kai", shortDate(BUILD), null));
+      var latestRow = row(t("Versão mais nova no GitHub"), REPO, t("Verificando..."), function () {
+        return checkForUpdate();
+      });
+      body.appendChild(latestRow);
+      latest().then(function (info2) {
+        var v = latestRow.querySelector(".value");
+        if (!v) return;
+        var newer = info2.build && info2.build !== BUILD && Date.parse(info2.build) > Date.parse(BUILD);
+        v.textContent = shortDate(info2.date) + (newer ? "  ·  " + t("nova!") : "  ·  " + t("em dia"));
+        if (info2.message) latestRow.querySelector(".label small").textContent = info2.message;
+      }).catch(function () {
+        var v = latestRow.querySelector(".value");
+        if (v) v.textContent = t("sem conexão");
+      });
       body.appendChild(row(t("Procurar atualização"), t("Baixa a versão nova do GitHub ({repo})", {
         repo: REPO
       }), "", function () {
@@ -12600,9 +12606,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       if (shouldAutoCheck()) {
         setTimeout(function () {
           check2().then(function (info2) {
-            return info2 && toast(t("Versão {v} disponível: Ajustes → Procurar atualização", {
-              v: info2.version
-            }), 7e3);
+            return info2 && toast(t("Atualização disponível: Ajustes → Procurar atualização"), 7e3);
           }).catch(function () {});
         }, 8e3);
       }
