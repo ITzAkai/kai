@@ -10587,17 +10587,21 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
             if (!isPlayableType(s)) return;
             var needs = needsServer(s);
             if (needs && !serverOk) return;
-            var warn = streamBadges(s).some(function (b) {
+            var badges = streamBadges(s);
+            var warn = badges.some(function (b) {
               return b.warn;
+            });
+            var heavy = badges.some(function (b) {
+              return b.t === "4K" || b.t === "HDR";
             });
             out.push({
               s: s,
-              key: [needs ? 1 : 0, warn ? 1 : 0, gi, si]
+              key: [needs ? 1 : 0, warn ? 1 : 0, heavy ? 1 : 0, gi, si]
             });
           });
         });
         out.sort(function (x, y) {
-          for (var i = 0; i < 4; i++) if (x.key[i] !== y.key[i]) return x.key[i] - y.key[i];
+          for (var i = 0; i < 5; i++) if (x.key[i] !== y.key[i]) return x.key[i] - y.key[i];
           return 0;
         });
         return out.map(function (c) {
@@ -11734,7 +11738,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   var REPO = "ITzAkai/kai";
   var REPO_URL = "https://github.com/" + REPO;
   var VERSION = "1.2.0";
-  var BUILD = "2026-10-27T17:35:57.381Z";
+  var BUILD = "2026-10-27T17:40:12.986Z";
   var RAW = "https://raw.githubusercontent.com/" + REPO + "/main/";
   var PURGE = "https://purge.jsdelivr.net/gh/" + REPO + "/";
   var FILES = ["package.json", "dist/index.html", "dist/loader.js", "dist/app.js", "dist/app.css", "dist/remote-service.js", "dist/build.json"];
