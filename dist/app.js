@@ -9799,6 +9799,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       if (!(d > 0) || !isFinite(d) || !videoEl.currentTime) return;
       var delta = watchedDelta;
       watchedDelta = 0;
+      if (meta.id === "dev") return;
       record(video.id, videoEl.currentTime / d);
       saveProgress(meta, video.id, videoEl.currentTime * 1e3, d * 1e3, delta);
     }
@@ -11732,8 +11733,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   // src/js/api/update.js
   var REPO = "ITzAkai/kai";
   var REPO_URL = "https://github.com/" + REPO;
-  var VERSION = "1.2.0-tizen.1";
-  var BUILD = "2026-10-27T17:12:37.940Z";
+  var VERSION = "1.2.0";
+  var BUILD = "2026-10-27T17:22:10.828Z";
   var RAW = "https://raw.githubusercontent.com/" + REPO + "/main/";
   var PURGE = "https://purge.jsdelivr.net/gh/" + REPO + "/";
   var FILES = ["package.json", "dist/index.html", "dist/loader.js", "dist/app.js", "dist/app.css", "dist/remote-service.js", "dist/build.json"];
@@ -13207,6 +13208,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     } else start2();
     document.addEventListener("webOSRelaunch", function () {
       check();
+      devLaunch();
     });
     document.addEventListener("visibilitychange", function () {
       if (!document.hidden) check();
@@ -13238,6 +13240,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           });
         });
       } else maybeShowWizard();
+      devLaunch();
       if (shouldAutoCheck()) {
         setTimeout(function () {
           check2().then(function (info2) {
@@ -13245,6 +13248,34 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           }).catch(function () {});
         }, 8e3);
       }
+    });
+  }
+  function devLaunch() {
+    if (true) return;
+    var params = {};
+    try {
+      params = JSON.parse(window.PalmSystem.launchParams || "{}") || {};
+    } catch (e) {
+      return;
+    }
+    if (params.devPlay64) params.devPlay = window.atob(params.devPlay64);
+    if (!params.devPlay) return;
+    log.info("devPlay", params.devPlay);
+    openPlayer({
+      meta: {
+        id: "dev",
+        type: "movie",
+        name: params.devTitle || "Teste"
+      },
+      video: {
+        id: "dev"
+      },
+      stream: {
+        url: params.devPlay
+      },
+      streams: [],
+      startTime: (params.devStart || 0) * 1e3,
+      isSeries: false
     });
   }
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot);else boot();
