@@ -11,7 +11,7 @@ const dist = path.join(root, 'dist');
 const watch = process.argv.includes('--watch');
 // Build id: the in-app updater compares it with dist/build.json on GitHub.
 const BUILD = new Date().toISOString();
-const APP_VERSION = JSON.parse(fs.readFileSync(path.join(root, 'appinfo.json'), 'utf8')).version;
+const APP_VERSION = JSON.parse(fs.readFileSync(path.join(root, 'package.json'), 'utf8')).version;
 
 function copyDir(from, to) {
   fs.mkdirSync(to, { recursive: true });
@@ -58,7 +58,6 @@ async function emit(result) {
   fs.rmSync(dist, { recursive: true, force: true });
   fs.mkdirSync(dist, { recursive: true });
   copyDir(path.join(src, 'static'), dist);
-  fs.copyFileSync(path.join(root, 'appinfo.json'), path.join(dist, 'appinfo.json'));
   const fonts = path.join(root, 'node_modules', '@fontsource', 'montserrat', 'files');
   fs.mkdirSync(path.join(dist, 'fonts'), { recursive: true });
   for (const w of [400, 600, 700, 800]) {

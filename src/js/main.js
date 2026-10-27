@@ -16,7 +16,6 @@ import { LibraryView } from './views/library.js';
 import { SettingsView } from './views/settings.js';
 import { CalendarView } from './views/calendar.js';
 import { maybeShowWizard } from './views/wizard.js';
-import { openPlayer } from './views/player.js';
 import * as update from './api/update.js';
 import { toast } from './ui.js';
 import * as profiles from './views/profiles.js';
@@ -75,7 +74,6 @@ function boot() {
   // Ao voltar do segundo plano, revalida o servidor do PC.
   document.addEventListener('webOSRelaunch', () => {
     server.check();
-    devLaunch();
   });
   document.addEventListener('visibilitychange', () => {
     if (!document.hidden) server.check();
@@ -110,7 +108,6 @@ function start() {
         });
       });
     } else maybeShowWizard();
-    devLaunch();
     // Aviso de versão nova (no máximo uma vez por dia).
     if (update.shouldAutoCheck()) {
       setTimeout(() => {
@@ -120,30 +117,6 @@ function start() {
           .catch(() => {});
       }, 8000);
     }
-  });
-}
-
-// Só em builds de desenvolvimento (KAI_DEVLOG): abre o player direto com uma URL passada pelo
-// luna-send (params.devPlay), para reproduzir travamentos sem precisar navegar com o controle.
-function devLaunch() {
-  if (!__KAI_DEVLOG__ || !window.PalmSystem) return;
-  let params = {};
-  try {
-    params = JSON.parse(window.PalmSystem.launchParams || '{}') || {};
-  } catch (e) {
-    return;
-  }
-  // devPlay64: URL em base64 (o webOS escapa "&" nos parâmetros de lançamento).
-  if (params.devPlay64) params.devPlay = window.atob(params.devPlay64);
-  if (!params.devPlay) return;
-  log.info('devPlay', params.devPlay);
-  openPlayer({
-    meta: { id: 'dev', type: 'movie', name: params.devTitle || 'Teste' },
-    video: { id: 'dev' },
-    stream: { url: params.devPlay },
-    streams: [],
-    startTime: (params.devStart || 0) * 1000,
-    isSeries: false,
   });
 }
 

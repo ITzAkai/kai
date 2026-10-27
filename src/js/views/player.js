@@ -1024,7 +1024,6 @@ function PlayerView(opts) {
     if (!(d > 0) || !isFinite(d) || !videoEl.currentTime) return;
     const delta = watchedDelta;
     watchedDelta = 0;
-    if (meta.id === 'dev') return; // teste de desenvolvimento: não mexe na biblioteca
     watched.record(video.id, videoEl.currentTime / d);
     stremio.saveProgress(meta, video.id, videoEl.currentTime * 1000, d * 1000, delta);
   }
