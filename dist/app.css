@@ -344,3 +344,11 @@ body.oled .details-shade { background: linear-gradient(to right, #000 25%, rgba(
 [dir="rtl"] .hero-dots span { margin-right: 0; margin-left: 10px; }
 [dir="rtl"] .details-genres span { margin: 0 0 10px 10px; }
 [dir="rtl"] .btn .ico { margin-right: 0; margin-left: 12px; }
+
+/* Phone remote in Settings */
+.set-row.phone-remote { display: -webkit-flex; display: flex; -webkit-align-items: center; align-items: center; }
+.phone-qr { width: 300px; height: 300px; background: #fff; padding: 14px; border-radius: 16px; margin-right: 36px; image-rendering: pixelated; }
+[dir="rtl"] .phone-qr { margin-right: 0; margin-left: 36px; }
+.phone-title { font-size: 23px; font-weight: 600; }
+.phone-sub { font-size: 18px; color: rgba(255,255,255,0.55); margin-top: 8px; }
+.phone-url { margin-top: 10px; font-size: 32px; font-weight: 700; color: #c9bbff; direction: ltr; unicode-bidi: embed; }

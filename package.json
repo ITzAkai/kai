@@ -45,5 +45,9 @@
     "ColorF3Blue",
     "ChannelUp",
     "ChannelDown"
-  ]
+  ],
+  "dependencies": {
+    "qrcode-generator": "^1.4.4"
+  },
+  "serviceFile": "dist/remote-service.js"
 }

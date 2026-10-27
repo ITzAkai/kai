@@ -21,6 +21,7 @@ import { toast } from './ui.js';
 import * as profiles from './views/profiles.js';
 import { openLogin } from './views/login.js';
 import { registerTizenKeys } from './lib/platform.js';
+import * as phone from './lib/phone.js';
 
 function boot() {
   const s = store.settings();
@@ -29,6 +30,7 @@ function boot() {
   log.info('Iniciando', navigator.userAgent);
 
   registerTizenKeys();
+  phone.start();
   nav.install();
   // Imagens e fileiras sob demanda depois que a rolagem para (segurar a seta não recalcula a cada passo).
   nav.setSmooth(s.smoothScroll);

@@ -32,6 +32,17 @@ start, it moves on to the next best one. **Sources** still shows the full list.
 
 ![Watch with Smart Choice, and the Sources button](docs/screenshots/smart-choice.jpg)
 
+### Phone remote
+Use your phone as the remote, no app to install. Scan the QR code in **Settings → Phone remote**
+and your phone's browser opens a remote with a D-pad, OK, Back and playback buttons, plus a text
+box that types straight into the TV's search or sign-in fields. A PIN shown on the TV keeps
+others on your Wi-Fi out. It runs as a small TizenBrew service on the TV, nothing leaves your
+home network.
+
+| On your phone | On the TV (Settings) |
+|---|---|
+| <img src="docs/screenshots/phone-remote.jpg" alt="Phone remote page" width="300"> | ![QR code and PIN in Settings](docs/screenshots/phone-remote-qr.jpg) |
+
 ### Search across all your add-ons
 Results from every add-on that supports search, grouped by movies and series.
 

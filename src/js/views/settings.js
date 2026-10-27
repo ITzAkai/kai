@@ -15,6 +15,7 @@ import * as router from '../router.js';
 import { openLogin } from './login.js';
 import { avatar, switchProfile, createProfile } from './profiles.js';
 import { t } from '../lib/i18n.js';
+import * as phone from '../lib/phone.js';
 
 const SUB_LANGS = [
   { label: 'Inglês', value: ['eng', 'en'] },
@@ -234,6 +235,27 @@ export function SettingsView() {
         )
       );
     }
+
+    // ---- Phone remote: QR code that opens the remote page with the PIN already filled in ----
+    body.appendChild(h('div.set-section', { text: t('Controle pelo celular') }));
+    const phoneBox = h('div.set-row.phone-remote', { focusable: true }, h('div.phone-sub', { text: t('Carregando...') }));
+    body.appendChild(phoneBox);
+    phone.info().then((i) => {
+      clear(phoneBox);
+      if (!i) {
+        phoneBox.appendChild(h('div.phone-sub', { text: t('O controle pelo celular funciona quando o app é aberto pelo TizenBrew.') }));
+        return;
+      }
+      phoneBox.appendChild(h('img.phone-qr', { src: phone.qrImage(i.url, 300), alt: '' }));
+      phoneBox.appendChild(
+        h('div.phone-text', null, [
+          h('div.phone-title', { text: t('Aponte a câmera do celular para o código') }),
+          h('div.phone-sub', { text: t('Ou abra no navegador do celular (mesmo Wi-Fi):') }),
+          h('div.phone-url', { text: 'http://' + i.ip + ':' + i.port }),
+          h('div.phone-sub', { text: t('PIN: {pin}', { pin: i.pin }) }),
+        ])
+      );
+    });
 
     body.appendChild(h('div.set-section', { text: t('Servidor de streaming (PC)') }));
     const st = server.lastStatus();
