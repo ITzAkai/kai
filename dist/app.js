@@ -6368,7 +6368,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     // Watch picks the best source and plays it
     theme: "purple",
     // see lib/theme.js
-    devlogUrl: true ? "" : "",
+    devlogUrl: true ? "http://192.168.68.108:8099/log" : "",
     language: "auto",
     // 'auto' (TV language: Arabic or English) | 'en' | 'ar'
     askProfile: true,
@@ -9893,7 +9893,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
             if (!videoEl.paused) saveProgress2();
           }, SAVE_MS);
           watchTimer = setInterval(watchdog, 2e3);
-          if ("") statusTimer = setInterval(function () {
+          if ("http://192.168.68.108:8099/log") statusTimer = setInterval(function () {
             return !videoEl.paused && diag("status");
           }, 1e4);
         }
@@ -11734,7 +11734,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   var REPO = "ITzAkai/kai";
   var REPO_URL = "https://github.com/" + REPO;
   var VERSION = "1.2.0";
-  var BUILD = "2026-10-27T17:22:10.828Z";
+  var BUILD = "2026-10-27T17:35:57.381Z";
   var RAW = "https://raw.githubusercontent.com/" + REPO + "/main/";
   var PURGE = "https://purge.jsdelivr.net/gh/" + REPO + "/";
   var FILES = ["package.json", "dist/index.html", "dist/loader.js", "dist/app.js", "dist/app.css", "dist/remote-service.js", "dist/build.json"];
@@ -13251,7 +13251,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     });
   }
   function devLaunch() {
-    if (true) return;
+    if (!window.PalmSystem) return;
     var params = {};
     try {
       params = JSON.parse(window.PalmSystem.launchParams || "{}") || {};
