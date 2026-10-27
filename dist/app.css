@@ -352,3 +352,28 @@ body.oled .details-shade { background: linear-gradient(to right, #000 25%, rgba(
 .phone-title { font-size: 23px; font-weight: 600; }
 .phone-sub { font-size: 18px; color: rgba(255,255,255,0.55); margin-top: 8px; }
 .phone-url { margin-top: 10px; font-size: 32px; font-weight: 700; color: #c9bbff; direction: ltr; unicode-bidi: embed; }
+
+/* Cast members open their profile */
+.cast.focused .ph { box-shadow: 0 0 0 4px #9d85ff; }
+.cast.focused .nm { color: #fff; }
+/* Actor profile */
+.person-head { display: -webkit-flex; display: flex; padding: 70px 96px 20px; }
+.person-photo { width: 280px; height: 420px; object-fit: cover; border-radius: 18px; margin-right: 48px; -webkit-flex-shrink: 0; flex-shrink: 0; }
+[dir="rtl"] .person-photo { margin-right: 0; margin-left: 48px; }
+.person-info { -webkit-flex: 1; flex: 1; border-radius: 18px; padding: 6px 14px; border: 3px solid transparent; }
+.person-info.focused { border-color: rgba(157,133,255,0.6); }
+.person-name { font-size: 54px; font-weight: 800; line-height: 1.1; }
+.person-dept { margin-top: 8px; font-size: 22px; color: #c9bbff; font-weight: 600; }
+.person-facts { margin-top: 18px; font-size: 21px; color: rgba(255,255,255,0.75); line-height: 1.6; }
+.person-bio { margin-top: 18px; font-size: 21px; line-height: 1.55; color: rgba(255,255,255,0.8); display: -webkit-box; -webkit-line-clamp: 7; -webkit-box-orient: vertical; overflow: hidden; }
+.person-info.focused .person-bio { -webkit-line-clamp: 30; }
+.person-bio.empty { color: rgba(255,255,255,0.45); }
+[dir="rtl"] .person-bio, [dir="rtl"] .person-name { unicode-bidi: -webkit-plaintext; unicode-bidi: plaintext; text-align: right; }
+.person-credits { margin-top: 20px; }
+/* Trailer */
+.view.trailer { background: #000; }
+.trailer-frame { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; border: 0; pointer-events: none; }
+.trailer-focus { position: absolute; width: 1px; height: 1px; opacity: 0; }
+.trailer-hint { position: absolute; left: 60px; bottom: 50px; padding: 12px 24px; border-radius: 14px; background: rgba(0,0,0,0.7); font-size: 22px; -webkit-transition: opacity 0.6s; transition: opacity 0.6s; }
+[dir="rtl"] .trailer-hint { left: auto; right: 60px; }
+.trailer-hint.faded { opacity: 0; }

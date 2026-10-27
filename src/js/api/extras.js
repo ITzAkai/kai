@@ -50,10 +50,6 @@ export function digitalReleases(ymd, region) {
   );
 }
 
-export function tmdbMovieImdb(tmdbId) {
-  return tmdb('movie/' + tmdbId + '/external_ids', {}).then((r) => (r && r.imdb_id) || null);
-}
-
 // IMDb → { id, type: 'movie' | 'tv', overview, title } em PT-BR.
 export function tmdbFind(imdb) {
   if (!tmdbKey() || !imdb) return Promise.resolve(null);
@@ -88,12 +84,62 @@ export function localized(meta) {
       tagline: d.tagline || '',
       logo: pickLogo(d.images && d.images.logos),
       cast: ((d.credits && d.credits.cast) || []).slice(0, 14).map((c) => ({
+        id: c.id,
         name: c.name,
         character: c.character || '',
         photo: c.profile_path ? TMDB_IMG + 'w185' + c.profile_path : null,
       })),
     }));
   });
+}
+
+// Actor profile: photo, dates, birthplace, biography in the app's language (English when TMDB
+// has none in Arabic) and their films and series, most popular first.
+export function person(id) {
+  return tmdb('person/' + id, { language: apiLang(), append_to_response: 'combined_credits' }).then((p) => {
+    const bio = p.biography
+      ? Promise.resolve(p.biography)
+      : current() === 'ar'
+      ? tmdb('person/' + id, { language: 'en-US' }).then((e) => (e && e.biography) || '')
+      : Promise.resolve('');
+    return bio.then((biography) => {
+      const seen = {};
+      const credits = ((p.combined_credits && p.combined_credits.cast) || [])
+        .concat(((p.combined_credits && p.combined_credits.crew) || []).filter((c) => c.job === 'Director'))
+        .filter((c) => {
+          const key = c.media_type + c.id;
+          if (!c.poster_path || seen[key] || (c.media_type !== 'movie' && c.media_type !== 'tv')) return false;
+          // Talk shows and award ceremonies where the actor appears as themselves aren't their work.
+          if (c.media_type === 'tv' && /^(Self|Himself|Herself|Host)/i.test(c.character || '')) return false;
+          seen[key] = true;
+          return true;
+        })
+        .sort((a, b) => (b.popularity || 0) - (a.popularity || 0))
+        .map((c) => ({
+          tmdb: c.id,
+          type: c.media_type,
+          name: c.title || c.name,
+          poster: TMDB_IMG + 'w342' + c.poster_path,
+          year: String(c.release_date || c.first_air_date || '').slice(0, 4),
+          role: c.character || c.job || '',
+        }));
+      return {
+        name: p.name,
+        photo: p.profile_path ? TMDB_IMG + 'h632' + p.profile_path : null,
+        birthday: p.birthday,
+        deathday: p.deathday,
+        place: p.place_of_birth || '',
+        department: p.known_for_department || '',
+        biography: biography,
+        credits: credits,
+      };
+    });
+  });
+}
+
+// TMDB movie/tv id → IMDb id, which Stremio's catalogs use.
+export function tmdbImdb(type, id) {
+  return tmdb(type + '/' + id + '/external_ids', {}).then((r) => (r && r.imdb_id) || null);
 }
 
 // Episódios de uma temporada em PT-BR: { [número]: { name, overview, still } }

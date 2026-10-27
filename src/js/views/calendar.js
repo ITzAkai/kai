@@ -137,7 +137,7 @@ function moviesDay(offset) {
       poster: m.poster,
       slot: t('Streaming'),
       score: m.score,
-      open: () => extras.tmdbMovieImdb(m.tmdb).then((imdb) => (imdb ? openDetails('movie', imdb) : notFound(t('Esse filme ainda não tem página no Stremio.')))),
+      open: () => extras.tmdbImdb('movie', m.tmdb).then((imdb) => (imdb ? openDetails('movie', imdb) : notFound(t('Esse filme ainda não tem página no Stremio.')))),
     }));
   });
 }

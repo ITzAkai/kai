@@ -9,6 +9,8 @@ import * as hero from '../api/hero.js';
 import { toast, spinnerLine, menu, fmtTime } from '../ui.js';
 import * as router from '../router.js';
 import { openPlayer } from './player.js';
+import { PersonView } from './person.js';
+import { trailerIds, openTrailer } from './trailer.js';
 import * as extras from '../api/extras.js';
 import { smallThumb } from '../lib/img.js';
 import { isAnime } from '../api/skip.js';
@@ -109,6 +111,10 @@ function DetailsView(type, id, opts) {
     libBtn = h('div.btn', { focusable: true, onSelect: toggleLibrary });
     // With Smart Choice on, Watch plays straight away; this opens the full source list instead.
     const sourcesBtn = smartOn() ? h('div.btn', { focusable: true, onSelect: () => onWatch(false) }, [h('span.ico', { text: '☰' }), t('Fontes')]) : null;
+    const trailers = trailerIds(meta);
+    const trailerBtn = trailers.length
+      ? h('div.btn', { focusable: true, onSelect: () => openTrailer(trailers, meta.name) }, [h('span.ico', { text: '🎬' }), t('Trailer')])
+      : null;
     updateButtons();
     info.appendChild(logo);
     info.appendChild(title);
@@ -117,7 +123,7 @@ function DetailsView(type, id, opts) {
     info.appendChild(genres);
     info.appendChild(desc);
     info.appendChild(castLine);
-    info.appendChild(h('div.details-buttons', { 'data-group': '' }, [watchBtn, sourcesBtn, libBtn]));
+    info.appendChild(h('div.details-buttons', { 'data-group': '' }, [watchBtn, sourcesBtn, trailerBtn, libBtn]));
     loadExtras({ logo: logo, title: title, desc: desc, castLine: castLine, ratingsEl: ratingsEl });
   }
 
@@ -147,11 +153,12 @@ function DetailsView(type, id, opts) {
           ui.logo.src = loc.logo;
         }
         if (loc.cast.length) {
+          // Each cast member opens their profile (photo, biography, films and series).
           const row = h(
             'div.cast-row',
-            null,
+            { 'data-group': '' },
             loc.cast.slice(0, 7).map((c) =>
-              h('div.cast', null, [
+              h('div.cast', { focusable: true, onSelect: () => router.push(PersonView(c.id, c.name)) }, [
                 h('div.ph', null, c.photo ? h('img', { src: c.photo, alt: '' }) : null),
                 h('div.nm', { text: c.name }),
                 h('div.ch', { text: c.character }),

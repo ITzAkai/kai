@@ -75,6 +75,15 @@ theme, subtitle and streaming-server settings, all usable with the remote.
 
 ![Settings](docs/screenshots/settings.jpg)
 
+### Trailers and actor profiles
+- **Trailer** on every film and series page plays the official trailer full screen. Back closes
+  it, OK pauses, and left/right switch between trailers when there are several.
+- Select anyone in the **cast** to open their profile: photo, age, birthplace, biography, and all
+  their films and series, each one a press away.
+- With a free [TMDB](https://www.themoviedb.org/settings/api) key in Settings, descriptions,
+  titles and biographies appear **in Arabic** when the app is in Arabic (English when TMDB has
+  no Arabic text).
+
 ### And more
 - **Your Stremio account.** Sign in with a code (on your phone at link.stremio.com) or by email.
   Add-ons, library and "Continue watching" come from your account, and progress syncs back.

@@ -4785,6 +4785,19 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     "Nada por aqui.": "Nothing here.",
     "Carregando...": "Loading...",
     "Ver tudo": "See all",
+    "Descrições em árabe, perfis de atores, calendário de filmes, logos e elenco com fotos (grátis em themoviedb.org)": "Arabic descriptions, actor profiles, movie calendar, logos and cast photos (free at themoviedb.org)",
+    "Trailer": "Trailer",
+    "Voltar fecha o trailer": "Back closes the trailer",
+    "Nascimento: {date}": "Born: {date}",
+    "Falecimento: {date}": "Died: {date}",
+    "{n} anos": "{n} years old",
+    "Local de nascimento: {place}": "Birthplace: {place}",
+    "Direção": "Directing",
+    "Atuação": "Acting",
+    "Sem biografia disponível.": "No biography available.",
+    "Filmes e séries": "Movies and series",
+    "Esse título ainda não tem página no Stremio.": "This title doesn't have a Stremio page yet.",
+    "Não foi possível carregar este perfil.": "Couldn't load this profile.",
     "Controle pelo celular": "Phone remote",
     "O controle pelo celular funciona quando o app é aberto pelo TizenBrew.": "The phone remote works when the app is opened from TizenBrew.",
     "Aponte a câmera do celular para o código": "Point your phone's camera at the code",
@@ -5182,6 +5195,19 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     "Nada por aqui.": "لا يوجد شيء هنا.",
     "Carregando...": "جارٍ التحميل...",
     "Ver tudo": "عرض الكل",
+    "Descrições em árabe, perfis de atores, calendário de filmes, logos e elenco com fotos (grátis em themoviedb.org)": "الأوصاف بالعربية، ملفات الممثلين، تقويم الأفلام، الشعارات وصور طاقم التمثيل (مجانًا من themoviedb.org)",
+    "Trailer": "الإعلان",
+    "Voltar fecha o trailer": "زر الرجوع يغلق الإعلان",
+    "Nascimento: {date}": "تاريخ الميلاد: {date}",
+    "Falecimento: {date}": "تاريخ الوفاة: {date}",
+    "{n} anos": "{n} سنة",
+    "Local de nascimento: {place}": "مكان الميلاد: {place}",
+    "Direção": "الإخراج",
+    "Atuação": "التمثيل",
+    "Sem biografia disponível.": "لا تتوفر سيرة ذاتية.",
+    "Filmes e séries": "الأفلام والمسلسلات",
+    "Esse título ainda não tem página no Stremio.": "لا توجد صفحة لهذا العنوان في Stremio بعد.",
+    "Não foi possível carregar este perfil.": "تعذّر تحميل هذا الملف الشخصي.",
     "Controle pelo celular": "التحكم بالهاتف",
     "O controle pelo celular funciona quando o app é aberto pelo TizenBrew.": "يعمل التحكم بالهاتف عند فتح التطبيق من TizenBrew.",
     "Aponte a câmera do celular para o código": "وجّه كاميرا الهاتف نحو الرمز",
@@ -7710,11 +7736,6 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       });
     });
   }
-  function tmdbMovieImdb(tmdbId) {
-    return tmdb("movie/" + tmdbId + "/external_ids", {}).then(function (r) {
-      return r && r.imdb_id || null;
-    });
-  }
   function tmdbFind(imdb) {
     if (!tmdbKey() || !imdb) return Promise.resolve(null);
     return tmdb("find/" + imdb, {
@@ -7768,6 +7789,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           logo: pickLogo(d.images && d.images.logos),
           cast: (d.credits && d.credits.cast || []).slice(0, 14).map(function (c) {
             return {
+              id: c.id,
               name: c.name,
               character: c.character || "",
               photo: c.profile_path ? TMDB_IMG + "w185" + c.profile_path : null
@@ -7775,6 +7797,56 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           })
         };
       });
+    });
+  }
+  function person(id) {
+    return tmdb("person/" + id, {
+      language: apiLang(),
+      append_to_response: "combined_credits"
+    }).then(function (p) {
+      var bio = p.biography ? Promise.resolve(p.biography) : current() === "ar" ? tmdb("person/" + id, {
+        language: "en-US"
+      }).then(function (e) {
+        return e && e.biography || "";
+      }) : Promise.resolve("");
+      return bio.then(function (biography) {
+        var seen = {};
+        var credits = (p.combined_credits && p.combined_credits.cast || []).concat((p.combined_credits && p.combined_credits.crew || []).filter(function (c) {
+          return c.job === "Director";
+        })).filter(function (c) {
+          var key = c.media_type + c.id;
+          if (!c.poster_path || seen[key] || c.media_type !== "movie" && c.media_type !== "tv") return false;
+          if (c.media_type === "tv" && /^(Self|Himself|Herself|Host)/i.test(c.character || "")) return false;
+          seen[key] = true;
+          return true;
+        }).sort(function (a, b) {
+          return (b.popularity || 0) - (a.popularity || 0);
+        }).map(function (c) {
+          return {
+            tmdb: c.id,
+            type: c.media_type,
+            name: c.title || c.name,
+            poster: TMDB_IMG + "w342" + c.poster_path,
+            year: String(c.release_date || c.first_air_date || "").slice(0, 4),
+            role: c.character || c.job || ""
+          };
+        });
+        return {
+          name: p.name,
+          photo: p.profile_path ? TMDB_IMG + "h632" + p.profile_path : null,
+          birthday: p.birthday,
+          deathday: p.deathday,
+          place: p.place_of_birth || "",
+          department: p.known_for_department || "",
+          biography: biography,
+          credits: credits
+        };
+      });
+    });
+  }
+  function tmdbImdb(type, id) {
+    return tmdb(type + "/" + id + "/external_ids", {}).then(function (r) {
+      return r && r.imdb_id || null;
     });
   }
   function seasonPt(tmdbId, season) {
@@ -9450,6 +9522,204 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     };
   }
 
+  // src/js/views/person.js
+  function age(birthday, deathday) {
+    var b = new Date(birthday);
+    if (isNaN(b.getTime())) return null;
+    var end = deathday ? new Date(deathday) : /* @__PURE__ */new Date();
+    var a = end.getFullYear() - b.getFullYear();
+    if (end.getMonth() < b.getMonth() || end.getMonth() === b.getMonth() && end.getDate() < b.getDate()) a--;
+    return a;
+  }
+  function longDate(iso) {
+    var d = new Date(iso);
+    if (isNaN(d.getTime())) return "";
+    try {
+      return d.toLocaleDateString(current() === "ar" ? "ar" : "en-GB", {
+        day: "numeric",
+        month: "long",
+        year: "numeric"
+      });
+    } catch (e) {
+      return iso;
+    }
+  }
+  function PersonView(personId, name) {
+    var el = h("div.view");
+    var scroller = h("div.scroll-y", {
+      "data-scroll-y": ""
+    });
+    var head = h("div.person-head");
+    var grid = h("div.grid");
+    scroller.appendChild(head);
+    scroller.appendChild(grid);
+    el.appendChild(scroller);
+    head.appendChild(h("div.person-name", {
+      text: name || ""
+    }));
+    head.appendChild(spinnerLine(t("Carregando...")));
+    person(personId).then(function (p) {
+      clear(head);
+      if (p.photo) head.appendChild(h("img.person-photo", {
+        src: p.photo,
+        alt: ""
+      }));
+      var facts = [];
+      var years = age(p.birthday, p.deathday);
+      if (p.birthday) facts.push(t("Nascimento: {date}", {
+        date: longDate(p.birthday)
+      }) + (years !== null && !p.deathday ? " · " + t("{n} anos", {
+        n: years
+      }) : ""));
+      if (p.deathday) facts.push(t("Falecimento: {date}", {
+        date: longDate(p.deathday)
+      }) + (years !== null ? " · " + t("{n} anos", {
+        n: years
+      }) : ""));
+      if (p.place) facts.push(t("Local de nascimento: {place}", {
+        place: p.place
+      }));
+      head.appendChild(h("div.person-info", {
+        focusable: true
+      }, [h("div.person-name", {
+        text: p.name
+      }), p.department ? h("div.person-dept", {
+        text: t(p.department === "Directing" ? "Direção" : "Atuação")
+      }) : null, h("div.person-facts", null, facts.map(function (f) {
+        return h("div", {
+          text: f
+        });
+      })), p.biography ? h("div.person-bio", {
+        text: p.biography
+      }) : h("div.person-bio.empty", {
+        text: t("Sem biografia disponível.")
+      })]));
+      if (!p.credits.length) return;
+      scroller.insertBefore(h("div.row-title.person-credits", {
+        text: t("Filmes e séries")
+      }), grid);
+      p.credits.forEach(function (c) {
+        grid.appendChild(card({
+          name: c.name,
+          poster: c.poster
+        }, {
+          title: c.name + (c.year ? " (" + c.year + ")" : ""),
+          onSelect: function onSelect() {
+            toast(t("Abrindo {name}...", {
+              name: c.name
+            }), 2e3);
+            tmdbImdb(c.type, c.tmdb).then(function (imdb) {
+              if (!imdb) return toast(t("Esse título ainda não tem página no Stremio."), 4e3);
+              openDetails(c.type === "tv" ? "series" : "movie", imdb);
+            });
+          }
+        }));
+      });
+      loadVisibleImages(el, 600);
+    }).catch(function () {
+      clear(head);
+      head.appendChild(h("div.hint", {
+        text: t("Não foi possível carregar este perfil.")
+      }));
+    });
+    return {
+      el: el,
+      onShow: function onShow() {
+        return loadVisibleImages(el, 600);
+      }
+    };
+  }
+
+  // src/js/views/trailer.js
+  function trailerIds(meta) {
+    var ids = [];
+    (meta.trailerStreams || []).forEach(function (s) {
+      return s && s.ytId && ids.push(s.ytId);
+    });
+    (meta.trailers || []).forEach(function (tr) {
+      return tr && tr.source && (!tr.type || tr.type === "Trailer") && ids.push(tr.source);
+    });
+    return ids.filter(function (id, i) {
+      return /^[\w-]{11}$/.test(id) && ids.indexOf(id) === i;
+    });
+  }
+  function openTrailer(ids, title) {
+    push(TrailerView(ids, title));
+  }
+  function TrailerView(ids, title) {
+    var index = 0;
+    var playing = true;
+    var el = h("div.view.trailer");
+    var frame = h("iframe.trailer-frame", {
+      tabindex: "-1",
+      allow: "autoplay; encrypted-media",
+      allowfullscreen: "",
+      referrerpolicy: "origin"
+    });
+    var hint = h("div.trailer-hint", {
+      text: title + "  ·  " + t("Voltar fecha o trailer")
+    });
+    el.appendChild(frame);
+    el.appendChild(hint);
+    el.appendChild(h("div.trailer-focus", {
+      focusable: true
+    }));
+    function load4() {
+      var params = "autoplay=1&controls=0&rel=0&modestbranding=1&playsinline=1&iv_load_policy=3&enablejsapi=1&hl=" + current();
+      frame.src = "https://www.youtube-nocookie.com/embed/" + ids[index] + "?" + params;
+      playing = true;
+    }
+    function command(func, args) {
+      try {
+        frame.contentWindow.postMessage(JSON.stringify({
+          event: "command",
+          func: func,
+          args: args || []
+        }), "*");
+      } catch (e) {}
+    }
+    var hintTimer = setTimeout(function () {
+      return hint.classList.add("faded");
+    }, 4e3);
+    function showHint() {
+      hint.classList.remove("faded");
+      clearTimeout(hintTimer);
+      hintTimer = setTimeout(function () {
+        return hint.classList.add("faded");
+      }, 3e3);
+    }
+    load4();
+    return {
+      el: el,
+      onKey: function onKey(e) {
+        var k = e.keyCode;
+        showHint();
+        if (k === KEY.PLAYPAUSE || k === KEY.PLAY || k === KEY.PAUSE || k === KEY.ENTER) {
+          playing = k === KEY.PLAY ? true : k === KEY.PAUSE ? false : !playing;
+          command(playing ? "playVideo" : "pauseVideo");
+          return true;
+        }
+        if ((k === KEY.RIGHT || k === KEY.FF) && ids.length > 1) {
+          index = (index + 1) % ids.length;
+          load4();
+          return true;
+        }
+        if (k === KEY.LEFT || k === KEY.RW) {
+          if (ids.length > 1 && k === KEY.LEFT) {
+            index = (index - 1 + ids.length) % ids.length;
+            load4();
+          }
+          return true;
+        }
+        return k === KEY.UP || k === KEY.DOWN;
+      },
+      destroy: function destroy() {
+        clearTimeout(hintTimer);
+        frame.src = "about:blank";
+      }
+    };
+  }
+
   // src/js/views/details.js
   function openDetails(type, id, opts) {
     push(DetailsView(type, id, opts || {}));
@@ -9571,6 +9841,15 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       }, [h("span.ico", {
         text: "☰"
       }), t("Fontes")]) : null;
+      var trailers = trailerIds(meta);
+      var trailerBtn = trailers.length ? h("div.btn", {
+        focusable: true,
+        onSelect: function onSelect() {
+          return openTrailer(trailers, meta.name);
+        }
+      }, [h("span.ico", {
+        text: "🎬"
+      }), t("Trailer")]) : null;
       updateButtons();
       info2.appendChild(logo2);
       info2.appendChild(title);
@@ -9581,7 +9860,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       info2.appendChild(castLine);
       info2.appendChild(h("div.details-buttons", {
         "data-group": ""
-      }, [watchBtn, sourcesBtn, libBtn]));
+      }, [watchBtn, sourcesBtn, trailerBtn, libBtn]));
       loadExtras({
         logo: logo2,
         title: title,
@@ -9617,8 +9896,15 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           ui.logo.src = loc.logo;
         }
         if (loc.cast.length) {
-          var row = h("div.cast-row", null, loc.cast.slice(0, 7).map(function (c) {
-            return h("div.cast", null, [h("div.ph", null, c.photo ? h("img", {
+          var row = h("div.cast-row", {
+            "data-group": ""
+          }, loc.cast.slice(0, 7).map(function (c) {
+            return h("div.cast", {
+              focusable: true,
+              onSelect: function onSelect() {
+                return push(PersonView(c.id, c.name));
+              }
+            }, [h("div.ph", null, c.photo ? h("img", {
               src: c.photo,
               alt: ""
             }) : null), h("div.nm", {
@@ -11647,7 +11933,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           text: sub
         })]), input]));
       };
-      keyRow(t("Chave TMDB"), t("Sinopses e títulos em PT-BR, logos e elenco com fotos (grátis em themoviedb.org)"), "tmdbKey", "API key (v3)");
+      keyRow(t("Chave TMDB"), t("Descrições em árabe, perfis de atores, calendário de filmes, logos e elenco com fotos (grátis em themoviedb.org)"), "tmdbKey", "API key (v3)");
       keyRow(t("Chave MDBList"), t("Notas do Rotten Tomatoes, Metacritic, Trakt e Letterboxd (grátis em mdblist.com)"), "mdblistKey", "API key");
       body.appendChild(h("div.set-section", {
         text: t("Addons")
@@ -11901,7 +12187,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           slot: t("Streaming"),
           score: m.score,
           open: function open() {
-            return tmdbMovieImdb(m.tmdb).then(function (imdb) {
+            return tmdbImdb("movie", m.tmdb).then(function (imdb) {
               return imdb ? openDetails("movie", imdb) : notFound(t("Esse filme ainda não tem página no Stremio."));
             });
           }
