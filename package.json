@@ -1,0 +1,49 @@
+{
+  "name": "stremio-kai-tizen",
+  "version": "1.2.0-tizen.1",
+  "private": true,
+  "description": "Stremio Kai Timeworn ported to old Samsung Tizen TVs (2017+, Tizen 3.0) as a TizenBrew app module",
+  "license": "GPL-3.0",
+  "type": "module",
+  "scripts": {
+    "build": "node tools/build.mjs",
+    "dev": "node tools/build.mjs --watch",
+    "package": "node tools/build.mjs && ares-package dist -o out",
+    "deploy": "node tools/deploy.mjs",
+    "logs": "node tools/devlog-server.mjs",
+    "release": "node tools/release.mjs",
+    "serve": "node tools/serve.mjs",
+    "ship": "node tools/publish.mjs"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.28.0",
+    "@babel/preset-env": "^7.28.0",
+    "@fontsource/montserrat": "^5.3.0",
+    "@fontsource/nata-sans": "^5.3.0",
+    "@webos-tools/cli": "^3.2.6",
+    "acorn": "^8.19.0",
+    "core-js": "^3.45.0",
+    "esbuild": "^0.25.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ITzAkai/stremio-kai-tizen.git"
+  },
+  "packageType": "app",
+  "appName": "Stremio Kai",
+  "appPath": "dist/index.html",
+  "keys": [
+    "MediaPlayPause",
+    "MediaPlay",
+    "MediaPause",
+    "MediaStop",
+    "MediaRewind",
+    "MediaFastForward",
+    "ColorF0Red",
+    "ColorF1Green",
+    "ColorF2Yellow",
+    "ColorF3Blue",
+    "ChannelUp",
+    "ChannelDown"
+  ]
+}
