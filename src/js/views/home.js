@@ -28,6 +28,26 @@ export function HomeView() {
 
   let loadedBoard = false;
 
+  // Progress saved on other devices (phone, PC, Fire TV): refetch the account library when the
+  // home screen comes back, at most once a minute, and redraw the row if anything changed.
+  let lastSync = Date.now();
+  function syncContinue() {
+    if (!stremio.isLoggedIn() || Date.now() - lastSync < 60000) return;
+    lastSync = Date.now();
+    const before = JSON.stringify(stremio.continueWatching().map((it) => [it._id, it.state.video_id, it.state.timeOffset]));
+    stremio
+      .getLibrary()
+      .then(() => {
+        const after = JSON.stringify(stremio.continueWatching().map((it) => [it._id, it.state.video_id, it.state.timeOffset]));
+        if (after !== before) renderContinue();
+      })
+      .catch(() => {});
+  }
+  // While the home screen stays open, check every 5 minutes too.
+  const syncTimer = setInterval(() => {
+    if (!el.classList.contains('hidden')) syncContinue();
+  }, 300000);
+
   function renderContinue() {
     clear(cwRow);
     const items = stremio.continueWatching().slice(0, 20);
@@ -111,6 +131,7 @@ export function HomeView() {
     el: el,
     onShow: () => {
       renderContinue();
+      syncContinue();
       if (!loadedBoard) renderBoard();
       heroUi.resume();
       loadVisibleImages(el);
@@ -129,6 +150,7 @@ export function HomeView() {
       renderBoard();
     },
     destroy: () => {
+      clearInterval(syncTimer);
       heroUi.pause();
       if (bar.__destroy) bar.__destroy();
     },

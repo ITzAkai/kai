@@ -31,6 +31,11 @@ function boot() {
 
   registerTizenKeys();
   phone.start();
+  phone.onSearch((q) => {
+    router.goTab('search');
+    const view = router.currentView();
+    if (view && view.search) view.search(q);
+  });
   nav.install();
   // Imagens e fileiras sob demanda depois que a rolagem para (segurar a seta não recalcula a cada passo).
   nav.setSmooth(s.smoothScroll);

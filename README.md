@@ -34,8 +34,9 @@ start, it moves on to the next best one. **Sources** still shows the full list.
 
 ### Phone remote
 Use your phone as the remote, no app to install. Scan the QR code in **Settings → Phone remote**
-and your phone's browser opens a remote with a D-pad, OK, Back and playback buttons, plus a text
-box that types straight into the TV's search or sign-in fields. A PIN shown on the TV keeps
+and your phone's browser opens a remote with a D-pad, OK, Back and playback buttons, subtitle
+sync buttons, **Search on the TV** (type, or speak with your keyboard's 🎤: the TV jumps to Search
+from any screen), and a text box that types straight into the TV's search or sign-in fields. A PIN shown on the TV keeps
 others on your Wi-Fi out. It runs as a small TizenBrew service on the TV, nothing leaves your
 home network.
 
@@ -85,6 +86,16 @@ theme, subtitle and streaming-server settings, all usable with the remote.
   no Arabic text).
 
 ![A trailer playing full screen](docs/screenshots/trailer.jpg)
+
+### Watching
+- **Up next.** Near the end of an episode (at the credits, when known) a card shows the next
+  episode with a 10-second countdown: **Play now**, or **Cancel** / Back to stay.
+- **Subtitle sync shortcut.** Subtitles out of time? While playing, press **Channel up/down**
+  (or yellow/blue, or the phone remote's buttons) to move them later or earlier by 0.25 s. The
+  setting is remembered for that episode or film.
+- **Continue watching everywhere.** Progress syncs through your Stremio account: stop on the TV,
+  carry on on your phone, PC or Fire TV, and the other way round. The TV refreshes the row when
+  you come back to the home screen.
 
 ### And more
 - **In-app updater.** Settings shows the installed and newest version; one press updates.

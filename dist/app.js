@@ -4785,6 +4785,11 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     "Nada por aqui.": "Nothing here.",
     "Carregando...": "Loading...",
     "Ver tudo": "See all",
+    "Assistir agora": "Play now",
+    "A seguir": "Up next",
+    "Começa em {n}s": "Starts in {n}s",
+    "Ligue uma legenda primeiro.": "Turn on subtitles first.",
+    "O ajuste funciona com legendas de addons (OpenSubtitles etc.).": "Sync works with add-on subtitles (OpenSubtitles etc.).",
     "Você já tem a versão mais nova.": "You're on the newest version.",
     "Atualização disponível ({date}): {msg}": "Update available ({date}): {msg}",
     "Atualizar agora": "Update now",
@@ -5208,6 +5213,11 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     "Nada por aqui.": "لا يوجد شيء هنا.",
     "Carregando...": "جارٍ التحميل...",
     "Ver tudo": "عرض الكل",
+    "Assistir agora": "شاهد الآن",
+    "A seguir": "التالي",
+    "Começa em {n}s": "يبدأ خلال {n} ث",
+    "Ligue uma legenda primeiro.": "شغّل الترجمة أولًا.",
+    "O ajuste funciona com legendas de addons (OpenSubtitles etc.).": "يعمل الضبط مع ترجمات الإضافات (OpenSubtitles وغيرها).",
     "Você já tem a versão mais nova.": "لديك أحدث إصدار.",
     "Atualização disponível ({date}): {msg}": "يتوفر تحديث ({date}): {msg}",
     "Atualizar agora": "تحديث الآن",
@@ -8537,7 +8547,28 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     });
     var skipBox = h("div.p-skip", null, [skipBtn, h("div.bar", null, skipFill)]);
     var overlay = h("div.p-overlay", null, [h("div.p-top", null, [titleEl, clockEl]), h("div.p-bottom", null, [bar, h("div.p-times", null, [curTimeEl, h("div.spacer"), durEl]), buttons])]);
-    var el = h("div.view.player", null, [videoEl, subsEl, overlay, skipBox, spinner, msgEl]);
+    var upNextTitle = h("div.un-title");
+    var upNextCount = h("div.un-count");
+    var upNextPlay = h("div.btn.primary", {
+      focusable: true,
+      onSelect: function onSelect() {
+        return upNextGo();
+      }
+    }, [h("span.ico", {
+      text: "▶"
+    }), t("Assistir agora")]);
+    var upNextCancel = h("div.btn", {
+      focusable: true,
+      onSelect: function onSelect() {
+        return upNextStop(true);
+      }
+    }, t("Cancelar"));
+    var upNextBox = h("div.p-upnext", null, [h("div.un-label", {
+      text: t("A seguir")
+    }), upNextTitle, upNextCount, h("div.un-buttons", {
+      "data-group": ""
+    }, [upNextPlay, upNextCancel])]);
+    var el = h("div.view.player", null, [videoEl, subsEl, overlay, skipBox, upNextBox, spinner, msgEl]);
     var renderer = Renderer(subsEl);
     apply(subsEl, settings2);
     var alive = true;
@@ -8596,6 +8627,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       };
       segments = [];
       segmentsLoaded = false;
+      if (typeof upNextStop === "function") upNextStop(false);
+      upNextCancelled = false;
       nativeOffDone = false;
       hideSkip();
       toPlayable(stream, seriesInfo()).then(function (res) {
@@ -8727,11 +8760,90 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       lastTick = now;
       renderer.update(videoEl.currentTime);
       if (controlsOn) updateTimes();
+      checkUpNext();
     });
     videoEl.addEventListener("ended", function () {
       saveProgress2();
-      if (opts.isSeries && nextVideo()) playNext();else pop();
+      if (opts.isSeries && nextVideo() && !upNextCancelled) playNext();else pop();
     });
+    var UP_NEXT_SECONDS = 25;
+    var UP_NEXT_COUNT = 10;
+    var upNextTimer = null;
+    var upNextLeft = 0;
+    var upNextCancelled = false;
+    function upNextStart() {
+      var outro = segments.find(function (s) {
+        return s.type === "outro";
+      });
+      var d = videoEl.duration;
+      return outro ? outro.start : d - UP_NEXT_SECONDS;
+    }
+    function checkUpNext() {
+      if (upNextTimer || upNextCancelled || !opts.isSeries || seekTarget !== null || videoEl.paused) return;
+      var d = videoEl.duration;
+      var nv = nextVideo();
+      if (!nv || !(d > 300) || !isFinite(d) || videoEl.currentTime < upNextStart()) return;
+      hideSkip();
+      upNextTitle.textContent = "T" + nv.season + " E" + nv.episode + (nv.name || nv.title ? " · " + (nv.name || nv.title) : "");
+      upNextLeft = UP_NEXT_COUNT;
+      upNextCount.textContent = t("Começa em {n}s", {
+        n: upNextLeft
+      });
+      upNextBox.classList.add("show");
+      focus(upNextPlay, {
+        noScroll: true
+      });
+      upNextTimer = setInterval(function () {
+        upNextLeft--;
+        upNextCount.textContent = t("Começa em {n}s", {
+          n: upNextLeft
+        });
+        if (upNextLeft <= 0) upNextGo();
+      }, 1e3);
+    }
+    function upNextStop(cancelled) {
+      clearInterval(upNextTimer);
+      upNextTimer = null;
+      upNextBox.classList.remove("show");
+      if (cancelled) {
+        upNextCancelled = true;
+        focus(bar, {
+          noScroll: true
+        });
+      }
+    }
+    function upNextGo() {
+      upNextStop(false);
+      upNextCancelled = false;
+      playNext();
+    }
+    var SUB_STEP = 0.25;
+    var SUB_DELAYS = "subDelays";
+    function savedDelay() {
+      return (get(SUB_DELAYS, {}) || {})[video.id] || 0;
+    }
+    function rememberDelay(v) {
+      var all = get(SUB_DELAYS, {}) || {};
+      delete all[video.id];
+      if (v) all[video.id] = v;
+      var keys = Object.keys(all);
+      if (keys.length > 200) delete all[keys[0]];
+      set(SUB_DELAYS, all);
+    }
+    function setSubDelay(v) {
+      v = Math.round(Math.max(-30, Math.min(30, v)) * 100) / 100;
+      renderer.setOffset(v);
+      rememberDelay(v);
+      return v;
+    }
+    function nudgeSubs(dir) {
+      if (currentSub.kind === "off") return toast(t("Ligue uma legenda primeiro."));
+      if (currentSub.kind === "embedded") return toast(t("O ajuste funciona com legendas de addons (OpenSubtitles etc.)."), 4e3);
+      var v = setSubDelay(renderer.offset() + dir * SUB_STEP);
+      toast(t("Atraso da legenda: {n}s", {
+        n: (v > 0 ? "+" : "") + v.toFixed(2)
+      }) + "  ·  " + (v < 0 ? t("Legenda aparece antes") : v > 0 ? t("Legenda aparece depois") : t("Sem ajuste")), 1800);
+    }
     videoEl.addEventListener("error", function () {
       var err = videoEl.error;
       log.warn("Erro de vídeo", err && err.code, mediaUrl);
@@ -9219,6 +9331,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         kind: "addon",
         id: s.id || s.url
       };
+      renderer.setOffset(savedDelay());
       load3(s.url, subtitlesProxy(s.url)).then(function (cues) {
         if (!alive || currentSub.id !== (s.id || s.url)) return;
         renderer.set(cues);
@@ -9354,7 +9467,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         };
       }), {
         onPick: function onPick(v) {
-          return renderer.setOffset(v);
+          return setSubDelay(v);
         }
       });
     }
@@ -9446,6 +9559,19 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     function onKey(e) {
       var k = e.keyCode;
       var cur = current2();
+      if (upNextTimer && (k === KEY.BACK || k === KEY.ESC || k === KEY.BACKSPACE)) {
+        upNextStop(true);
+        return true;
+      }
+      if (upNextTimer && cur && upNextBox.contains(cur)) return false;
+      if (k === KEY.CH_UP || k === KEY.YELLOW) {
+        nudgeSubs(1);
+        return true;
+      }
+      if (k === KEY.CH_DOWN || k === KEY.BLUE) {
+        nudgeSubs(-1);
+        return true;
+      }
       switch (k) {
         case KEY.PLAY:
           videoEl.play();
@@ -10567,6 +10693,23 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     scroller.appendChild(rows);
     el.appendChild(scroller);
     var loadedBoard = false;
+    var lastSync = Date.now();
+    function syncContinue() {
+      if (!isLoggedIn() || Date.now() - lastSync < 6e4) return;
+      lastSync = Date.now();
+      var before = JSON.stringify(continueWatching().map(function (it) {
+        return [it._id, it.state.video_id, it.state.timeOffset];
+      }));
+      getLibrary().then(function () {
+        var after = JSON.stringify(continueWatching().map(function (it) {
+          return [it._id, it.state.video_id, it.state.timeOffset];
+        }));
+        if (after !== before) renderContinue();
+      }).catch(function () {});
+    }
+    var syncTimer = setInterval(function () {
+      if (!el.classList.contains("hidden")) syncContinue();
+    }, 3e5);
     function renderContinue() {
       clear(cwRow);
       var items = continueWatching().slice(0, 20);
@@ -10664,6 +10807,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       el: el,
       onShow: function onShow() {
         renderContinue();
+        syncContinue();
         if (!loadedBoard) renderBoard();
         heroUi.resume();
         loadVisibleImages(el);
@@ -10688,6 +10832,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         renderBoard();
       },
       destroy: function destroy() {
+        clearInterval(syncTimer);
         heroUi.pause();
         if (bar.__destroy) bar.__destroy();
       }
@@ -11010,6 +11155,11 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       },
       focusInput: function focusInput() {
         return focus(input);
+      },
+      // From the phone remote: fill the box and run the search.
+      search: function search(q) {
+        input.value = q;
+        run(q);
       }
     };
   }
@@ -11101,7 +11251,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   var REPO = "ITzAkai/stremio-kai-tizen";
   var REPO_URL = "https://github.com/" + REPO;
   var VERSION = "1.2.0";
-  var BUILD = "2026-10-27T14:46:36.127Z";
+  var BUILD = "2026-10-27T15:01:02.738Z";
   var RAW = "https://raw.githubusercontent.com/" + REPO + "/main/";
   var CDN = "https://cdn.jsdelivr.net/gh/" + REPO + "/";
   var PURGE = "https://purge.jsdelivr.net/gh/" + REPO + "/";
@@ -11330,8 +11480,12 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     el.dispatchEvent(ev);
     if (submit) fireKey(ENTER);
   }
+  var searchHandler = null;
+  function onSearch(fn) {
+    searchHandler = fn;
+  }
   function handle(ev) {
-    if (ev.type === "key") fireKey(ev.code);else if (ev.type === "text") typeText(ev.text, ev.submit);
+    if (ev.type === "key") fireKey(ev.code);else if (ev.type === "text") typeText(ev.text, ev.submit);else if (ev.type === "search" && searchHandler && ev.text) searchHandler(ev.text);
   }
   function poll(wait) {
     setTimeout(function () {
@@ -12546,6 +12700,11 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     log.info("Iniciando", navigator.userAgent);
     registerTizenKeys();
     start();
+    onSearch(function (q) {
+      goTab("search");
+      var view = currentView();
+      if (view && view.search) view.search(q);
+    });
     install();
     setSmooth(s.smoothScroll);
     var scrollTimer = null;

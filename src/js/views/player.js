@@ -68,7 +68,18 @@ function PlayerView(opts) {
     h('div.p-top', null, [titleEl, clockEl]),
     h('div.p-bottom', null, [bar, h('div.p-times', null, [curTimeEl, h('div.spacer'), durEl]), buttons]),
   ]);
-  const el = h('div.view.player', null, [videoEl, subsEl, overlay, skipBox, spinner, msgEl]);
+  // "Up next": a countdown card near the end of an episode.
+  const upNextTitle = h('div.un-title');
+  const upNextCount = h('div.un-count');
+  const upNextPlay = h('div.btn.primary', { focusable: true, onSelect: () => upNextGo() }, [h('span.ico', { text: '▶' }), t('Assistir agora')]);
+  const upNextCancel = h('div.btn', { focusable: true, onSelect: () => upNextStop(true) }, t('Cancelar'));
+  const upNextBox = h('div.p-upnext', null, [
+    h('div.un-label', { text: t('A seguir') }),
+    upNextTitle,
+    upNextCount,
+    h('div.un-buttons', { 'data-group': '' }, [upNextPlay, upNextCancel]),
+  ]);
+  const el = h('div.view.player', null, [videoEl, subsEl, overlay, skipBox, upNextBox, spinner, msgEl]);
 
   const renderer = subs.Renderer(subsEl);
   substyle.apply(subsEl, settings);
@@ -121,6 +132,8 @@ function PlayerView(opts) {
     currentSub = { kind: 'off' };
     segments = [];
     segmentsLoaded = false;
+    if (typeof upNextStop === 'function') upNextStop(false);
+    upNextCancelled = false;
     nativeOffDone = false;
     hideSkip();
     server
@@ -250,12 +263,94 @@ function PlayerView(opts) {
     lastTick = now;
     renderer.update(videoEl.currentTime);
     if (controlsOn) updateTimes();
+    checkUpNext();
   });
   videoEl.addEventListener('ended', () => {
     saveProgress();
-    if (opts.isSeries && nextVideo()) playNext();
+    if (opts.isSeries && nextVideo() && !upNextCancelled) playNext();
     else router.pop();
   });
+
+  // ---------- Up next ----------
+  // Starts at the credits (the outro segment, when known) or UP_NEXT_SECONDS before the end.
+  const UP_NEXT_SECONDS = 25;
+  const UP_NEXT_COUNT = 10;
+  let upNextTimer = null;
+  let upNextLeft = 0;
+  let upNextCancelled = false;
+
+  function upNextStart() {
+    const outro = segments.find((s) => s.type === 'outro');
+    const d = videoEl.duration;
+    return outro ? outro.start : d - UP_NEXT_SECONDS;
+  }
+
+  function checkUpNext() {
+    if (upNextTimer || upNextCancelled || !opts.isSeries || seekTarget !== null || videoEl.paused) return;
+    const d = videoEl.duration;
+    const nv = nextVideo();
+    if (!nv || !(d > 300) || !isFinite(d) || videoEl.currentTime < upNextStart()) return;
+    hideSkip();
+    upNextTitle.textContent = 'T' + nv.season + ' E' + nv.episode + (nv.name || nv.title ? ' · ' + (nv.name || nv.title) : '');
+    upNextLeft = UP_NEXT_COUNT;
+    upNextCount.textContent = t('Começa em {n}s', { n: upNextLeft });
+    upNextBox.classList.add('show');
+    nav.focus(upNextPlay, { noScroll: true });
+    upNextTimer = setInterval(() => {
+      upNextLeft--;
+      upNextCount.textContent = t('Começa em {n}s', { n: upNextLeft });
+      if (upNextLeft <= 0) upNextGo();
+    }, 1000);
+  }
+
+  function upNextStop(cancelled) {
+    clearInterval(upNextTimer);
+    upNextTimer = null;
+    upNextBox.classList.remove('show');
+    if (cancelled) {
+      upNextCancelled = true;
+      nav.focus(bar, { noScroll: true });
+    }
+  }
+
+  function upNextGo() {
+    upNextStop(false);
+    upNextCancelled = false;
+    playNext();
+  }
+
+  // ---------- Subtitle sync shortcut ----------
+  // Channel up/down (or yellow/blue, or the phone remote) move add-on subtitles by SUB_STEP
+  // seconds while playing; the value is remembered per episode/film.
+  const SUB_STEP = 0.25;
+  const SUB_DELAYS = 'subDelays';
+
+  function savedDelay() {
+    return (store.get(SUB_DELAYS, {}) || {})[video.id] || 0;
+  }
+
+  function rememberDelay(v) {
+    const all = store.get(SUB_DELAYS, {}) || {};
+    delete all[video.id];
+    if (v) all[video.id] = v;
+    const keys = Object.keys(all);
+    if (keys.length > 200) delete all[keys[0]]; // oldest first (insertion order)
+    store.set(SUB_DELAYS, all);
+  }
+
+  function setSubDelay(v) {
+    v = Math.round(Math.max(-30, Math.min(30, v)) * 100) / 100;
+    renderer.setOffset(v);
+    rememberDelay(v);
+    return v;
+  }
+
+  function nudgeSubs(dir) {
+    if (currentSub.kind === 'off') return toast(t('Ligue uma legenda primeiro.'));
+    if (currentSub.kind === 'embedded') return toast(t('O ajuste funciona com legendas de addons (OpenSubtitles etc.).'), 4000);
+    const v = setSubDelay(renderer.offset() + dir * SUB_STEP);
+    toast(t('Atraso da legenda: {n}s', { n: (v > 0 ? '+' : '') + v.toFixed(2) }) + '  ·  ' + (v < 0 ? t('Legenda aparece antes') : v > 0 ? t('Legenda aparece depois') : t('Sem ajuste')), 1800);
+  }
   videoEl.addEventListener('error', () => {
     const err = videoEl.error;
     log.warn('Erro de vídeo', err && err.code, mediaUrl);
@@ -733,6 +828,7 @@ function PlayerView(opts) {
   function selectAddonSub(s, silent) {
     disableEmbeddedSubs();
     currentSub = { kind: 'addon', id: s.id || s.url };
+    renderer.setOffset(savedDelay());
     subs
       .load(s.url, server.subtitlesProxy(s.url))
       .then((cues) => {
@@ -828,7 +924,7 @@ function PlayerView(opts) {
     menu(
       t('Atraso da legenda'),
       vals.map((v) => ({ label: (v > 0 ? '+' : '') + v + 's', sub: v < 0 ? t('Legenda aparece antes') : v > 0 ? t('Legenda aparece depois') : t('Sem ajuste'), value: v, checked: renderer.offset() === v })),
-      { onPick: (v) => renderer.setOffset(v) }
+      { onPick: (v) => setSubDelay(v) }
     );
   }
 
@@ -910,6 +1006,19 @@ function PlayerView(opts) {
   function onKey(e) {
     const k = e.keyCode;
     const cur = nav.current();
+    if (upNextTimer && (k === KEY.BACK || k === KEY.ESC || k === KEY.BACKSPACE)) {
+      upNextStop(true);
+      return true;
+    }
+    if (upNextTimer && cur && upNextBox.contains(cur)) return false; // arrows/OK on the card
+    if (k === KEY.CH_UP || k === KEY.YELLOW) {
+      nudgeSubs(1);
+      return true;
+    }
+    if (k === KEY.CH_DOWN || k === KEY.BLUE) {
+      nudgeSubs(-1);
+      return true;
+    }
     switch (k) {
       case KEY.PLAY:
         videoEl.play();

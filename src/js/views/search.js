@@ -67,5 +67,10 @@ export function SearchView() {
     onShow: () => loadVisibleImages(el),
     destroy: () => bar.__destroy && bar.__destroy(),
     focusInput: () => nav.focus(input),
+    // From the phone remote: fill the box and run the search.
+    search: (q) => {
+      input.value = q;
+      run(q);
+    },
   };
 }

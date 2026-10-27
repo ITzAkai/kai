@@ -122,6 +122,13 @@ var server = http.createServer(function (req, res) {
     push({ type: 'key', code: code });
     return send(res, 200, { ok: true });
   }
+  if (url.pathname === '/api/search' && req.method === 'POST') {
+    if (q.pin !== PIN) return send(res, 401, { ok: false });
+    return readBody(req, function (text) {
+      push({ type: 'search', text: String(text).slice(0, 200) });
+      send(res, 200, { ok: true });
+    });
+  }
   if (url.pathname === '/api/text' && req.method === 'POST') {
     if (q.pin !== PIN) return send(res, 401, { ok: false });
     return readBody(req, function (text) {

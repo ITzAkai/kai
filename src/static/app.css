@@ -377,3 +377,14 @@ body.oled .details-shade { background: linear-gradient(to right, #000 25%, rgba(
 .trailer-hint { position: absolute; left: 60px; bottom: 50px; padding: 12px 24px; border-radius: 14px; background: rgba(0,0,0,0.7); font-size: 22px; -webkit-transition: opacity 0.6s; transition: opacity 0.6s; }
 [dir="rtl"] .trailer-hint { left: auto; right: 60px; }
 .trailer-hint.faded { opacity: 0; }
+
+/* Up next card */
+.p-upnext { position: absolute; right: 80px; bottom: 120px; width: 560px; padding: 28px 32px; border-radius: 22px; background: rgba(13,11,20,0.92); border: 2px solid rgba(157,133,255,0.5); display: none; }
+[dir="rtl"] .p-upnext { right: auto; left: 80px; }
+.p-upnext.show { display: block; }
+.un-label { font-size: 20px; color: #c9bbff; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
+.un-title { margin-top: 8px; font-size: 28px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.un-count { margin-top: 6px; font-size: 20px; color: rgba(255,255,255,0.65); }
+.un-buttons { margin-top: 20px; display: -webkit-flex; display: flex; }
+.un-buttons .btn { margin-right: 14px; }
+[dir="rtl"] .un-buttons .btn { margin-right: 0; margin-left: 14px; }

@@ -51,9 +51,16 @@ function typeText(text, submit) {
   if (submit) fireKey(ENTER); // same as confirming on the TV keyboard
 }
 
+// Search from the phone (typed or spoken): opens the Search tab and runs it, from any screen.
+let searchHandler = null;
+export function onSearch(fn) {
+  searchHandler = fn;
+}
+
 function handle(ev) {
   if (ev.type === 'key') fireKey(ev.code);
   else if (ev.type === 'text') typeText(ev.text, ev.submit);
+  else if (ev.type === 'search' && searchHandler && ev.text) searchHandler(ev.text);
 }
 
 // Polls forever; when the service isn't running (e.g. outside TizenBrew) it checks again slowly.

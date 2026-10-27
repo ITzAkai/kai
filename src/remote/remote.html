@@ -34,6 +34,8 @@
   .type input:focus { border-color: var(--accent); }
   .type button { padding: 0 20px; background: var(--accent); font-weight: 700; }
   .hint { color: var(--muted); font-size: 13px; text-align: center; margin: -10px 0 0; }
+  .type .mic { padding: 0 16px; background: var(--key); font-size: 22px; }
+  .type .mic.on { background: #e5484d; }
   .pin { display: none; flex-direction: column; gap: 14px; align-items: center; text-align: center; padding-top: 30px; }
   .pin input { width: 200px; text-align: center; font-size: 34px; letter-spacing: 12px; color: var(--text); background: var(--card); border: 2px solid #2d2840; border-radius: 16px; padding: 12px; outline: none; }
   .pin button { padding: 14px 40px; background: var(--accent); font-weight: 700; }
@@ -69,6 +71,16 @@
     <button data-key="412">⏪<small>Rewind</small></button>
     <button data-key="417">⏩<small>Forward</small></button>
   </div>
+  <div class="row two">
+    <button data-key="428">⏪ Aa<small>Subtitles earlier</small></button>
+    <button data-key="427">Aa ⏩<small>Subtitles later</small></button>
+  </div>
+  <form class="type" id="searchForm">
+    <input id="query" type="search" placeholder="Search on the TV…" autocomplete="off" enterkeyhint="search">
+    <button type="button" id="mic" class="mic" aria-label="Voice search" hidden>🎤</button>
+    <button type="submit">Search</button>
+  </form>
+  <p class="hint" id="voiceHint">Speak your search: tap 🎤 on your phone's keyboard, or the mic button.</p>
   <form class="type" id="typeForm">
     <input id="text" placeholder="Type on the TV…" autocomplete="off" enterkeyhint="send">
     <button type="submit">Send</button>
@@ -133,6 +145,34 @@
     if (!input.value) return;
     post('/api/text?submit=1', input.value).then(function () { input.value = ''; });
   };
+
+  // Search on the TV from anywhere in the app (typed, keyboard dictation, or the mic button).
+  var query = document.getElementById('query');
+  function search(q) {
+    q = (q || '').trim();
+    if (q.length < 2) return;
+    post('/api/search', q).then(function () { query.value = ''; status('Searching on the TV…', 'ok'); });
+  }
+  document.getElementById('searchForm').onsubmit = function (e) { e.preventDefault(); search(query.value); };
+
+  // The browser's speech recognition only runs on secure (https) pages; on the TV's local
+  // address the keyboard's own dictation button does the same job, so the hint stays.
+  var Rec = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!(Rec && window.isSecureContext)) document.getElementById('voiceHint').textContent = "Speak your search: tap 🎤 on your phone's keyboard, then Search.";
+  if (Rec && window.isSecureContext) {
+    var mic = document.getElementById('mic');
+    mic.hidden = false;
+    mic.onclick = function () {
+      var r = new Rec();
+      r.lang = navigator.language || 'en-US';
+      r.interimResults = false;
+      mic.classList.add('on');
+      r.onresult = function (e) { var q = e.results[0][0].transcript; query.value = q; search(q); };
+      r.onend = function () { mic.classList.remove('on'); };
+      r.onerror = function () { mic.classList.remove('on'); status('Mic not available: use the keyboard 🎤', 'bad'); };
+      r.start();
+    };
+  }
 
   if (pin) unlock(pin); else status('Locked');
 })();
