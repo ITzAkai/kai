@@ -1,11 +1,8 @@
-function _defineProperty(e, r, t) { return (r = _toPropertyKey(r)) in e ? Object.defineProperty(e, r, { value: t, enumerable: !0, configurable: !0, writable: !0 }) : e[r] = t, e; }
-function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" == _typeof(i) ? i : i + ""; }
-function _toPrimitive(t, e) { if ("object" != _typeof(t) || !t) return t; var r; if ("undefined" != typeof Symbol && void 0 !== (r = t[Symbol.toPrimitive])) { var i = r.call(t, e || "default"); if ("object" != _typeof(i)) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === e ? String : Number)(t); }
 function _createForOfIteratorHelper(r, e) { var t = "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"]; if (!t) { if (Array.isArray(r) || (t = _unsupportedIterableToArray(r)) || e && r && "number" == typeof r.length) { t && (r = t); var _n = 0, F = function F() {}; return { s: F, n: function n() { return _n >= r.length ? { done: !0 } : { done: !1, value: r[_n++] }; }, e: function e(r) { throw r; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var o, a = !0, u = !1; return { s: function s() { t = t.call(r); }, n: function n() { var r = t.next(); return a = r.done, r; }, e: function e(r) { u = !0, o = r; }, f: function f() { try { a || null == t.return || t.return(); } finally { if (u) throw o; } } }; }
 function _unsupportedIterableToArray(r, a) { if (r) { if ("string" == typeof r) return _arrayLikeToArray(r, a); var t = {}.toString.call(r).slice(8, -1); return "Object" === t && r.constructor && (t = r.constructor.name), "Map" === t || "Set" === t ? Array.from(r) : "Arguments" === t || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(t) ? _arrayLikeToArray(r, a) : void 0; } }
 function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length); for (var e = 0, n = Array(a); e < a; e++) n[e] = r[e]; return n; }
 function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
-(function (_EN) {
+(function () {
   var __create = Object.create;
   var __defProp = Object.defineProperty;
   var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
@@ -3256,7 +3253,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   };
 
   // src/js/lib/i18n-en.js
-  var EN = (_EN = {
+  var EN = {
     // Navegação e geral
     "Início": "Home",
     "Buscar": "Search",
@@ -3270,8 +3267,375 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     "Sair": "Exit",
     "Nada por aqui.": "Nothing here.",
     "Carregando...": "Loading...",
-    "Ver tudo": "See all"
-  }, _defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_EN, "Nada por aqui.", "Nothing here."), "carregando...", "loading..."), "Sair do Stremio Kai?", "Exit Stremio Kai?"), "Desconhecido", "Unknown"), "Desligado", "Off"), "Desligada", "Off"), "Automático", "Automatic"), "Perfil", "Profile"), "Perfis", "Profiles"), "Perfil atual", "Current profile"), _defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_EN, "Trocar para este perfil", "Switch to this profile"), "+ Adicionar perfil", "+ Add profile"), "Adicionar perfil", "Add profile"), "Com outra conta Stremio (histórico separado)", "With another Stremio account (separate history)"), "Gerenciar perfis", "Manage profiles"), "Nome, cor, apagar", "Name, color, delete"), "Quem está assistindo?", "Who's watching?"), "Cada perfil tem sua própria conta Stremio, com histórico e biblioteca separados.", "Each profile has its own Stremio account, with separate history and library."), "Nome do novo perfil", "New profile name"), "Criar perfil", "Create profile"), _defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_EN, "Ex.: Ana, Pedro, Sala", "E.g.: Anna, Peter, Living room"), "Digite um nome para o perfil.", "Type a name for the profile."), "Já existe um perfil com esse nome.", "A profile with this name already exists."), "Nome do perfil", "Profile name"), "Nome do perfil salvo", "Profile name saved"), "Este perfil usa a conta Stremio abaixo", "This profile uses the Stremio account below"), "Cor do perfil", "Profile color"), "Roxo", "Purple"), "Rosa", "Pink"), "Verde-água", "Teal"), _defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_EN, "Laranja", "Orange"), "Azul", "Blue"), "Vermelho", "Red"), "Verde", "Green"), "Cinza", "Gray"), "Trocar de perfil", "Switch profile"), "{n} perfis nesta TV", "{n} profiles on this TV"), "Para outra pessoa, com outra conta Stremio", "For someone else, with another Stremio account"), 'Perguntar "Quem está assistindo?" ao abrir', "Ask \"Who's watching?\" on launch"), "Apagar este perfil", "Delete this profile"), _defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_EN, "Remove deste aparelho a conta e as preferências do perfil (a conta Stremio continua existindo)", "Removes the profile's account and preferences from this TV (the Stremio account itself is kept)"), 'Apagar o perfil "{name}" desta TV?', 'Delete profile "{name}" from this TV?'), "Apagar", "Delete"), "PASSO {n} DE {total}", "STEP {n} OF {total}"), "Bem-vindo! Quem vai usar este perfil?", "Welcome! Who will use this profile?"), "Dê um nome ao perfil. Depois você pode criar outros perfis, cada um com a própria conta Stremio e histórico.", "Give this profile a name. Later you can create other profiles, each with its own Stremio account and history."), "Bem-vindo ao Stremio Kai", "Welcome to Stremio Kai"), "Você já está conectado à sua conta Stremio. Seus addons e sua biblioteca já estão aqui.", "You're already signed in to Stremio. Your add-ons and library are here."), "Entre com a sua conta Stremio para trazer seus addons (Torrentio, debrid, Anime Kitsu...) e a biblioteca.", "Sign in with your Stremio account to bring your add-ons (Torrentio, debrid, Anime Kitsu...) and library."), "Entrar na conta", "Sign in"), _defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_EN, "Servidor de torrents no PC", "Torrent server on a PC"), "Servidor conectado em {url}. Torrents liberados.", "Server connected at {url}. Torrents enabled."), "Para tocar torrents, deixe o stremio-service aberto num PC da rede. Links de debrid funcionam sem ele.", "To play torrents, keep stremio-service running on a PC on your network. Debrid links work without it."), "Procurar na rede", "Scan network"), "Procurando o servidor na rede...", "Scanning the network for the server..."), "Nenhum servidor encontrado. Você pode configurar depois em Ajustes.", "No server found. You can set it up later in Settings."), "Servidor encontrado em {ip}", "Server found at {ip}"), "Servidor do PC conectado", "PC server connected"), "Não foi possível procurar. Configure depois em Ajustes.", "Couldn't scan. Set it up later in Settings."), "Legendas", "Subtitles"), _defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_EN, "Em qual idioma o app deve ligar a legenda sozinho quando o áudio não for no seu idioma?", "Which subtitle language should turn on automatically when the audio is not in your language?"), "Português (BR)", "Portuguese (BR)"), "Inglês", "English"), "Não ligar sozinho", "Don't turn on automatically"), "Gerando código...", "Generating code..."), "E-mail", "E-mail"), "Senha", "Password"), "Entrar", "Sign in"), "Entrar com o celular", "Sign in with your phone"), "No celular ou PC, abra <b>link.stremio.com</b> e digite o código:", "On your phone or PC, open <b>link.stremio.com</b> and enter the code:"), _defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_EN, "Ou com e-mail", "Or with e-mail"), "Use a mesma conta do Stremio. Seus addons e a biblioteca vêm junto.", "Use your Stremio account. Your add-ons and library come along."), "Aguardando confirmação...", "Waiting for confirmation..."), "Não foi possível gerar o código. Use o e-mail ao lado.", "Couldn't generate a code. Use e-mail instead."), "Código expirou. Gerando outro...", "Code expired. Generating a new one..."), "Preencha e-mail e senha.", "Enter your e-mail and password."), "Entrando...", "Signing in..."), "Falha no login", "Sign-in failed"), "Conectado à conta Stremio", "Signed in to Stremio"), "Continuar assistindo", "Continue watching"), _defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_EN, "Carregando catálogos...", "Loading catalogs..."), "Nenhum catálogo. Entre na sua conta em Ajustes.", "No catalogs. Sign in to your account in Settings."), "Erro ao carregar addons: {msg}", "Error loading add-ons: {msg}"), "Filmes", "Movies"), "Séries", "Series"), "Canais", "Channels"), "Assistir", "Watch"), "Detalhes", "Details"), "Buscar filmes e séries...", "Search movies and series..."), "Digite pelo menos 2 letras e confirme no teclado.", "Type at least 2 letters and confirm on the keyboard."), _defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_EN, 'Buscando "{q}"...', 'Searching "{q}"...'), "Nenhum addon com busca instalado.", "No add-on with search installed."), 'Nada encontrado para "{q}".', 'Nothing found for "{q}".'), "Tudo", "All"), "Sua biblioteca está vazia.", "Your library is empty."), "Entre na sua conta em Ajustes para ver a biblioteca.", "Sign in to your account in Settings to see your library."), "Carregando biblioteca...", "Loading library..."), "Hoje", "Today"), "Amanhã", "Tomorrow"), "Ontem", "Yesterday"), _defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_EN, "Domingo", "Sunday"), "Segunda", "Monday"), "Terça", "Tuesday"), "Quarta", "Wednesday"), "Quinta", "Thursday"), "Sexta", "Friday"), "Sábado", "Saturday"), "Buscando lançamentos...", "Loading releases..."), "Nenhum episódio neste dia.", "No episodes on this day."), "Abrindo {name}...", "Opening {name}..."), _defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_EN, "Esse anime não foi encontrado nos seus addons (instale o Anime Kitsu).", "This anime was not found in your add-ons (install Anime Kitsu)."), "Não foi possível carregar o calendário: {msg}", "Couldn't load the calendar: {msg}"), "{n} temporadas", "{n} seasons"), "{n} temporada", "{n} season"), "Direção: ", "Director: "), "Elenco: ", "Cast: "), "Na biblioteca", "In library"), "Removido da biblioteca", "Removed from library"), "Adicionado à biblioteca", "Added to library"), "Episódios", "Episodes"), _defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_EN, "Especiais", "Specials"), "Temporada {n}", "Season {n}"), "Episódio {n}", "Episode {n}"), "Episódio", "Episode"), "parou em {time}", "stopped at {time}"), "Fontes", "Sources"), "Todos", "All"), "Todos ▾", "All ▾"), "Buscando fontes nos addons...", "Searching add-ons for sources..."), "Nenhum addon de streams instalado (ex.: Torrentio). Instale pela sua conta Stremio.", "No stream add-on installed (e.g. Torrentio). Install one in your Stremio account."), _defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_EN, "Servidor do PC não conectado: só links diretos", "PC server not connected: direct links only"), "{n} addon(s) ainda carregando", "{n} add-on(s) still loading"), "{n} fontes", "{n} sources"), "Mostrar fontes de", "Show sources from"), "Nenhuma fonte encontrada.", "No sources found."), "Não suportado na TV", "Not supported on TV"), "Torrent · via PC", "Torrent · via PC"), "Torrent · precisa do PC", "Torrent · needs PC"), "Direto", "Direct"), "Esse tipo de fonte não abre na TV.", "This kind of source doesn't open on the TV."), _defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_EN, "Torrent precisa do stremio-service rodando no PC. Configure em Ajustes.", "Torrents need stremio-service running on a PC. Set it up in Settings."), "Continuar de onde parou?", "Resume where you left off?"), "Continuar de {time}", "Resume from {time}"), "Começar do início", "Start from the beginning"), "Não foi possível abrir", "Couldn't open"), "Detalhes não encontrados", "Details not found"), "Nenhum addon fornece detalhes para {id}", "No add-on provides details for {id}"), "Público", "Audience"), "Áudio", "Audio"), "Próximo", "Next"), _defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_EN, "Tocar", "Play"), "Pausar", "Pause"), "Pular abertura", "Skip intro"), "Pular recapitulação", "Skip recap"), "Próximo episódio", "Next episode"), "Pular encerramento", "Skip credits"), "Abertura pulada", "Intro skipped"), "Recapitulação pulada", "Recap skipped"), "Encerramento pulado", "Credits skipped"), "Termina às {time}", "Ends at {time}"), _defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_EN, "O vídeo parou de carregar", "The video stopped loading"), "Reabre o vídeo em {time}", "Reopens the video at {time}"), "Tentar de novo", "Try again"), "Escolher outra fonte", "Choose another source"), "Reconectando ao vídeo...", "Reconnecting to the video..."), "A TV não conseguiu tocar este arquivo diretamente.", "The TV couldn't play this file directly."), "A TV não conseguiu tocar este arquivo (formato ou codec não suportado).", "The TV couldn't play this file (unsupported format or codec)."), "Tente outra fonte (de preferência MP4/MKV com H.264 ou HEVC e áudio AAC/AC3).", "Try another source (preferably MP4/MKV with H.264 or HEVC and AAC/AC3 audio)."), "Converter no PC (experimental)", "Convert on PC (experimental)"), "O servidor converte para HLS que a TV aceita", "The server converts to HLS the TV accepts"), _defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_EN, "Problema na reprodução", "Playback problem"), "Troca de áudio indisponível agora.", "Audio switching unavailable right now."), "Falha ao trocar áudio: {msg}", "Failed to switch audio: {msg}"), "Falha na legenda embutida: {msg}", "Embedded subtitle failed: {msg}"), "Legenda: {lang}", "Subtitle: {lang}"), "Não foi possível baixar a legenda.", "Couldn't download the subtitle."), "Lendo as faixas do arquivo...", "Reading the file's tracks..."), "{n} canais", "{n} channels"), "Só uma faixa de áudio.", "Only one audio track."), "Para listar as faixas, conecte o servidor do PC em Ajustes.", "To list tracks, connect the PC server in Settings."), _defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_EN, "Embutida no arquivo", "Embedded in file"), "Atraso da legenda: {n}s", "Subtitle delay: {n}s"), "Ajustar sincronia", "Adjust sync"), "Tamanho: {n}%", "Size: {n}%"), "Carregando legendas...", "Loading subtitles..."), "Nenhuma legenda.", "No subtitles."), "Atraso da legenda", "Subtitle delay"), "Legenda aparece antes", "Subtitle shows earlier"), "Legenda aparece depois", "Subtitle shows later"), "Sem ajuste", "No adjustment"), _defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_EN, "Tamanho da legenda", "Subtitle size"), "Essa fonte precisa do servidor do PC.", "This source needs the PC server."), "Procurando o próximo episódio...", "Looking for the next episode..."), "Português", "Portuguese"), "Espanhol", "Spanish"), "Japonês", "Japanese"), "Francês", "French"), "Alemão", "German"), "Italiano", "Italian"), "Coreano", "Korean"), _defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_EN, "Chinês", "Chinese"), "Russo", "Russian"), "Árabe", "Arabic"), "Hindi", "Hindi"), "Indefinido", "Undefined"), "Automático (idioma da TV)", "Automatic (TV language)"), "Conta Stremio", "Stremio account"), "Conectado", "Signed in"), "Addons e biblioteca sincronizados com a conta", "Add-ons and library synced with the account"), "conta Stremio", "Stremio account"), _defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_EN, "Atualizar addons e biblioteca", "Refresh add-ons and library"), "Busca de novo a lista de addons instalados", "Reloads the list of installed add-ons"), "Atualizado", "Updated"), "Erro: {msg}", "Error: {msg}"), "Sair da conta", "Sign out"), "Sair da conta Stremio?", "Sign out of Stremio?"), "Traz seus addons (Torrentio, debrid...) e a biblioteca", "Brings your add-ons (Torrentio, debrid...) and library"), "Servidor de streaming (PC)", "Streaming server (PC)"), "não configurado", "not set"), "conectado ✓", "connected ✓"), _defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_EN, "sem resposta", "no response"), "Servidor conectado", "Server connected"), "Servidor não respondeu em {url}", "Server did not respond at {url}"), "Endereço do PC", "PC address"), "Rode o stremio-service no PC (porta 11470). Status: {s}", "Run stremio-service on the PC (port 11470). Status: {s}"), "Varre a rede local atrás do servidor", "Scans the local network for the server"), "Procurando servidor na rede...", "Scanning the network for the server..."), "Nenhum servidor encontrado. Ele está aberto no PC?", "No server found. Is it running on the PC?"), "Falha na busca: {msg}", "Scan failed: {msg}"), "Testar conexão", "Test connection"), _defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_EN, "Servidor OK", "Server OK"), "Sem resposta de {url}", "No response from {url}"), "Aparência (Kai)", "Appearance (Kai)"), "Hero Banner", "Hero Banner"), "Destaques no topo da tela inicial", "Highlights at the top of the home screen"), "Fonte do Hero Banner", "Hero Banner source"), "Cinemeta · Populares", "Cinemeta · Popular"), "Cinemeta · Mais bem avaliados", "Cinemeta · Top rated"), "MDBList · Tendências (Snoak)", "MDBList · Trending (Snoak)"), "Tema OLED (preto puro)", "OLED theme (pure black)"), _defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_EN, "Fundo totalmente preto", "Fully black background"), "Rolagem animada", "Animated scrolling"), "Mais bonita, porém mais pesada na TV", "Prettier, but heavier on the TV"), "Legendas e áudio", "Subtitles and audio"), "Idioma da legenda", "Subtitle language"), "Escolhida sozinha ao abrir o vídeo", "Picked automatically when a video opens"), "Português (BR) e Português", "Portuguese (BR) and Portuguese"), "Nenhum (não ligar sozinho)", "None (don't turn on automatically)"), "Ligar legenda automaticamente", "Turn on subtitles automatically"), "Se o áudio não estiver no seu idioma", "If the audio isn't in your language"), _defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_EN, "Áudio preferido", "Preferred audio"), "Precisa do servidor do PC para ler as faixas", "Needs the PC server to read tracks"), "Original do arquivo", "File's original"), "Português (dublado) quando houver", "Portuguese (dubbed) when available"), "Inglês quando houver", "English when available"), "Japonês quando houver", "Japanese when available"), "Aparência da legenda", "Subtitle appearance"), "Oi. Meu nome é Peter Parker.", "Hi. My name is Peter Parker."), "Você não lembra de mim...", "You don't remember me..."), "Fonte", "Font"), _defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_EN, "Vale para legendas de addons (OpenSubtitles etc.)", "Applies to add-on subtitles (OpenSubtitles etc.)"), "Estilo", "Style"), "Contorno, sombra ou caixa de fundo", "Outline, shadow or background box"), "Cor do texto", "Text color"), "Tamanho", "Size"), "Posição", "Position"), "Distância da borda de baixo", "Distance from the bottom edge"), "Negrito", "Bold"), "O Kai usa negrito", "Kai uses bold"), "Legendas embutidas no arquivo são desenhadas pela própria TV: só cor, tamanho, posição e caixa se aplicam a elas.", "Subtitles embedded in the file are drawn by the TV itself: only color, size, position and box apply to them."), _defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_EN, "Nata Sans (padrão Kai)", "Nata Sans (Kai default)"), "Fonte da TV (LG)", "TV font (LG)"), "Clássica (Arial)", "Classic (Arial)"), "Contorno fino + sombra (Kai)", "Thin outline + shadow (Kai)"), "Contorno grosso", "Thick outline"), "Só sombra", "Shadow only"), "Caixa de fundo", "Background box"), "Branco", "White"), "Amarelo", "Yellow"), "Cinza claro", "Light gray"), _defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_EN, "Ciano", "Cyan"), "Baixa", "Low"), "Média", "Middle"), "Alta", "High"), "Player", "Player"), "Pular abertura e encerramento", "Skip intros and credits"), "IntroDB (séries e filmes) e AniSkip (animes)", "IntroDB (series and movies) and AniSkip (anime)"), 'Mostrar botão "Pular"', 'Show "Skip" button'), "Pular automaticamente", "Skip automatically"), "Mostrar botão", "Show button"), _defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_EN, "Metadados extras (opcional)", "Extra metadata (optional)"), "Chave salva", "Key saved"), "Chave removida", "Key removed"), "Chave TMDB", "TMDB key"), "Sinopses e títulos em PT-BR, logos e elenco com fotos (grátis em themoviedb.org)", "Localized synopses and titles, logos and cast photos (free at themoviedb.org)"), "Chave MDBList", "MDBList key"), "Notas do Rotten Tomatoes, Metacritic, Trakt e Letterboxd (grátis em mdblist.com)", "Rotten Tomatoes, Metacritic, Trakt and Letterboxd ratings (free at mdblist.com)"), "Addons", "Add-ons"), "Addons ativos", "Active add-ons"), "Gerencie pela sua conta em web.stremio.com", "Manage them in your account at web.stremio.com"), _defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_EN, "Sem conta: Cinemeta, OpenSubtitles e os adicionados aqui", "No account: Cinemeta, OpenSubtitles and the ones added here"), "{n} addon(s)", "{n} add-on(s)"), "Instalar {name}", "Install {name}"), "Catálogos e detalhes de animes (usado pelo calendário)", "Anime catalogs and details (used by the calendar)"), "Legendas em português para quase tudo", "Subtitles for almost everything"), "Cole a URL do manifest.json do addon", "Paste the add-on's manifest.json URL"), "o addon", "the add-on"), "Addon adicionado", "Add-on added"), "Adicionar addon por URL", "Add add-on by URL"), "Instala na sua conta Stremio", "Installs into your Stremio account"), _defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_EN, "Fica só nesta TV", "Stays on this TV only"), "Entre na conta primeiro", "Sign in first"), "Instalar {name} na sua conta Stremio?", "Install {name} into your Stremio account?"), "Instalar", "Install"), "Instalando...", "Installing..."), "{name} instalado na sua conta", "{name} installed in your account"), "Não foi possível instalar: {msg}", "Couldn't install: {msg}"), "Esse addon já está instalado", "This add-on is already installed"), "Manifest inválido", "Invalid manifest"), "Sobre e depuração", "About and debugging"), _defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_EN, "Log remoto", "Remote log"), "npm run logs no PC", "npm run logs on the PC"), "Log remoto ligado", "Remote log on"), "Enviando logs para o PC", "Sending logs to the PC"), "Log remoto desligado", "Remote log off"), "Versão", "Version"), "Procurar atualização", "Check for update"), "Baixa a versão nova do GitHub ({repo})", "Downloads the new version from GitHub ({repo})"), "Procurando atualização...", "Checking for update..."), "Você já está na versão mais nova (v{v}).", "You're on the latest version (v{v})."), _defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_EN, "Versão {v} disponível", "Version {v} available"), "Versão {v} disponível: Ajustes → Procurar atualização", "Version {v} available: Settings → Check for update"), "Como atualizar", "How to update"), "No PC: webOS Dev Manager → instalar o .ipk da release", "On the PC: webOS Dev Manager → install the release's .ipk"), "Página da release", "Release page"), "Instalar a versão {v}? O app vai fechar e reabrir.", "Install version {v}? The app will close and reopen."), "Atualizar", "Update"), "Atualizado! Reabrindo...", "Updated! Reopening..."), "Não foi possível atualizar: {msg}", "Couldn't update: {msg}"), "Não foi possível verificar: {msg}", "Couldn't check: {msg}"), _defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_EN, "Baixando", "Downloading"), "Conferindo o arquivo...", "Verifying the file..."), "Falha na instalação", "Installation failed"), "Release sem hash SHA-256", "Release has no SHA-256 hash"), "Erro da API Stremio", "Stremio API error"), "Não foi possível gerar o código", "Couldn't generate the code"), "Falha de rede em {url}", "Network error at {url}"), "Tempo esgotado em {url}", "Timed out at {url}"), "JSON inválido de {url}", "Invalid JSON from {url}"), "HTTP {code} em {url}", "HTTP {code} at {url}"), _defineProperty(_defineProperty(_defineProperty(_EN, "Este link é torrent: configure o servidor do PC", "This link is a torrent: set up the PC server"), "Magnet inválido", "Invalid magnet link"), "Tipo de link não suportado na TV", "Link type not supported on the TV"));
+    "Ver tudo": "See all",
+    "Escolha inteligente": "Smart Choice",
+    "Assistir já toca a melhor fonte; o botão Fontes mostra a lista": "Watch plays the best source right away; the Sources button shows the list",
+    "Escolha inteligente: procurando a melhor fonte...": "Smart Choice: finding the best source...",
+    "aperte uma seta para escolher você": "press an arrow to choose yourself",
+    "Escolha inteligente: nenhuma fonte que a TV toque. Escolha na lista.": "Smart Choice: no source the TV can play. Pick one from the list.",
+    "Essa fonte não tocou. Tentando outra...": "That source didn't play. Trying another...",
+    "carregando...": "loading...",
+    "Sair do Stremio Kai?": "Exit Stremio Kai?",
+    "Desconhecido": "Unknown",
+    "Desligado": "Off",
+    "Desligada": "Off",
+    "Automático": "Automatic",
+    // Perfis
+    "Perfil": "Profile",
+    "Perfis": "Profiles",
+    "Perfil atual": "Current profile",
+    "Trocar para este perfil": "Switch to this profile",
+    "+ Adicionar perfil": "+ Add profile",
+    "Adicionar perfil": "Add profile",
+    "Com outra conta Stremio (histórico separado)": "With another Stremio account (separate history)",
+    "Gerenciar perfis": "Manage profiles",
+    "Nome, cor, apagar": "Name, color, delete",
+    "Quem está assistindo?": "Who's watching?",
+    "Cada perfil tem sua própria conta Stremio, com histórico e biblioteca separados.": "Each profile has its own Stremio account, with separate history and library.",
+    "Nome do novo perfil": "New profile name",
+    "Criar perfil": "Create profile",
+    "Ex.: Ana, Pedro, Sala": "E.g.: Anna, Peter, Living room",
+    "Digite um nome para o perfil.": "Type a name for the profile.",
+    "Já existe um perfil com esse nome.": "A profile with this name already exists.",
+    "Nome do perfil": "Profile name",
+    "Nome do perfil salvo": "Profile name saved",
+    "Este perfil usa a conta Stremio abaixo": "This profile uses the Stremio account below",
+    "Cor do perfil": "Profile color",
+    "Roxo": "Purple",
+    "Rosa": "Pink",
+    "Verde-água": "Teal",
+    "Laranja": "Orange",
+    "Azul": "Blue",
+    "Vermelho": "Red",
+    "Verde": "Green",
+    "Cinza": "Gray",
+    "Trocar de perfil": "Switch profile",
+    "{n} perfis nesta TV": "{n} profiles on this TV",
+    "Para outra pessoa, com outra conta Stremio": "For someone else, with another Stremio account",
+    'Perguntar "Quem está assistindo?" ao abrir': "Ask \"Who's watching?\" on launch",
+    "Apagar este perfil": "Delete this profile",
+    "Remove deste aparelho a conta e as preferências do perfil (a conta Stremio continua existindo)": "Removes the profile's account and preferences from this TV (the Stremio account itself is kept)",
+    'Apagar o perfil "{name}" desta TV?': 'Delete profile "{name}" from this TV?',
+    "Apagar": "Delete",
+    // Assistente
+    "PASSO {n} DE {total}": "STEP {n} OF {total}",
+    "Bem-vindo! Quem vai usar este perfil?": "Welcome! Who will use this profile?",
+    "Dê um nome ao perfil. Depois você pode criar outros perfis, cada um com a própria conta Stremio e histórico.": "Give this profile a name. Later you can create other profiles, each with its own Stremio account and history.",
+    "Bem-vindo ao Stremio Kai": "Welcome to Stremio Kai",
+    "Você já está conectado à sua conta Stremio. Seus addons e sua biblioteca já estão aqui.": "You're already signed in to Stremio. Your add-ons and library are here.",
+    "Entre com a sua conta Stremio para trazer seus addons (Torrentio, debrid, Anime Kitsu...) e a biblioteca.": "Sign in with your Stremio account to bring your add-ons (Torrentio, debrid, Anime Kitsu...) and library.",
+    "Entrar na conta": "Sign in",
+    "Servidor de torrents no PC": "Torrent server on a PC",
+    "Servidor conectado em {url}. Torrents liberados.": "Server connected at {url}. Torrents enabled.",
+    "Para tocar torrents, deixe o stremio-service aberto num PC da rede. Links de debrid funcionam sem ele.": "To play torrents, keep stremio-service running on a PC on your network. Debrid links work without it.",
+    "Procurar na rede": "Scan network",
+    "Procurando o servidor na rede...": "Scanning the network for the server...",
+    "Nenhum servidor encontrado. Você pode configurar depois em Ajustes.": "No server found. You can set it up later in Settings.",
+    "Servidor encontrado em {ip}": "Server found at {ip}",
+    "Servidor do PC conectado": "PC server connected",
+    "Não foi possível procurar. Configure depois em Ajustes.": "Couldn't scan. Set it up later in Settings.",
+    "Legendas": "Subtitles",
+    "Em qual idioma o app deve ligar a legenda sozinho quando o áudio não for no seu idioma?": "Which subtitle language should turn on automatically when the audio is not in your language?",
+    "Português (BR)": "Portuguese (BR)",
+    "Inglês": "English",
+    "Não ligar sozinho": "Don't turn on automatically",
+    // Login
+    "Gerando código...": "Generating code...",
+    "E-mail": "E-mail",
+    "Senha": "Password",
+    "Entrar": "Sign in",
+    "Entrar com o celular": "Sign in with your phone",
+    "No celular ou PC, abra <b>link.stremio.com</b> e digite o código:": "On your phone or PC, open <b>link.stremio.com</b> and enter the code:",
+    "Ou com e-mail": "Or with e-mail",
+    "Use a mesma conta do Stremio. Seus addons e a biblioteca vêm junto.": "Use your Stremio account. Your add-ons and library come along.",
+    "Aguardando confirmação...": "Waiting for confirmation...",
+    "Não foi possível gerar o código. Use o e-mail ao lado.": "Couldn't generate a code. Use e-mail instead.",
+    "Código expirou. Gerando outro...": "Code expired. Generating a new one...",
+    "Preencha e-mail e senha.": "Enter your e-mail and password.",
+    "Entrando...": "Signing in...",
+    "Falha no login": "Sign-in failed",
+    "Conectado à conta Stremio": "Signed in to Stremio",
+    // Início, busca, biblioteca, calendário
+    "Continuar assistindo": "Continue watching",
+    "Carregando catálogos...": "Loading catalogs...",
+    "Nenhum catálogo. Entre na sua conta em Ajustes.": "No catalogs. Sign in to your account in Settings.",
+    "Erro ao carregar addons: {msg}": "Error loading add-ons: {msg}",
+    "Filmes": "Movies",
+    "Séries": "Series",
+    "Canais": "Channels",
+    "Assistir": "Watch",
+    "Detalhes": "Details",
+    "Buscar filmes e séries...": "Search movies and series...",
+    "Digite pelo menos 2 letras e confirme no teclado.": "Type at least 2 letters and confirm on the keyboard.",
+    'Buscando "{q}"...': 'Searching "{q}"...',
+    "Nenhum addon com busca instalado.": "No add-on with search installed.",
+    'Nada encontrado para "{q}".': 'Nothing found for "{q}".',
+    "Tudo": "All",
+    "Sua biblioteca está vazia.": "Your library is empty.",
+    "Entre na sua conta em Ajustes para ver a biblioteca.": "Sign in to your account in Settings to see your library.",
+    "Carregando biblioteca...": "Loading library...",
+    "Hoje": "Today",
+    "Amanhã": "Tomorrow",
+    "Ontem": "Yesterday",
+    "Domingo": "Sunday",
+    "Segunda": "Monday",
+    "Terça": "Tuesday",
+    "Quarta": "Wednesday",
+    "Quinta": "Thursday",
+    "Sexta": "Friday",
+    "Sábado": "Saturday",
+    "Buscando lançamentos...": "Loading releases...",
+    "Nenhum episódio neste dia.": "No episodes on this day.",
+    "Abrindo {name}...": "Opening {name}...",
+    "Esse anime não foi encontrado nos seus addons (instale o Anime Kitsu).": "This anime was not found in your add-ons (install Anime Kitsu).",
+    "Não foi possível carregar o calendário: {msg}": "Couldn't load the calendar: {msg}",
+    // Detalhes e fontes
+    "{n} temporadas": "{n} seasons",
+    "{n} temporada": "{n} season",
+    "Direção: ": "Director: ",
+    "Elenco: ": "Cast: ",
+    "Na biblioteca": "In library",
+    "Removido da biblioteca": "Removed from library",
+    "Adicionado à biblioteca": "Added to library",
+    "Episódios": "Episodes",
+    "Especiais": "Specials",
+    "Temporada {n}": "Season {n}",
+    "Episódio {n}": "Episode {n}",
+    "Episódio": "Episode",
+    "parou em {time}": "stopped at {time}",
+    "Fontes": "Sources",
+    "Todos": "All",
+    "Todos ▾": "All ▾",
+    "Buscando fontes nos addons...": "Searching add-ons for sources...",
+    "Nenhum addon de streams instalado (ex.: Torrentio). Instale pela sua conta Stremio.": "No stream add-on installed (e.g. Torrentio). Install one in your Stremio account.",
+    "Servidor do PC não conectado: só links diretos": "PC server not connected: direct links only",
+    "{n} addon(s) ainda carregando": "{n} add-on(s) still loading",
+    "{n} fontes": "{n} sources",
+    "Mostrar fontes de": "Show sources from",
+    "Nenhuma fonte encontrada.": "No sources found.",
+    "Não suportado na TV": "Not supported on TV",
+    "Torrent · via PC": "Torrent · via PC",
+    "Torrent · precisa do PC": "Torrent · needs PC",
+    "Direto": "Direct",
+    "Esse tipo de fonte não abre na TV.": "This kind of source doesn't open on the TV.",
+    "Torrent precisa do stremio-service rodando no PC. Configure em Ajustes.": "Torrents need stremio-service running on a PC. Set it up in Settings.",
+    "Continuar de onde parou?": "Resume where you left off?",
+    "Continuar de {time}": "Resume from {time}",
+    "Começar do início": "Start from the beginning",
+    "Não foi possível abrir": "Couldn't open",
+    "Detalhes não encontrados": "Details not found",
+    "Nenhum addon fornece detalhes para {id}": "No add-on provides details for {id}",
+    "Público": "Audience",
+    // Player
+    "Áudio": "Audio",
+    "Próximo": "Next",
+    "Tocar": "Play",
+    "Pausar": "Pause",
+    "Pular abertura": "Skip intro",
+    "Pular recapitulação": "Skip recap",
+    "Próximo episódio": "Next episode",
+    "Pular encerramento": "Skip credits",
+    "Abertura pulada": "Intro skipped",
+    "Recapitulação pulada": "Recap skipped",
+    "Encerramento pulado": "Credits skipped",
+    "Termina às {time}": "Ends at {time}",
+    "O vídeo parou de carregar": "The video stopped loading",
+    "Reabre o vídeo em {time}": "Reopens the video at {time}",
+    "Tentar de novo": "Try again",
+    "Escolher outra fonte": "Choose another source",
+    "Reconectando ao vídeo...": "Reconnecting to the video...",
+    "A TV não conseguiu tocar este arquivo diretamente.": "The TV couldn't play this file directly.",
+    "A TV não conseguiu tocar este arquivo (formato ou codec não suportado).": "The TV couldn't play this file (unsupported format or codec).",
+    "Tente outra fonte (de preferência MP4/MKV com H.264 ou HEVC e áudio AAC/AC3).": "Try another source (preferably MP4/MKV with H.264 or HEVC and AAC/AC3 audio).",
+    "Converter no PC (experimental)": "Convert on PC (experimental)",
+    "O servidor converte para HLS que a TV aceita": "The server converts to HLS the TV accepts",
+    "Problema na reprodução": "Playback problem",
+    "Troca de áudio indisponível agora.": "Audio switching unavailable right now.",
+    "Falha ao trocar áudio: {msg}": "Failed to switch audio: {msg}",
+    "Falha na legenda embutida: {msg}": "Embedded subtitle failed: {msg}",
+    "Legenda: {lang}": "Subtitle: {lang}",
+    "Não foi possível baixar a legenda.": "Couldn't download the subtitle.",
+    "Lendo as faixas do arquivo...": "Reading the file's tracks...",
+    "{n} canais": "{n} channels",
+    "Só uma faixa de áudio.": "Only one audio track.",
+    "Para listar as faixas, conecte o servidor do PC em Ajustes.": "To list tracks, connect the PC server in Settings.",
+    "Embutida no arquivo": "Embedded in file",
+    "Atraso da legenda: {n}s": "Subtitle delay: {n}s",
+    "Ajustar sincronia": "Adjust sync",
+    "Tamanho: {n}%": "Size: {n}%",
+    "Carregando legendas...": "Loading subtitles...",
+    "Nenhuma legenda.": "No subtitles.",
+    "Atraso da legenda": "Subtitle delay",
+    "Legenda aparece antes": "Subtitle shows earlier",
+    "Legenda aparece depois": "Subtitle shows later",
+    "Sem ajuste": "No adjustment",
+    "Tamanho da legenda": "Subtitle size",
+    "Essa fonte precisa do servidor do PC.": "This source needs the PC server.",
+    "Procurando o próximo episódio...": "Looking for the next episode...",
+    // nomes de idiomas
+    "Português": "Portuguese",
+    "Espanhol": "Spanish",
+    "Japonês": "Japanese",
+    "Francês": "French",
+    "Alemão": "German",
+    "Italiano": "Italian",
+    "Coreano": "Korean",
+    "Chinês": "Chinese",
+    "Russo": "Russian",
+    "Árabe": "Arabic",
+    "Hindi": "Hindi",
+    "Indefinido": "Undefined",
+    // Ajustes
+    "Automático (idioma da TV)": "Automatic (TV language)",
+    "Conta Stremio": "Stremio account",
+    "Conectado": "Signed in",
+    "Addons e biblioteca sincronizados com a conta": "Add-ons and library synced with the account",
+    "conta Stremio": "Stremio account",
+    "Atualizar addons e biblioteca": "Refresh add-ons and library",
+    "Busca de novo a lista de addons instalados": "Reloads the list of installed add-ons",
+    "Atualizado": "Updated",
+    "Erro: {msg}": "Error: {msg}",
+    "Sair da conta": "Sign out",
+    "Sair da conta Stremio?": "Sign out of Stremio?",
+    "Traz seus addons (Torrentio, debrid...) e a biblioteca": "Brings your add-ons (Torrentio, debrid...) and library",
+    "Servidor de streaming (PC)": "Streaming server (PC)",
+    "não configurado": "not set",
+    "conectado ✓": "connected ✓",
+    "sem resposta": "no response",
+    "Servidor conectado": "Server connected",
+    "Servidor não respondeu em {url}": "Server did not respond at {url}",
+    "Endereço do PC": "PC address",
+    "Rode o stremio-service no PC (porta 11470). Status: {s}": "Run stremio-service on the PC (port 11470). Status: {s}",
+    "Varre a rede local atrás do servidor": "Scans the local network for the server",
+    "Procurando servidor na rede...": "Scanning the network for the server...",
+    "Nenhum servidor encontrado. Ele está aberto no PC?": "No server found. Is it running on the PC?",
+    "Falha na busca: {msg}": "Scan failed: {msg}",
+    "Testar conexão": "Test connection",
+    "Servidor OK": "Server OK",
+    "Sem resposta de {url}": "No response from {url}",
+    "Aparência (Kai)": "Appearance (Kai)",
+    "Hero Banner": "Hero Banner",
+    "Destaques no topo da tela inicial": "Highlights at the top of the home screen",
+    "Fonte do Hero Banner": "Hero Banner source",
+    "Cinemeta · Populares": "Cinemeta · Popular",
+    "Cinemeta · Mais bem avaliados": "Cinemeta · Top rated",
+    "MDBList · Tendências (Snoak)": "MDBList · Trending (Snoak)",
+    "Tema OLED (preto puro)": "OLED theme (pure black)",
+    "Fundo totalmente preto": "Fully black background",
+    "Rolagem animada": "Animated scrolling",
+    "Mais bonita, porém mais pesada na TV": "Prettier, but heavier on the TV",
+    "Legendas e áudio": "Subtitles and audio",
+    "Idioma da legenda": "Subtitle language",
+    "Escolhida sozinha ao abrir o vídeo": "Picked automatically when a video opens",
+    "Português (BR) e Português": "Portuguese (BR) and Portuguese",
+    "Nenhum (não ligar sozinho)": "None (don't turn on automatically)",
+    "Ligar legenda automaticamente": "Turn on subtitles automatically",
+    "Se o áudio não estiver no seu idioma": "If the audio isn't in your language",
+    "Áudio preferido": "Preferred audio",
+    "Precisa do servidor do PC para ler as faixas": "Needs the PC server to read tracks",
+    "Original do arquivo": "File's original",
+    "Português (dublado) quando houver": "Portuguese (dubbed) when available",
+    "Inglês quando houver": "English when available",
+    "Japonês quando houver": "Japanese when available",
+    "Aparência da legenda": "Subtitle appearance",
+    "Oi. Meu nome é Peter Parker.": "Hi. My name is Peter Parker.",
+    "Você não lembra de mim...": "You don't remember me...",
+    "Fonte": "Font",
+    "Vale para legendas de addons (OpenSubtitles etc.)": "Applies to add-on subtitles (OpenSubtitles etc.)",
+    "Estilo": "Style",
+    "Contorno, sombra ou caixa de fundo": "Outline, shadow or background box",
+    "Cor do texto": "Text color",
+    "Tamanho": "Size",
+    "Posição": "Position",
+    "Distância da borda de baixo": "Distance from the bottom edge",
+    "Negrito": "Bold",
+    "O Kai usa negrito": "Kai uses bold",
+    "Legendas embutidas no arquivo são desenhadas pela própria TV: só cor, tamanho, posição e caixa se aplicam a elas.": "Subtitles embedded in the file are drawn by the TV itself: only color, size, position and box apply to them.",
+    "Nata Sans (padrão Kai)": "Nata Sans (Kai default)",
+    "Fonte da TV (LG)": "TV font (LG)",
+    "Clássica (Arial)": "Classic (Arial)",
+    "Contorno fino + sombra (Kai)": "Thin outline + shadow (Kai)",
+    "Contorno grosso": "Thick outline",
+    "Só sombra": "Shadow only",
+    "Caixa de fundo": "Background box",
+    "Branco": "White",
+    "Amarelo": "Yellow",
+    "Cinza claro": "Light gray",
+    "Ciano": "Cyan",
+    "Baixa": "Low",
+    "Média": "Middle",
+    "Alta": "High",
+    "Player": "Player",
+    "Pular abertura e encerramento": "Skip intros and credits",
+    "IntroDB (séries e filmes) e AniSkip (animes)": "IntroDB (series and movies) and AniSkip (anime)",
+    'Mostrar botão "Pular"': 'Show "Skip" button',
+    "Pular automaticamente": "Skip automatically",
+    "Mostrar botão": "Show button",
+    "Metadados extras (opcional)": "Extra metadata (optional)",
+    "Chave salva": "Key saved",
+    "Chave removida": "Key removed",
+    "Chave TMDB": "TMDB key",
+    "Sinopses e títulos em PT-BR, logos e elenco com fotos (grátis em themoviedb.org)": "Localized synopses and titles, logos and cast photos (free at themoviedb.org)",
+    "Chave MDBList": "MDBList key",
+    "Notas do Rotten Tomatoes, Metacritic, Trakt e Letterboxd (grátis em mdblist.com)": "Rotten Tomatoes, Metacritic, Trakt and Letterboxd ratings (free at mdblist.com)",
+    "Addons": "Add-ons",
+    "Addons ativos": "Active add-ons",
+    "Gerencie pela sua conta em web.stremio.com": "Manage them in your account at web.stremio.com",
+    "Sem conta: Cinemeta, OpenSubtitles e os adicionados aqui": "No account: Cinemeta, OpenSubtitles and the ones added here",
+    "{n} addon(s)": "{n} add-on(s)",
+    "Instalar {name}": "Install {name}",
+    "Catálogos e detalhes de animes (usado pelo calendário)": "Anime catalogs and details (used by the calendar)",
+    "Legendas em português para quase tudo": "Subtitles for almost everything",
+    "Cole a URL do manifest.json do addon": "Paste the add-on's manifest.json URL",
+    "o addon": "the add-on",
+    "Addon adicionado": "Add-on added",
+    "Adicionar addon por URL": "Add add-on by URL",
+    "Instala na sua conta Stremio": "Installs into your Stremio account",
+    "Fica só nesta TV": "Stays on this TV only",
+    "Entre na conta primeiro": "Sign in first",
+    "Instalar {name} na sua conta Stremio?": "Install {name} into your Stremio account?",
+    "Instalar": "Install",
+    "Instalando...": "Installing...",
+    "{name} instalado na sua conta": "{name} installed in your account",
+    "Não foi possível instalar: {msg}": "Couldn't install: {msg}",
+    "Esse addon já está instalado": "This add-on is already installed",
+    "Manifest inválido": "Invalid manifest",
+    "Sobre e depuração": "About and debugging",
+    "Log remoto": "Remote log",
+    "npm run logs no PC": "npm run logs on the PC",
+    "Log remoto ligado": "Remote log on",
+    "Enviando logs para o PC": "Sending logs to the PC",
+    "Log remoto desligado": "Remote log off",
+    "Versão": "Version",
+    "Procurar atualização": "Check for update",
+    "Baixa a versão nova do GitHub ({repo})": "Downloads the new version from GitHub ({repo})",
+    "Procurando atualização...": "Checking for update...",
+    "Você já está na versão mais nova (v{v}).": "You're on the latest version (v{v}).",
+    "Versão {v} disponível": "Version {v} available",
+    "Versão {v} disponível: Ajustes → Procurar atualização": "Version {v} available: Settings → Check for update",
+    "Como atualizar": "How to update",
+    "No PC: webOS Dev Manager → instalar o .ipk da release": "On the PC: webOS Dev Manager → install the release's .ipk",
+    "Página da release": "Release page",
+    "Instalar a versão {v}? O app vai fechar e reabrir.": "Install version {v}? The app will close and reopen.",
+    "Atualizar": "Update",
+    "Atualizado! Reabrindo...": "Updated! Reopening...",
+    "Não foi possível atualizar: {msg}": "Couldn't update: {msg}",
+    "Não foi possível verificar: {msg}": "Couldn't check: {msg}",
+    "Baixando": "Downloading",
+    "Conferindo o arquivo...": "Verifying the file...",
+    "Falha na instalação": "Installation failed",
+    "Release sem hash SHA-256": "Release has no SHA-256 hash",
+    // Erros de rede e da conta
+    "Erro da API Stremio": "Stremio API error",
+    "Não foi possível gerar o código": "Couldn't generate the code",
+    "Falha de rede em {url}": "Network error at {url}",
+    "Tempo esgotado em {url}": "Timed out at {url}",
+    "JSON inválido de {url}": "Invalid JSON from {url}",
+    "HTTP {code} em {url}": "HTTP {code} at {url}",
+    "Este link é torrent: configure o servidor do PC": "This link is a torrent: set up the PC server",
+    "Magnet inválido": "Invalid magnet link",
+    "Tipo de link não suportado na TV": "Link type not supported on the TV"
+  };
 
   // src/js/lib/i18n.js
   var lang = "pt";
@@ -3983,6 +4347,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     mdblistKey: true ? "" : "",
     smoothScroll: false,
     // rolagem animada (mais bonita, mais pesada na TV)
+    smartChoice: true,
+    // Watch picks the best source and plays it
     devlogUrl: true ? "" : "",
     language: "auto",
     // 'auto' (idioma da TV) | 'pt' | 'en'
@@ -6308,6 +6674,17 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       var err = videoEl.error;
       log.warn("Erro de vídeo", err && err.code, mediaUrl);
       if (!alive) return;
+      if (!hasPlayed && opts.fallbacks && opts.fallbacks.length) {
+        stream = opts.fallbacks.shift();
+        toast(t("Essa fonte não tocou. Tentando outra..."));
+        triedTranscode = false;
+        autoDone = {
+          sub: false,
+          audio: false
+        };
+        start2();
+        return;
+      }
       if (!triedTranscode && isAvailable()) {
         fail(t("A TV não conseguiu tocar este arquivo diretamente."), true);
       } else fail(t("A TV não conseguiu tocar este arquivo (formato ou codec não suportado)."));
@@ -7122,6 +7499,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       return sa - sb || (a.episode || 0) - (b.episode || 0);
     });
   }
+  var SMART_WAIT_MS = 1e4;
+  var SMART_FALLBACKS = 4;
   function DetailsView(type, id, opts) {
     var el = h("div.view");
     var bg = h("img.details-bg", {
@@ -7212,12 +7591,22 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       watchBtn = h("div.btn.primary", {
         focusable: true,
         "data-autofocus": "",
-        onSelect: onWatch
+        onSelect: function onSelect() {
+          return onWatch(smartOn());
+        }
       });
       libBtn = h("div.btn", {
         focusable: true,
         onSelect: toggleLibrary
       });
+      var sourcesBtn = smartOn() ? h("div.btn", {
+        focusable: true,
+        onSelect: function onSelect() {
+          return onWatch(false);
+        }
+      }, [h("span.ico", {
+        text: "☰"
+      }), t("Fontes")]) : null;
       updateButtons();
       info.appendChild(logo2);
       info.appendChild(title);
@@ -7228,7 +7617,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       info.appendChild(castLine);
       info.appendChild(h("div.details-buttons", {
         "data-group": ""
-      }, [watchBtn, libBtn]));
+      }, [watchBtn, sourcesBtn, libBtn]));
       loadExtras({
         logo: logo2,
         title: title,
@@ -7304,15 +7693,18 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       watchBtn.innerHTML = '<span class="ico">▶</span>' + label;
       libBtn.innerHTML = isInLibrary(meta.id) ? '<span class="ico">✓</span>' + t("Na biblioteca") : '<span class="ico">＋</span>' + t("Biblioteca");
     }
-    function onWatch() {
+    function smartOn() {
+      return settings().smartChoice !== false;
+    }
+    function onWatch(smart) {
       if (isSeries()) {
         var v = nextUpVideo();
-        if (v) showStreams(v, true);
+        if (v) showStreams(v, true, smart);
       } else {
         showStreams({
           id: movieVideoId(),
           title: meta.name
-        }, true);
+        }, true, smart);
       }
     }
     function toggleLibrary() {
@@ -7456,7 +7848,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       }
       return out;
     }
-    function showStreams(video, focusFirst2) {
+    function showStreams(video, focusFirst2, smart) {
       mode = "streams";
       streamsVideo = video;
       clear(panel);
@@ -7518,7 +7910,66 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       var all = [];
       var autoFocused = null;
       var serverOk = isAvailable();
+      var smartActive = !!smart;
+      var smartTimer = smartActive ? setTimeout(function () {
+        return decideSmart(true);
+      }, SMART_WAIT_MS) : null;
+      function stopSmart() {
+        smartActive = false;
+        clearTimeout(smartTimer);
+      }
+      function smartCandidates() {
+        var out = [];
+        groups.forEach(function (g, gi) {
+          (g.streams || []).forEach(function (s, si) {
+            if (!isPlayableType(s)) return;
+            var needs = needsServer(s);
+            if (needs && !serverOk) return;
+            var warn = streamBadges(s).some(function (b) {
+              return b.warn;
+            });
+            out.push({
+              s: s,
+              key: [needs ? 1 : 0, warn ? 1 : 0, gi, si]
+            });
+          });
+        });
+        out.sort(function (x, y) {
+          for (var i = 0; i < 4; i++) if (x.key[i] !== y.key[i]) return x.key[i] - y.key[i];
+          return 0;
+        });
+        return out.map(function (c) {
+          return c.s;
+        });
+      }
+      function decideSmart(timedOut) {
+        if (!smartActive || !alive || streamsVideo !== video) return;
+        if (focusFirst2 && autoFocused && current2() !== autoFocused) return stopSmart();
+        var list3 = smartCandidates();
+        var debridPending = groups.some(function (g) {
+          return addonRank(g.addon) === 0 && !g.done;
+        });
+        var best = list3[0];
+        var clean = best && !needsServer(best) && !streamBadges(best).some(function (b) {
+          return b.warn;
+        });
+        if (!best) {
+          if (pendingCount <= 0 || timedOut) {
+            stopSmart();
+            if (pendingCount <= 0) toast(t("Escolha inteligente: nenhuma fonte que a TV toque. Escolha na lista."), 5e3);
+          }
+          return;
+        }
+        if (pendingCount > 0 && !timedOut && (debridPending || !clean)) return;
+        stopSmart();
+        play(video, best, all, list3.slice(1, 1 + SMART_FALLBACKS));
+      }
       function status2() {
+        if (smartActive) {
+          sub.textContent = t("Escolha inteligente: procurando a melhor fonte...") + "  ·  " + t("aperte uma seta para escolher você");
+          barFill.style.width = Math.round((srcs.length - pendingCount) / srcs.length * 100) + "%";
+          return;
+        }
         var srv = serverOk ? t("Servidor do PC conectado") : t("Servidor do PC não conectado: só links diretos");
         sub.textContent = srv + (pendingCount > 0 ? "  ·  " + t("{n} addon(s) ainda carregando", {
           n: pendingCount
@@ -7584,6 +8035,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           if (g) {
             g.done = true;
             g.count = streams.length;
+            g.streams = streams;
             streams.forEach(function (s) {
               all.push(s);
               g.el.appendChild(streamItem(s, video, serverOk, all));
@@ -7603,6 +8055,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
             }));
           }
           status2();
+          decideSmart(false);
         });
       }).catch(function () {});
     }
@@ -7639,7 +8092,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         text: (s.title || s.description || "").trim()
       }), h("div.s-tags", null, tags)])]);
     }
-    function play(video, stream, all) {
+    function play(video, stream, all, fallbacks) {
       var li = libraryItem(meta.id);
       var resumeMs = li && li.state && li.state.video_id === video.id ? li.state.timeOffset : 0;
       var start2 = function start2(ms) {
@@ -7649,7 +8102,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           stream: stream,
           streams: all,
           startTime: ms,
-          isSeries: isSeries()
+          isSeries: isSeries(),
+          fallbacks: fallbacks || []
         });
       };
       if (resumeMs > 3e4) {
@@ -8953,6 +9407,12 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         document.body.classList.toggle("oled", on);
         render();
       }, toggle(s.oled)));
+      body.appendChild(row(t("Escolha inteligente"), t("Assistir já toca a melhor fonte; o botão Fontes mostra a lista"), "", function () {
+        saveSettings({
+          smartChoice: settings().smartChoice === false
+        });
+        render();
+      }, toggle(s.smartChoice !== false)));
       body.appendChild(row(t("Rolagem animada"), t("Mais bonita, porém mais pesada na TV"), "", function () {
         var on = !settings().smoothScroll;
         saveSettings({

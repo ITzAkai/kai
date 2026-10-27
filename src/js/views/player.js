@@ -260,6 +260,15 @@ function PlayerView(opts) {
     const err = videoEl.error;
     log.warn('Erro de vídeo', err && err.code, mediaUrl);
     if (!alive) return;
+    // Smart Choice: before giving up, try its next-best source.
+    if (!hasPlayed && opts.fallbacks && opts.fallbacks.length) {
+      stream = opts.fallbacks.shift();
+      toast(t('Essa fonte não tocou. Tentando outra...'));
+      triedTranscode = false;
+      autoDone = { sub: false, audio: false };
+      start();
+      return;
+    }
     if (!triedTranscode && server.isAvailable()) {
       fail(t('A TV não conseguiu tocar este arquivo diretamente.'), true);
     } else fail(t('A TV não conseguiu tocar este arquivo (formato ou codec não suportado).'));

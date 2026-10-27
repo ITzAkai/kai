@@ -122,6 +122,7 @@ const DEFAULT_SETTINGS = {
   tmdbKey: typeof __KAI_TMDB__ !== 'undefined' ? __KAI_TMDB__ : '',
   mdblistKey: typeof __KAI_MDBLIST__ !== 'undefined' ? __KAI_MDBLIST__ : '',
   smoothScroll: false, // rolagem animada (mais bonita, mais pesada na TV)
+  smartChoice: true, // Watch picks the best source and plays it
   devlogUrl: typeof __KAI_DEVLOG__ !== 'undefined' ? __KAI_DEVLOG__ : '',
   language: 'auto', // 'auto' (idioma da TV) | 'pt' | 'en'
   askProfile: true, // "Quem está assistindo?" ao abrir, se houver mais de um perfil

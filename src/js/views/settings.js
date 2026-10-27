@@ -303,6 +303,12 @@ export function SettingsView() {
       }, toggle(s.oled))
     );
     body.appendChild(
+      row(t('Escolha inteligente'), t('Assistir já toca a melhor fonte; o botão Fontes mostra a lista'), '', () => {
+        store.saveSettings({ smartChoice: store.settings().smartChoice === false });
+        render();
+      }, toggle(s.smartChoice !== false))
+    );
+    body.appendChild(
       row(t('Rolagem animada'), t('Mais bonita, porém mais pesada na TV'), '', () => {
         const on = !store.settings().smoothScroll;
         store.saveSettings({ smoothScroll: on });
