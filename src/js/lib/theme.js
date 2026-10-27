@@ -37,7 +37,7 @@ export function apply(id) {
   const th = THEMES.find((x) => x.id === id);
   if (!th || th === BASE) return;
   const x = new XMLHttpRequest();
-  x.open('GET', 'app.css');
+  x.open('GET', (window.__KAI_BASE__ || '') + 'app.css'); // where loader.js took it from
   x.onload = () => {
     if (x.status !== 200) return;
     const style = document.createElement('style');

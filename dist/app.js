@@ -11733,11 +11733,10 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   var REPO = "ITzAkai/stremio-kai-tizen";
   var REPO_URL = "https://github.com/" + REPO;
   var VERSION = "1.2.0-tizen.1";
-  var BUILD = "2026-10-27T16:33:21.219Z";
+  var BUILD = "2026-10-27T16:49:33.920Z";
   var RAW = "https://raw.githubusercontent.com/" + REPO + "/main/";
-  var CDN = "https://cdn.jsdelivr.net/gh/" + REPO + "/";
   var PURGE = "https://purge.jsdelivr.net/gh/" + REPO + "/";
-  var FILES = ["package.json", "dist/index.html", "dist/app.js", "dist/app.css", "dist/remote-service.js", "dist/build.json"];
+  var FILES = ["package.json", "dist/index.html", "dist/loader.js", "dist/app.js", "dist/app.css", "dist/remote-service.js", "dist/build.json"];
   function latest() {
     var bust = "?t=" + Date.now();
     return Promise.all([getJSON(RAW + "dist/build.json" + bust, {
@@ -11767,34 +11766,17 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       return info2.build && info2.build !== BUILD && Date.parse(info2.build) > Date.parse(BUILD) ? info2 : null;
     });
   }
-  function apply2(info2) {
+  function apply2() {
     return Promise.all(FILES.map(function (f) {
       return getJSON(PURGE + f, {
-        timeout: 2e4,
+        timeout: 8e3,
         quiet: true
       }).catch(function () {
         return null;
       });
     })).then(function () {
-      var tries = 0;
-      var _poll = function poll2() {
-        return getJSON(CDN + "dist/build.json?t=" + Date.now(), {
-          timeout: 15e3,
-          quiet: true
-        }).catch(function () {
-          return {};
-        }).then(function (b) {
-          if (b.build === info2.build) {
-            window.location.reload();
-            return true;
-          }
-          if (++tries >= 6) return false;
-          return new Promise(function (r) {
-            return setTimeout(r, 1e4);
-          }).then(_poll);
-        });
-      };
-      return _poll();
+      window.location.reload();
+      return true;
     });
   }
   function shouldAutoCheck() {
@@ -11976,7 +11958,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     });
     if (!th || th === BASE2) return;
     var x = new XMLHttpRequest();
-    x.open("GET", "app.css");
+    x.open("GET", (window.__KAI_BASE__ || "") + "app.css");
     x.onload = function () {
       if (x.status !== 200) return;
       var style = document.createElement("style");
