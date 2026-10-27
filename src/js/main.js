@@ -88,7 +88,6 @@ function start() {
   const s = store.settings();
   document.body.classList.toggle('oled', !!s.oled);
   theme.apply(s.theme);
-  document.body.classList.toggle('perf', s.perfMode !== false);
   log.info('Perfil', store.activeProfile().name);
 
   // Atualiza a conta em segundo plano; a tela inicial abre com o cache.

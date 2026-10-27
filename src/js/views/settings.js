@@ -240,7 +240,7 @@ export function SettingsView() {
     phone.info().then((i) => {
       clear(phoneBox);
       if (!i) {
-        phoneBox.appendChild(h('div.phone-sub', { text: t('O controle pelo celular não está rodando. Feche o app e abra de novo pelo TizenBrew.') }));
+        phoneBox.appendChild(h('div.phone-sub', { text: t('O controle pelo celular funciona quando o app é aberto pelo TizenBrew.') }));
         return;
       }
       phoneBox.appendChild(h('img.phone-qr', { src: phone.qrImage(i.url, 300), alt: '' }));
@@ -342,15 +342,6 @@ export function SettingsView() {
         store.saveSettings({ smartChoice: store.settings().smartChoice === false });
         render();
       }, toggle(s.smartChoice !== false))
-    );
-    body.appendChild(
-      row(t('Modo desempenho'), t('Mais rápido na TV: sem animações, sem Novos episódios e sem sincronizar em segundo plano'), '', () => {
-        const on = store.settings().perfMode === false;
-        store.saveSettings({ perfMode: on });
-        document.body.classList.toggle('perf', on);
-        router.dropTab('home'); // rebuilt with or without the extras
-        render();
-      }, toggle(store.settings().perfMode !== false))
     );
     body.appendChild(
       row(t('Rolagem animada'), t('Mais bonita, porém mais pesada na TV'), '', () => {

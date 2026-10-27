@@ -132,14 +132,6 @@ function tvKey(keyName, cb) {
 }
 
 var server = http.createServer(function (req, res) {
-  try {
-    handle(req, res);
-  } catch (e) {
-    try { send(res, 500, { error: String(e && e.message) }); } catch (e2) { /* already answered */ }
-  }
-});
-
-function handle(req, res) {
   var url = require('url').parse(req.url, true);
   var q = url.query;
 
@@ -228,7 +220,7 @@ function handle(req, res) {
   if (url.pathname === '/api/state') {
     if (q.pin !== PIN) return send(res, 401, { ok: false });
     // The player reports every few seconds; a stale report means it's no longer playing.
-    var fresh = nowPlaying && Date.now() - nowPlayingAt < 45000;
+    var fresh = nowPlaying && Date.now() - nowPlayingAt < 20000;
     return send(res, 200, { playing: fresh ? nowPlaying : null, at: nowPlayingAt });
   }
   if (url.pathname === '/api/seek' && req.method === 'POST') {
@@ -254,11 +246,7 @@ function handle(req, res) {
     });
   }
   send(res, 404, { error: 'not found' });
-}
-
-// Port busy: an older copy may still be letting go of it; try again for a minute.
-var tries = 0;
-server.on('error', function () {
-  if (++tries < 12) setTimeout(function () { server.listen(PORT, '0.0.0.0'); }, 5000);
 });
+
+server.on('error', function () { /* port busy: an older copy is already serving */ });
 server.listen(PORT, '0.0.0.0');

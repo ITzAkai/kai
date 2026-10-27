@@ -8,7 +8,7 @@ import * as store from '../lib/store.js';
 
 const DAYS = 7;
 const CHECK = 25;
-const PARALLEL = 1; // in the background: one at a time keeps navigation responsive
+const PARALLEL = 3;
 
 function librarySeries() {
   return stremio
@@ -46,31 +46,20 @@ export function cached() {
   return (store.get('newEpisodes', []) || []).filter((e) => !watched.isWatched(e.videoId) && Date.now() - e.released <= DAYS * 86400000);
 }
 
-// Resolves to the list, newest release first (after the add-ons are loaded); rejects if stopped.
-let run = 0;
+// Resolves to the list, newest release first (after the add-ons are loaded).
 export function load() {
-  const my = ++run;
-  return addons
-    .load()
-    .then(() => scan(my))
-    .then((list) => {
-      if (my !== run) throw new Error('stopped');
-      store.set('newEpisodes', list.slice(0, 40));
-      return list;
-    });
+  return addons.load().then(scan).then((list) => {
+    store.set('newEpisodes', list.slice(0, 40));
+    return list;
+  });
 }
 
-// A video started: its downloads and memory come first.
-export function stop() {
-  run++;
-}
-
-function scan(my) {
+function scan() {
   const series = librarySeries();
   const out = [];
   let i = 0;
   const worker = () => {
-    if (i >= series.length || my !== run) return Promise.resolve();
+    if (i >= series.length) return Promise.resolve();
     const it = series[i++];
     return addons
       .fetchMeta('series', it._id)

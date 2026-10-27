@@ -383,9 +383,8 @@ function DetailsView(type, id, opts) {
     }
 
     // Candidates in list order (add-on priority, then each add-on's own order), with the ones
-    // that play best on the TV first: direct links before torrents, then Dolby Vision, REMUX and
-    // very high bitrates (the badges marked as warnings) last, and 4K/HDR after 1080p (over Wi-Fi
-    // the 2017 TVs break up on them).
+    // that play best on the TV first: direct links before torrents, and Dolby Vision, REMUX and
+    // very high bitrates (the badges marked as warnings) last.
     function smartCandidates() {
       const out = [];
       groups.forEach((g, gi) => {
@@ -393,14 +392,12 @@ function DetailsView(type, id, opts) {
           if (!server.isPlayableType(s)) return;
           const needs = server.needsServer(s);
           if (needs && !serverOk) return;
-          const badges = streamBadges(s);
-          const warn = badges.some((b) => b.warn);
-          const heavy = badges.some((b) => b.t === '4K' || b.t === 'HDR');
-          out.push({ s: s, key: [needs ? 1 : 0, warn ? 1 : 0, heavy ? 1 : 0, gi, si] });
+          const warn = streamBadges(s).some((b) => b.warn);
+          out.push({ s: s, key: [needs ? 1 : 0, warn ? 1 : 0, gi, si] });
         });
       });
       out.sort((x, y) => {
-        for (let i = 0; i < 5; i++) if (x.key[i] !== y.key[i]) return x.key[i] - y.key[i];
+        for (let i = 0; i < 4; i++) if (x.key[i] !== y.key[i]) return x.key[i] - y.key[i];
         return 0;
       });
       return out.map((c) => c.s);
