@@ -17,15 +17,15 @@ import { avatar, switchProfile, createProfile } from './profiles.js';
 import { t } from '../lib/i18n.js';
 
 const SUB_LANGS = [
-  { label: 'Português (BR) e Português', value: ['pob', 'por', 'pt', 'pt-br'] },
   { label: 'Inglês', value: ['eng', 'en'] },
+  { label: 'Árabe', value: ['ara', 'ar'] },
   { label: 'Espanhol', value: ['spa', 'es'] },
   { label: 'Nenhum (não ligar sozinho)', value: [] },
 ];
 const AUDIO_LANGS = [
   { label: 'Original do arquivo', value: [] },
-  { label: 'Português (dublado) quando houver', value: ['por', 'pt', 'pob'] },
   { label: 'Inglês quando houver', value: ['eng', 'en'] },
+  { label: 'Árabe quando houver', value: ['ara', 'ar'] },
   { label: 'Japonês quando houver', value: ['jpn', 'ja'] },
 ];
 
@@ -117,13 +117,13 @@ export function SettingsView() {
     // ---- Idioma do app (vale para a TV inteira; o nome fica bilíngue para quem não lê o atual) ----
     const LANGS = [
       { id: 'auto', label: t('Automático (idioma da TV)') },
-      { id: 'pt', label: 'Português' },
       { id: 'en', label: 'English' },
+      { id: 'ar', label: 'العربية' },
     ];
-    body.appendChild(h('div.set-section', { text: 'Idioma / Language' }));
+    body.appendChild(h('div.set-section', { text: 'Language / اللغة' }));
     body.appendChild(
-      row('Idioma / Language', '', (LANGS.find((l) => l.id === s.language) || LANGS[0]).label, () =>
-        menu('Idioma / Language', LANGS.map((l) => ({ label: l.label, value: l.id, checked: l.id === s.language })), {
+      row('Language / اللغة', '', (LANGS.find((l) => l.id === s.language) || LANGS[0]).label, () =>
+        menu('Language / اللغة', LANGS.map((l) => ({ label: l.label, value: l.id, checked: l.id === s.language })), {
           onPick: (v) => {
             if (v === s.language) return;
             store.saveSettings({ language: v });

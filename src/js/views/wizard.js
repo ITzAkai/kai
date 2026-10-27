@@ -131,10 +131,10 @@ function WizardView() {
   function stepSubs() {
     card.appendChild(h('h1', { text: t('Legendas') }));
     card.appendChild(h('p', { text: t('Em qual idioma o app deve ligar a legenda sozinho quando o áudio não for no seu idioma?') }));
-    const pt = { label: t('Português (BR)'), value: ['pob', 'por', 'pt', 'pt-br'] };
+    const ar = { label: t('Árabe'), value: ['ara', 'ar'] };
     const en = { label: t('Inglês'), value: ['eng', 'en'] };
     // O idioma do app vem primeiro.
-    const choices = (currentLang() === 'en' ? [en, pt] : [pt, en]).concat([{ label: t('Não ligar sozinho'), value: [] }]);
+    const choices = (currentLang() === 'ar' ? [ar, en] : [en, ar]).concat([{ label: t('Não ligar sozinho'), value: [] }]);
     card.appendChild(
       h(
         'div.opts',

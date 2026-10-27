@@ -124,13 +124,13 @@ const DEFAULT_SETTINGS = {
   smoothScroll: false, // rolagem animada (mais bonita, mais pesada na TV)
   smartChoice: true, // Watch picks the best source and plays it
   devlogUrl: typeof __KAI_DEVLOG__ !== 'undefined' ? __KAI_DEVLOG__ : '',
-  language: 'auto', // 'auto' (idioma da TV) | 'pt' | 'en'
+  language: 'auto', // 'auto' (TV language: Arabic or English) | 'en' | 'ar'
   askProfile: true, // "Quem está assistindo?" ao abrir, se houver mais de um perfil
   wizardDone: false,
   // Perfil
   heroSource: 'cinemeta',
   oled: false,
-  subtitleLangs: ['pob', 'por', 'pt', 'pt-br'],
+  subtitleLangs: ['eng', 'en'],
   audioLangs: [], // vazio = mantém o áudio padrão do arquivo (geralmente o original)
   subtitleSize: 100,
   subtitleFont: 'nata',
@@ -145,7 +145,8 @@ const DEFAULT_SETTINGS = {
 
 export function settings() {
   // Legenda automática padrão segue o idioma do app (quem já escolheu, mantém a escolha).
-  const base = Object.assign({}, DEFAULT_SETTINGS, current() === 'en' ? { subtitleLangs: ['eng', 'en'] } : null);
+  const subs = { en: ['eng', 'en'], ar: ['ara', 'ar'] }[current()];
+  const base = Object.assign({}, DEFAULT_SETTINGS, subs ? { subtitleLangs: subs } : null);
   return Object.assign(base, rawGet('device', {}), get('settings', {}));
 }
 

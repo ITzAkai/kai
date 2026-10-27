@@ -321,3 +321,26 @@ body.oled .details-shade { background: linear-gradient(to right, #000 25%, rgba(
 .cal-modes { padding-bottom: 12px; }
 .cal-tag { position: absolute; left: 10px; bottom: 10px; max-width: 180px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; background: rgba(0,0,0,0.8); padding: 2px 10px; border-radius: 8px; font-size: 16px; font-weight: 700; color: #fff; }
 .card .poster-wrap .badge.cal-score { top: auto; bottom: 10px; right: 10px; left: auto; }
+
+/* Arabic (right-to-left). Horizontal rows keep left-to-right scrolling so remote navigation
+   and scroll positions behave the same on the TV's old engine; their contents read RTL. */
+[dir="rtl"] body { font-family: 'Montserrat', 'SamsungOneArabic', 'Noto Sans Arabic', Tahoma, sans-serif; }
+[dir="rtl"] [data-scroll-x] { direction: ltr; }
+[dir="rtl"] [data-scroll-x] > * { direction: rtl; }
+/* Arabic: mirror the banner and details layouts (text block right, picture and fade left,
+   sources panel left), and let each piece of content keep its own direction so English titles
+   and synopses don't get their punctuation moved to the wrong end. */
+[dir="rtl"] .hero-info, [dir="rtl"] .details-info { left: auto; right: 96px; }
+[dir="rtl"] .hero-bg { right: auto; left: 0; }
+[dir="rtl"] .hero-shade-left { left: auto; right: 0; background: linear-gradient(to left, #0d0b14 30%, rgba(13,11,20,0.85) 50%, rgba(13,11,20,0) 100%); }
+[dir="rtl"] .details-shade { background: linear-gradient(to left, #0d0b14 25%, rgba(13,11,20,0.7) 55%, rgba(13,11,20,0.35) 100%); }
+[dir="rtl"] .details-panel { right: auto; left: 0; }
+[dir="rtl"] .hero-title, [dir="rtl"] .hero-meta, [dir="rtl"] .hero-desc, [dir="rtl"] .card .name,
+[dir="rtl"] .details-title, [dir="rtl"] .details-meta, [dir="rtl"] .details-desc, [dir="rtl"] .details-cast,
+[dir="rtl"] .s-title, [dir="rtl"] .s-addon {
+  unicode-bidi: -webkit-plaintext; unicode-bidi: plaintext; text-align: right;
+}
+[dir="rtl"] .row-title small { margin-left: 0; margin-right: 14px; }
+[dir="rtl"] .hero-dots span { margin-right: 0; margin-left: 10px; }
+[dir="rtl"] .details-genres span { margin: 0 0 10px 10px; }
+[dir="rtl"] .btn .ico { margin-right: 0; margin-left: 12px; }

@@ -14,6 +14,7 @@ export const EN = {
   'Nada por aqui.': 'Nothing here.',
   'Carregando...': 'Loading...',
   'Ver tudo': 'See all',
+  'Árabe quando houver': 'Arabic when available',
   'Calendário': 'Calendar',
   'Streaming': 'Streaming',
   'As datas de streaming dos filmes vêm do TMDB: coloque sua chave grátis do TMDB em Ajustes.': 'Movie streaming dates come from TMDB: add your free TMDB key in Settings.',

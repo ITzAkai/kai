@@ -4,7 +4,7 @@
 import { getJSON, postJSON, cachedJSON } from '../lib/http.js';
 import * as store from '../lib/store.js';
 import { getJSONViaProxy } from './server.js';
-import { t, apiLang } from '../lib/i18n.js';
+import { t, apiLang, current } from '../lib/i18n.js';
 
 const TMDB = 'https://api.themoviedb.org/3/';
 const TMDB_IMG = 'https://image.tmdb.org/t/p/';
@@ -67,7 +67,7 @@ export function tmdbFind(imdb) {
 }
 
 function pickLogo(logos) {
-  const pref = ['pt', 'en', null];
+  const pref = current() === 'ar' ? ['ar', 'en', null] : ['en', null];
   for (let i = 0; i < pref.length; i++) {
     const l = (logos || []).find((x) => x.iso_639_1 === pref[i]);
     if (l) return TMDB_IMG + 'w500' + l.file_path;
@@ -80,7 +80,7 @@ export function localized(meta) {
   const imdb = imdbOf(meta.id);
   return tmdbFind(imdb).then((f) => {
     if (!f) return null;
-    return tmdb(f.type + '/' + f.id, { language: apiLang(), append_to_response: 'credits,images', include_image_language: 'pt,en,null' }).then((d) => ({
+    return tmdb(f.type + '/' + f.id, { language: apiLang(), append_to_response: 'credits,images', include_image_language: 'en,ar,null' }).then((d) => ({
       tmdbId: f.id,
       tmdbType: f.type,
       title: d.title || d.name || f.title,
