@@ -22,7 +22,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/ITzAkai/stremio-kai-tizen.git"
+    "url": "https://github.com/ITzAkai/kai.git"
   },
   "packageType": "app",
   "appName": "Stremio Kai",

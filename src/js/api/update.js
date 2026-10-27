@@ -4,7 +4,7 @@
 import { getJSON } from '../lib/http.js';
 import * as store from '../lib/store.js';
 
-export const REPO = 'ITzAkai/stremio-kai-tizen';
+export const REPO = 'ITzAkai/kai';
 export const REPO_URL = 'https://github.com/' + REPO;
 export const VERSION = __KAI_VERSION__;
 export const BUILD = __KAI_BUILD__; // ISO time of this build
