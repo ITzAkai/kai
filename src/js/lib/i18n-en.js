@@ -324,6 +324,8 @@ export const EN = {
   'MDBList · Tendências (Snoak)': 'MDBList · Trending (Snoak)',
   'Tema OLED (preto puro)': 'OLED theme (pure black)',
   'Fundo totalmente preto': 'Fully black background',
+  'Modo desempenho': 'Performance mode',
+  'Mais rápido na TV: sem animações, sem Novos episódios e sem sincronizar em segundo plano': 'Faster on the TV: no animations, no New episodes and no background syncing',
   'Rolagem animada': 'Animated scrolling',
   'Mais bonita, porém mais pesada na TV': 'Prettier, but heavier on the TV',
   'Legendas e áudio': 'Subtitles and audio',

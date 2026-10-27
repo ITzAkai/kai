@@ -227,7 +227,7 @@ function handle(req, res) {
   if (url.pathname === '/api/state') {
     if (q.pin !== PIN) return send(res, 401, { ok: false });
     // The player reports every few seconds; a stale report means it's no longer playing.
-    var fresh = nowPlaying && Date.now() - nowPlayingAt < 20000;
+    var fresh = nowPlaying && Date.now() - nowPlayingAt < 45000;
     return send(res, 200, { playing: fresh ? nowPlaying : null, at: nowPlayingAt });
   }
   if (url.pathname === '/api/seek' && req.method === 'POST') {

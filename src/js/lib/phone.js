@@ -132,7 +132,10 @@ export function start() {
     .then((r) => {
       if (r) last = r.last || 0;
     })
-    .catch(() => startService())
+    .catch(() => {
+      // TizenBrew may still be starting it: only step in if it's still off after 15 s.
+      setTimeout(() => request(BASE + '/api/info', 4000).catch(() => startService()), 15000);
+    })
     .then(() => poll(0));
 }
 

@@ -10,6 +10,7 @@ import * as router from '../router.js';
 import { openDetails } from './details.js';
 import * as newEpisodes from '../api/newEpisodes.js';
 import * as phone from '../lib/phone.js';
+import * as store from '../lib/store.js';
 import { CatalogView, canPage } from './catalog.js';
 import { t, epLabel } from '../lib/i18n.js';
 
@@ -53,14 +54,14 @@ export function HomeView() {
   }
   // While the home screen stays open, check every 5 minutes too.
   const syncTimer = setInterval(() => {
-    if (!el.classList.contains('hidden')) syncContinue();
+    if (!el.classList.contains('hidden') && !perf()) syncContinue();
   }, 300000);
 
   // ---------- New episodes (series in your library, released this week) ----------
-  let newList = newEpisodes.cached();
+  let newList = perf() ? [] : newEpisodes.cached();
   let newLoadedAt = 0;
   function loadNew(force) {
-    if (!force && Date.now() - newLoadedAt < 30 * 60000) return;
+    if (perf() || (!force && Date.now() - newLoadedAt < 30 * 60000)) return;
     newLoadedAt = Date.now();
     newEpisodes
       .load()
@@ -302,6 +303,10 @@ function buildRow(entry, parent) {
   return { row: row, load: load };
 }
 
+function perf() {
+  return store.settings().perfMode !== false;
+}
+
 function typeLabel(type) {
   return { movie: t('Filmes'), series: t('Séries'), anime: t('Animes'), channel: t('Canais'), tv: 'TV' }[type] || type;
 }
@@ -386,7 +391,7 @@ function buildHero() {
 
   function schedule() {
     clearTimeout(timer);
-    if (paused || items.length < 2) return;
+    if (paused || items.length < 2 || perf()) return; // Performance mode: changes only with left/right
     timer = setTimeout(() => {
       // Scrolled down to the rows: keep still, a fade there only costs smoothness.
       if (el.getBoundingClientRect().bottom > 0) {

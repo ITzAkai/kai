@@ -324,6 +324,8 @@ export const AR = {
   'MDBList · Tendências (Snoak)': 'MDBList · الرائج (Snoak)',
   'Tema OLED (preto puro)': 'سمة OLED (أسود خالص)',
   'Fundo totalmente preto': 'خلفية سوداء بالكامل',
+  'Modo desempenho': 'وضع الأداء',
+  'Mais rápido na TV: sem animações, sem Novos episódios e sem sincronizar em segundo plano': 'أسرع على التلفاز: بدون حركات، بدون الحلقات الجديدة وبدون مزامنة في الخلفية',
   'Rolagem animada': 'تمرير متحرك',
   'Mais bonita, porém mais pesada na TV': 'أجمل، لكنها أثقل على التلفاز',
   'Legendas e áudio': 'الترجمة والصوت',

@@ -406,3 +406,5 @@ body.oled .details-shade { background: linear-gradient(to right, #000 25%, rgba(
 /* New episodes row: release day on the card */
 .card .poster-wrap .badge.new-badge { left: 10px; right: auto; background: #7b5bf5; color: #fff; }
 [dir="rtl"] .card .poster-wrap .badge.new-badge { left: auto; right: 10px; }
+/* Performance mode: every change is instant (each fade/zoom repaints on the TV's slow GPU). */
+.perf *, .perf *:before, .perf *:after { -webkit-transition: none !important; transition: none !important; }

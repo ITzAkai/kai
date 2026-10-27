@@ -5088,6 +5088,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     "MDBList · Tendências (Snoak)": "MDBList · Trending (Snoak)",
     "Tema OLED (preto puro)": "OLED theme (pure black)",
     "Fundo totalmente preto": "Fully black background",
+    "Modo desempenho": "Performance mode",
+    "Mais rápido na TV: sem animações, sem Novos episódios e sem sincronizar em segundo plano": "Faster on the TV: no animations, no New episodes and no background syncing",
     "Rolagem animada": "Animated scrolling",
     "Mais bonita, porém mais pesada na TV": "Prettier, but heavier on the TV",
     "Legendas e áudio": "Subtitles and audio",
@@ -5522,6 +5524,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     "MDBList · Tendências (Snoak)": "MDBList · الرائج (Snoak)",
     "Tema OLED (preto puro)": "سمة OLED (أسود خالص)",
     "Fundo totalmente preto": "خلفية سوداء بالكامل",
+    "Modo desempenho": "وضع الأداء",
+    "Mais rápido na TV: sem animações, sem Novos episódios e sem sincronizar em segundo plano": "أسرع على التلفاز: بدون حركات، بدون الحلقات الجديدة وبدون مزامنة في الخلفية",
     "Rolagem animada": "تمرير متحرك",
     "Mais bonita, porém mais pesada na TV": "أجمل، لكنها أثقل على التلفاز",
     "Legendas e áudio": "الترجمة والصوت",
@@ -6350,7 +6354,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   function set(key, value) {
     rawSet(profileKey(activeProfile().id, key), value);
   }
-  var DEVICE_KEYS = ["serverUrl", "tmdbKey", "mdblistKey", "smoothScroll", "devlogUrl", "lastUpdateCheck", "askProfile", "wizardDone", "language"];
+  var DEVICE_KEYS = ["serverUrl", "tmdbKey", "mdblistKey", "smoothScroll", "perfMode", "devlogUrl", "lastUpdateCheck", "askProfile", "wizardDone", "language"];
   var DEFAULT_SETTINGS = {
     // TV
     serverUrl: "",
@@ -6358,6 +6362,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     mdblistKey: true ? "" : "",
     smoothScroll: false,
     // rolagem animada (mais bonita, mais pesada na TV)
+    perfMode: true,
+    // Performance mode: no animations, no New episodes row, no background sync
     smartChoice: true,
     // Watch picks the best source and plays it
     theme: "purple",
@@ -8616,7 +8622,11 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     request2(BASE + "/api/info", 3e3).then(function (r) {
       if (r) last = r.last || 0;
     }).catch(function () {
-      return startService();
+      setTimeout(function () {
+        return request2(BASE + "/api/info", 4e3).catch(function () {
+          return startService();
+        });
+      }, 15e3);
     }).then(function () {
       return poll(0);
     });
@@ -9000,7 +9010,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     });
     var nowTimer = setInterval(function () {
       return alive && !videoEl.paused && sendNowPlaying();
-    }, 5e3);
+    }, 15e3);
     var UP_NEXT_SECONDS = 25;
     var UP_NEXT_COUNT = 10;
     var upNextTimer = null;
@@ -11039,12 +11049,12 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       }).catch(function () {});
     }
     var syncTimer = setInterval(function () {
-      if (!el.classList.contains("hidden")) syncContinue();
+      if (!el.classList.contains("hidden") && !perf()) syncContinue();
     }, 3e5);
-    var newList = cached();
+    var newList = perf() ? [] : cached();
     var newLoadedAt = 0;
     function loadNew(force) {
-      if (!force && Date.now() - newLoadedAt < 30 * 6e4) return;
+      if (perf() || !force && Date.now() - newLoadedAt < 30 * 6e4) return;
       newLoadedAt = Date.now();
       load4().then(function (list2) {
         newList = list2;
@@ -11336,6 +11346,9 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       load: load5
     };
   }
+  function perf() {
+    return settings().perfMode !== false;
+  }
   function typeLabel(type) {
     return {
       movie: t("Filmes"),
@@ -11435,7 +11448,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
     function schedule() {
       clearTimeout(timer);
-      if (paused || items.length < 2) return;
+      if (paused || items.length < 2 || perf()) return;
       timer = setTimeout(function () {
         if (el.getBoundingClientRect().bottom > 0) {
           index = (index + 1) % items.length;
@@ -11720,7 +11733,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   var REPO = "ITzAkai/stremio-kai-tizen";
   var REPO_URL = "https://github.com/" + REPO;
   var VERSION = "1.2.0-tizen.1";
-  var BUILD = "2026-10-27T16:28:05.431Z";
+  var BUILD = "2026-10-27T16:33:21.219Z";
   var RAW = "https://raw.githubusercontent.com/" + REPO + "/main/";
   var CDN = "https://cdn.jsdelivr.net/gh/" + REPO + "/";
   var PURGE = "https://purge.jsdelivr.net/gh/" + REPO + "/";
@@ -12393,6 +12406,15 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         });
         render();
       }, toggle(s.smartChoice !== false)));
+      body.appendChild(row(t("Modo desempenho"), t("Mais rápido na TV: sem animações, sem Novos episódios e sem sincronizar em segundo plano"), "", function () {
+        var on = settings().perfMode === false;
+        saveSettings({
+          perfMode: on
+        });
+        document.body.classList.toggle("perf", on);
+        dropTab("home");
+        render();
+      }, toggle(settings().perfMode !== false)));
       body.appendChild(row(t("Rolagem animada"), t("Mais bonita, porém mais pesada na TV"), "", function () {
         var on = !settings().smoothScroll;
         saveSettings({
@@ -13213,6 +13235,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     var s = settings();
     document.body.classList.toggle("oled", !!s.oled);
     apply3(s.theme);
+    document.body.classList.toggle("perf", s.perfMode !== false);
     log.info("Perfil", activeProfile().name);
     if (isLoggedIn()) {
       refreshUser().catch(function () {});

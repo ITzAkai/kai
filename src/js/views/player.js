@@ -293,7 +293,7 @@ function PlayerView(opts) {
     sendNowPlaying();
   });
   ['play', 'pause', 'seeked', 'loadedmetadata'].forEach((ev) => videoEl.addEventListener(ev, sendNowPlaying));
-  const nowTimer = setInterval(() => alive && !videoEl.paused && sendNowPlaying(), 5000);
+  const nowTimer = setInterval(() => alive && !videoEl.paused && sendNowPlaying(), 15000);
 
   // ---------- Up next ----------
   // Starts at the credits (the outro segment, when known) or UP_NEXT_SECONDS before the end.

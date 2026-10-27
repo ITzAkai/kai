@@ -344,6 +344,15 @@ export function SettingsView() {
       }, toggle(s.smartChoice !== false))
     );
     body.appendChild(
+      row(t('Modo desempenho'), t('Mais rápido na TV: sem animações, sem Novos episódios e sem sincronizar em segundo plano'), '', () => {
+        const on = store.settings().perfMode === false;
+        store.saveSettings({ perfMode: on });
+        document.body.classList.toggle('perf', on);
+        router.dropTab('home'); // rebuilt with or without the extras
+        render();
+      }, toggle(store.settings().perfMode !== false))
+    );
+    body.appendChild(
       row(t('Rolagem animada'), t('Mais bonita, porém mais pesada na TV'), '', () => {
         const on = !store.settings().smoothScroll;
         store.saveSettings({ smoothScroll: on });
