@@ -137,6 +137,17 @@ export function person(id) {
   });
 }
 
+// People matching a search (actors and directors with a photo), most popular first.
+export function searchPeople(query) {
+  if (!tmdbKey()) return Promise.resolve([]);
+  return tmdb('search/person', { query: query, include_adult: 'false', language: apiLang() }).then((r) =>
+    ((r && r.results) || [])
+      .filter((p) => p.profile_path && (p.known_for_department === 'Acting' || p.known_for_department === 'Directing') && p.popularity > 1)
+      .slice(0, 12)
+      .map((p) => ({ id: p.id, name: p.name, photo: TMDB_IMG + 'w185' + p.profile_path }))
+  );
+}
+
 // TMDB movie/tv id → IMDb id, which Stremio's catalogs use.
 export function tmdbImdb(type, id) {
   return tmdb(type + '/' + id + '/external_ids', {}).then((r) => (r && r.imdb_id) || null);

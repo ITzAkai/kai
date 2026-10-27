@@ -123,6 +123,7 @@ const DEFAULT_SETTINGS = {
   mdblistKey: typeof __KAI_MDBLIST__ !== 'undefined' ? __KAI_MDBLIST__ : '',
   smoothScroll: false, // rolagem animada (mais bonita, mais pesada na TV)
   smartChoice: true, // Watch picks the best source and plays it
+  theme: 'purple', // see lib/theme.js
   devlogUrl: typeof __KAI_DEVLOG__ !== 'undefined' ? __KAI_DEVLOG__ : '',
   language: 'auto', // 'auto' (TV language: Arabic or English) | 'en' | 'ar'
   askProfile: true, // "Quem está assistindo?" ao abrir, se houver mais de um perfil
@@ -138,7 +139,7 @@ const DEFAULT_SETTINGS = {
   subtitleColor: '#ffffff',
   subtitleBold: true,
   subtitlePosition: 'low',
-  skipMode: 'prompt', // prompt | auto | off
+  skipMode: 'auto', // auto (default) | prompt | off
   subtitlesAuto: true,
   localAddons: [],
 };

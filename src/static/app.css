@@ -388,3 +388,17 @@ body.oled .details-shade { background: linear-gradient(to right, #000 25%, rgba(
 .un-buttons { margin-top: 20px; display: -webkit-flex; display: flex; }
 .un-buttons .btn { margin-right: 14px; }
 [dir="rtl"] .un-buttons .btn { margin-right: 0; margin-left: 14px; }
+
+/* Watched markers in the episode list */
+.episode .thumb { position: relative; }
+.ep-watched { position: absolute; right: 8px; top: 8px; width: 34px; height: 34px; line-height: 34px; text-align: center; border-radius: 17px; background: #7b5bf5; color: #fff; font-weight: 800; font-size: 20px; }
+.episode.watched .ep-title { color: rgba(255,255,255,0.6); }
+.episode.watched .ep-title:after { content: none; }
+.episode .thumb .progress { position: absolute; left: 0; right: 0; bottom: 0; height: 6px; background: rgba(255,255,255,0.25); }
+.episode .thumb .progress i { display: block; height: 100%; background: #9d85ff; }
+/* People row in search */
+.people-row .row-track { padding-top: 10px; padding-bottom: 10px; }
+.person-card { width: 150px; margin-right: 22px; }
+.person-card .ph { width: 130px; height: 130px; border-radius: 65px; }
+.person-card .nm { font-size: 19px; }
+.person-card.focused .ph { box-shadow: 0 0 0 5px #9d85ff; }

@@ -16,6 +16,8 @@ import { menu, toast, fmtTime, timeHM } from '../ui.js';
 import * as router from '../router.js';
 import { sortedVideos, openDetails } from './details.js';
 import { t } from '../lib/i18n.js';
+import * as watched from '../lib/watched.js';
+import * as phone from '../lib/phone.js';
 
 const HIDE_MS = 5000;
 const SAVE_MS = 15000;
@@ -267,9 +269,31 @@ function PlayerView(opts) {
   });
   videoEl.addEventListener('ended', () => {
     saveProgress();
+    watched.record(video.id, 1);
     if (opts.isSeries && nextVideo() && !upNextCancelled) playNext();
     else router.pop();
   });
+
+  // ---------- Now playing on the phone remote ----------
+  function sendNowPlaying() {
+    const d = videoEl.duration;
+    phone.nowPlaying({
+      title: meta.name || '',
+      episode: opts.isSeries ? 'T' + video.season + ' E' + video.episode + (video.name || video.title ? ' · ' + (video.name || video.title) : '') : '',
+      poster: meta.poster || '',
+      position: Math.floor(videoEl.currentTime || 0),
+      duration: d > 0 && isFinite(d) ? Math.floor(d) : 0,
+      paused: videoEl.paused,
+    });
+  }
+  phone.onSeek((sec) => {
+    if (!alive || !(videoEl.duration > 0)) return;
+    videoEl.currentTime = Math.max(0, Math.min(sec, videoEl.duration - 2));
+    showControls();
+    sendNowPlaying();
+  });
+  ['play', 'pause', 'seeked', 'loadedmetadata'].forEach((ev) => videoEl.addEventListener(ev, sendNowPlaying));
+  const nowTimer = setInterval(() => alive && !videoEl.paused && sendNowPlaying(), 5000);
 
   // ---------- Up next ----------
   // Starts at the credits (the outro segment, when known) or UP_NEXT_SECONDS before the end.
@@ -315,6 +339,7 @@ function PlayerView(opts) {
 
   function upNextGo() {
     upNextStop(false);
+    watched.record(video.id, 1); // reached the credits
     upNextCancelled = false;
     playNext();
   }
@@ -408,7 +433,8 @@ function PlayerView(opts) {
         if (seg) activeSeg = null;
         return;
       }
-      if (store.settings().skipMode === 'auto') {
+      // Auto mode skips intros and recaps; the credits of a series are left to the Up next card.
+      if (store.settings().skipMode === 'auto' && !(seg.type === 'outro' && opts.isSeries && nextVideo())) {
         doSkip();
         return;
       }
@@ -999,6 +1025,7 @@ function PlayerView(opts) {
     const delta = watchedDelta;
     watchedDelta = 0;
     if (meta.id === 'dev') return; // teste de desenvolvimento: não mexe na biblioteca
+    watched.record(video.id, videoEl.currentTime / d);
     stremio.saveProgress(meta, video.id, videoEl.currentTime * 1000, d * 1000, delta);
   }
 
@@ -1113,6 +1140,9 @@ function PlayerView(opts) {
     },
     destroy: () => {
       alive = false;
+      clearInterval(nowTimer);
+      phone.onSeek(null);
+      phone.nowPlaying(null);
       clearInterval(ticker);
       clearInterval(saveTimer);
       clearInterval(watchTimer);

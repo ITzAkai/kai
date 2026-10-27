@@ -34,6 +34,15 @@
   .type input:focus { border-color: var(--accent); }
   .type button { padding: 0 20px; background: var(--accent); font-weight: 700; }
   .hint { color: var(--muted); font-size: 13px; text-align: center; margin: -10px 0 0; }
+  .now { display: flex; gap: 14px; background: var(--card); border-radius: 18px; padding: 12px; }
+  .now[hidden] { display: none; }
+  .now img { width: 74px; height: 110px; object-fit: cover; border-radius: 10px; background: #2d2840; flex-shrink: 0; }
+  .np-info { flex: 1; min-width: 0; display: flex; flex-direction: column; justify-content: center; }
+  .np-title { font-weight: 700; font-size: 17px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .np-ep { color: var(--muted); font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-height: 17px; }
+  .np-info input[type=range] { width: 100%; margin: 10px 0 4px; accent-color: var(--accent); }
+  .np-times { display: flex; justify-content: space-between; align-items: center; font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+  .np-times button { width: 46px; height: 34px; border-radius: 12px; font-size: 16px; }
   .type .mic { padding: 0 16px; background: var(--key); font-size: 22px; }
   .type .mic.on { background: #e5484d; }
   .pin { display: none; flex-direction: column; gap: 14px; align-items: center; text-align: center; padding-top: 30px; }
@@ -55,6 +64,15 @@
 </section>
 
 <main>
+  <section class="now" id="now" hidden>
+    <img id="npPoster" alt="">
+    <div class="np-info">
+      <div class="np-title" id="npTitle"></div>
+      <div class="np-ep" id="npEp"></div>
+      <input type="range" id="npSeek" min="0" max="100" value="0">
+      <div class="np-times"><span id="npPos">0:00</span><button id="npPlay" data-key="10252">⏯</button><span id="npDur">0:00</span></div>
+    </div>
+  </section>
   <div class="pad">
     <button class="up" data-key="38" aria-label="Up">▲</button>
     <button class="left" data-key="37" aria-label="Left">◀</button>
@@ -70,6 +88,11 @@
   <div class="row two">
     <button data-key="412">⏪<small>Rewind</small></button>
     <button data-key="417">⏩<small>Forward</small></button>
+  </div>
+  <div class="row">
+    <button data-vol="down">🔉<small>Volume −</small></button>
+    <button data-vol="mute">🔇<small>Mute</small></button>
+    <button data-vol="up">🔊<small>Volume +</small></button>
   </div>
   <div class="row two">
     <button data-key="428">⏪ Aa<small>Subtitles earlier</small></button>
@@ -109,6 +132,7 @@
       try { localStorage.setItem('kaiRemotePin', p); } catch (e) {}
       document.body.classList.remove('locked');
       status('Connected', 'ok');
+      refreshNow();
       return true;
     });
   }
@@ -145,6 +169,49 @@
     if (!input.value) return;
     post('/api/text?submit=1', input.value).then(function () { input.value = ''; });
   };
+
+  // Volume: the TV's own volume, through the TV.
+  Array.prototype.forEach.call(document.querySelectorAll('[data-vol]'), function (b) {
+    b.addEventListener('click', function () {
+      if (navigator.vibrate) navigator.vibrate(10);
+      fetch('/api/volume?dir=' + b.getAttribute('data-vol') + '&pin=' + encodeURIComponent(pin), { method: 'POST' })
+        .then(function (r) { return r.json(); })
+        .then(function (r) { if (r.ok) status('Connected', 'ok'); else status(/allow/.test(r.error || '') ? 'Allow the remote on the TV' : 'Volume not available', 'bad'); })
+        .catch(function () { status('TV not reachable', 'bad'); });
+    });
+  });
+
+  // Now playing: poster, title and a progress bar you can drag to jump.
+  var nowEl = document.getElementById('now'), seek = document.getElementById('npSeek'), dragging = false, lastPoster = '';
+  function fmt(sec) {
+    sec = Math.max(0, Math.floor(sec)); var h = Math.floor(sec / 3600), m = Math.floor(sec % 3600 / 60), s = sec % 60;
+    return (h ? h + ':' + (m < 10 ? '0' : '') : '') + m + ':' + (s < 10 ? '0' : '') + s;
+  }
+  function refreshNow() {
+    if (!pin || document.body.classList.contains('locked') || document.hidden) return;
+    fetch('/api/state?pin=' + encodeURIComponent(pin)).then(function (r) { return r.json(); }).then(function (r) {
+      var p = r.playing;
+      nowEl.hidden = !p;
+      if (!p) return;
+      document.getElementById('npTitle').textContent = p.title;
+      document.getElementById('npEp').textContent = p.episode || '';
+      if (p.poster && p.poster !== lastPoster) { document.getElementById('npPoster').src = lastPoster = p.poster; }
+      document.getElementById('npDur').textContent = fmt(p.duration);
+      document.getElementById('npPlay').textContent = p.paused ? '▶' : '⏸';
+      if (!dragging && p.duration) {
+        // The TV reports every few seconds; move the bar along in between.
+        var pos = p.paused ? p.position : p.position + (Date.now() - r.at) / 1000;
+        seek.max = p.duration; seek.value = Math.min(pos, p.duration);
+        document.getElementById('npPos').textContent = fmt(pos);
+      }
+    }).catch(function () {});
+  }
+  seek.addEventListener('input', function () { dragging = true; document.getElementById('npPos').textContent = fmt(seek.value); });
+  seek.addEventListener('change', function () {
+    dragging = false;
+    post('/api/seek?to=' + Math.floor(seek.value));
+  });
+  setInterval(refreshNow, 2000);
 
   // Search on the TV from anywhere in the app (typed, keyboard dictation, or the mic button).
   var query = document.getElementById('query');

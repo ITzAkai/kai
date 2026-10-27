@@ -6,6 +6,8 @@ import { topbar, card, spinnerLine } from '../ui.js';
 import * as router from '../router.js';
 import { openDetails } from './details.js';
 import { t } from '../lib/i18n.js';
+import * as extras from '../api/extras.js';
+import { PersonView } from './person.js';
 
 export function SearchView() {
   const el = h('div.view');
@@ -30,9 +32,32 @@ export function SearchView() {
     }
     const my = ++token;
     results.appendChild(spinnerLine(t('Buscando "{q}"...', { q: query })));
+    // People first: a row of actors/directors (TMDB), each opening their profile.
+    const people = h('div.row.people-row', { 'data-anchor': '30' });
+    extras
+      .searchPeople(query)
+      .then((list) => {
+        if (my !== token || !list.length) return;
+        people.appendChild(h('div.row-title', { text: t('Pessoas') }));
+        people.appendChild(
+          h(
+            'div.row-track',
+            { 'data-scroll-x': '', 'data-group': '' },
+            list.map((p) =>
+              h('div.cast.person-card', { focusable: true, onSelect: () => router.push(PersonView(p.id, p.name)) }, [
+                h('div.ph', null, h('img', { src: p.photo, alt: '' })),
+                h('div.nm', { text: p.name }),
+              ])
+            )
+          )
+        );
+        results.insertBefore(people, results.firstChild);
+      })
+      .catch(() => {});
     addons.load().then(() => {
       if (my !== token) return;
       clear(results);
+      if (people.firstChild) results.appendChild(people);
       const cats = addons.searchCatalogs();
       if (!cats.length) results.appendChild(h('div.hint', { text: t('Nenhum addon com busca instalado.') }));
       let found = 0;

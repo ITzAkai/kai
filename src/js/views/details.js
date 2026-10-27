@@ -10,6 +10,7 @@ import { toast, spinnerLine, menu, fmtTime } from '../ui.js';
 import * as router from '../router.js';
 import { openPlayer } from './player.js';
 import { PersonView } from './person.js';
+import * as watched from '../lib/watched.js';
 import { trailerIds, openTrailer } from './trailer.js';
 import * as extras from '../api/extras.js';
 import { smallThumb } from '../lib/img.js';
@@ -277,7 +278,12 @@ function DetailsView(type, id, opts) {
         if (v.released) sub += ' · ' + formatDate(v.released);
         const inProgress = li && li.state && li.state.video_id === v.id && li.state.timeOffset > 0;
         if (inProgress) sub += ' · ' + t('parou em {time}', { time: fmtTime(li.state.timeOffset / 1000) });
-        const row = h('div.episode', { focusable: true, onSelect: () => showStreams(v, true) }, [
+        // Watched markers: a check on finished episodes, a bar on half-watched ones.
+        const done = watched.isWatched(v.id);
+        const part = done ? 0 : watched.progress(v.id) || (inProgress && li.state.duration ? li.state.timeOffset / li.state.duration : 0);
+        if (done) thumb.appendChild(h('div.ep-watched', { text: '✓' }));
+        else if (part > 0) thumb.appendChild(h('div.progress', null, h('i', { style: { width: Math.round(part * 100) + '%' } })));
+        const row = h('div.episode', { focusable: true, cls: done ? 'watched' : '', onSelect: () => showStreams(v, true) }, [
           thumb,
           h('div.ep-info', null, [
             h('div.ep-title', { text: (v.episode ? v.episode + '. ' : '') + (v.name || v.title || t('Episódio')) }),

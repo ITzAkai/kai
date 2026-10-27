@@ -51,6 +51,19 @@ function typeText(text, submit) {
   if (submit) fireKey(ENTER); // same as confirming on the TV keyboard
 }
 
+// "Now playing" for the phone: the player reports what's on screen; the phone shows it and can seek.
+export function nowPlaying(state) {
+  const x = new XMLHttpRequest();
+  x.open('POST', BASE + '/api/state');
+  x.onerror = () => {};
+  x.send(JSON.stringify(state || null));
+}
+
+let seekHandler = null;
+export function onSeek(fn) {
+  seekHandler = fn;
+}
+
 // Search from the phone (typed or spoken): opens the Search tab and runs it, from any screen.
 let searchHandler = null;
 export function onSearch(fn) {
@@ -61,6 +74,7 @@ function handle(ev) {
   if (ev.type === 'key') fireKey(ev.code);
   else if (ev.type === 'text') typeText(ev.text, ev.submit);
   else if (ev.type === 'search' && searchHandler && ev.text) searchHandler(ev.text);
+  else if (ev.type === 'seek' && seekHandler) seekHandler(ev.to);
 }
 
 // Polls forever; when the service isn't running (e.g. outside TizenBrew) it checks again slowly.

@@ -13,6 +13,8 @@ var KEEP = 50; // events kept for late pollers
 var PIN = String(1000 + Math.floor(Math.random() * 9000));
 
 var events = [];
+var nowPlaying = null;
+var nowPlayingAt = 0;
 var nextId = 1;
 var waiting = [];
 
@@ -78,6 +80,55 @@ function remotePage() {
   return page;
 }
 
+// Volume: the app can't change it itself, so it presses the TV's own volume keys through
+// Samsung's remote-control API (the one phone remote apps use), on this TV only. The first time,
+// the TV may ask to allow "Stremio Kai Remote".
+var tvWs = null;
+var tvQueue = [];
+function tvKey(keyName, cb) {
+  var WebSocket;
+  try {
+    WebSocket = require('ws');
+  } catch (e) {
+    return cb('no websocket module');
+  }
+  var msg = JSON.stringify({
+    method: 'ms.remote.control',
+    params: { Cmd: 'Click', DataOfCmd: keyName, Option: 'false', TypeOfRemote: 'SendRemoteKey' }
+  });
+  if (tvWs && tvWs.readyState === 1) {
+    tvWs.send(msg);
+    return cb(null);
+  }
+  tvQueue.push({ msg: msg, cb: cb });
+  if (tvWs) return;
+  var name = new Buffer('Stremio Kai Remote').toString('base64');
+  tvWs = new WebSocket('ws://127.0.0.1:8001/api/v2/channels/samsung.remote.control?name=' + name);
+  var flush = function (err) {
+    var q = tvQueue;
+    tvQueue = [];
+    q.forEach(function (item) {
+      if (!err && tvWs && tvWs.readyState === 1) tvWs.send(item.msg);
+      item.cb(err);
+    });
+  };
+  tvWs.on('message', function (data) {
+    // The TV answers ms.channel.connect once the connection is allowed.
+    if (String(data).indexOf('ms.channel.connect') >= 0) flush(null);
+    else if (String(data).indexOf('ms.channel.unauthorized') >= 0) flush('not allowed on the TV');
+  });
+  tvWs.on('error', function () {
+    tvWs = null;
+    flush('TV remote API unreachable');
+  });
+  tvWs.on('close', function () {
+    tvWs = null;
+  });
+  setTimeout(function () {
+    if (tvQueue.length) flush('waiting for the TV to allow the remote');
+  }, 15000);
+}
+
 var server = http.createServer(function (req, res) {
   var url = require('url').parse(req.url, true);
   var q = url.query;
@@ -108,6 +159,19 @@ var server = http.createServer(function (req, res) {
     return;
   }
 
+  if (url.pathname === '/api/state' && req.method === 'POST') {
+    if (!isLocal(req)) return send(res, 403, { error: 'local only' });
+    return readBody(req, function (body) {
+      try {
+        nowPlaying = JSON.parse(body);
+      } catch (e) {
+        nowPlaying = null;
+      }
+      nowPlayingAt = Date.now();
+      send(res, 200, { ok: true });
+    });
+  }
+
   // ---- Phone side ----
   if (url.pathname === '/' || url.pathname === '/index.html') {
     return send(res, 200, remotePage(), 'text/html; charset=utf-8');
@@ -127,6 +191,27 @@ var server = http.createServer(function (req, res) {
     return readBody(req, function (text) {
       push({ type: 'search', text: String(text).slice(0, 200) });
       send(res, 200, { ok: true });
+    });
+  }
+  if (url.pathname === '/api/state') {
+    if (q.pin !== PIN) return send(res, 401, { ok: false });
+    // The player reports every few seconds; a stale report means it's no longer playing.
+    var fresh = nowPlaying && Date.now() - nowPlayingAt < 20000;
+    return send(res, 200, { playing: fresh ? nowPlaying : null, at: nowPlayingAt });
+  }
+  if (url.pathname === '/api/seek' && req.method === 'POST') {
+    if (q.pin !== PIN) return send(res, 401, { ok: false });
+    var to = parseInt(q.to, 10);
+    if (!(to >= 0)) return send(res, 400, { ok: false });
+    push({ type: 'seek', to: to });
+    return send(res, 200, { ok: true });
+  }
+  if (url.pathname === '/api/volume' && req.method === 'POST') {
+    if (q.pin !== PIN) return send(res, 401, { ok: false });
+    var keyName = { up: 'KEY_VOLUP', down: 'KEY_VOLDOWN', mute: 'KEY_MUTE' }[q.dir];
+    if (!keyName) return send(res, 400, { ok: false });
+    return tvKey(keyName, function (err) {
+      send(res, err ? 502 : 200, { ok: !err, error: err || undefined });
     });
   }
   if (url.pathname === '/api/text' && req.method === 'POST') {

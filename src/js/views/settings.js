@@ -16,6 +16,7 @@ import { openLogin } from './login.js';
 import { avatar, switchProfile, createProfile } from './profiles.js';
 import { t } from '../lib/i18n.js';
 import * as phone from '../lib/phone.js';
+import * as theme from '../lib/theme.js';
 
 const SUB_LANGS = [
   { label: 'Inglês', value: ['eng', 'en'] },
@@ -312,6 +313,22 @@ export function SettingsView() {
         )
       )
     );
+    const curTheme = theme.THEMES.find((x) => x.id === s.theme) || theme.THEMES[0];
+    body.appendChild(
+      row(t('Tema de cores'), t('Cor de destaque do app'), t(curTheme.label), () =>
+        menu(
+          t('Tema de cores'),
+          theme.THEMES.map((x) => ({ label: t(x.label), value: x.id, checked: x.id === curTheme.id })),
+          {
+            onPick: (v) => {
+              store.saveSettings({ theme: v });
+              theme.apply(v);
+              render();
+            },
+          }
+        )
+      )
+    );
     body.appendChild(
       row(t('Tema OLED (preto puro)'), t('Fundo totalmente preto'), '', () => {
         const on = !store.settings().oled;
@@ -412,13 +429,13 @@ export function SettingsView() {
       t('Pular abertura e encerramento'),
       t('IntroDB (séries e filmes) e AniSkip (animes)'),
       [
-        { id: 'prompt', label: t('Mostrar botão "Pular"') },
         { id: 'auto', label: t('Pular automaticamente') },
+        { id: 'prompt', label: t('Mostrar botão "Pular"') },
         { id: 'off', label: t('Desligado') },
       ],
       'skipMode',
       s.skipMode,
-      { prompt: t('Mostrar botão'), auto: t('Automático'), off: t('Desligado') }[s.skipMode] || t('Mostrar botão')
+      { prompt: t('Mostrar botão'), auto: t('Automático'), off: t('Desligado') }[s.skipMode] || t('Automático')
     );
 
     // ---- Metadados (opcional, como no Kai) ----

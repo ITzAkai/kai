@@ -22,6 +22,7 @@ import * as profiles from './views/profiles.js';
 import { openLogin } from './views/login.js';
 import { registerTizenKeys } from './lib/platform.js';
 import * as phone from './lib/phone.js';
+import * as theme from './lib/theme.js';
 
 function boot() {
   const s = store.settings();
@@ -80,6 +81,7 @@ function start() {
   stremio.reloadProfile();
   const s = store.settings();
   document.body.classList.toggle('oled', !!s.oled);
+  theme.apply(s.theme);
   log.info('Perfil', store.activeProfile().name);
 
   // Atualiza a conta em segundo plano; a tela inicial abre com o cache.

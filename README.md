@@ -35,7 +35,8 @@ start, it moves on to the next best one. **Sources** still shows the full list.
 ### Phone remote
 Use your phone as the remote, no app to install. Scan the QR code in **Settings → Phone remote**
 and your phone's browser opens a remote with a D-pad, OK, Back and playback buttons, subtitle
-sync buttons, **Search on the TV** (type, or speak with your keyboard's 🎤: the TV jumps to Search
+sync and volume buttons, a **Now playing** card (poster, title and a progress bar you can drag
+to jump anywhere), **Search on the TV** (type, or speak with your keyboard's 🎤: the TV jumps to Search
 from any screen), and a text box that types straight into the TV's search or sign-in fields. A PIN shown on the TV keeps
 others on your Wi-Fi out. It runs as a small TizenBrew service on the TV, nothing leaves your
 home network.
@@ -88,6 +89,13 @@ theme, subtitle and streaming-server settings, all usable with the remote.
 ![A trailer playing full screen](docs/screenshots/trailer.jpg)
 
 ### Watching
+- **Skip intros automatically.** Intros and recaps are skipped on their own (IntroDB and
+  AniSkip); at the credits the Up next card takes over. Settings → Skip intro can switch back to
+  a button.
+- **Watched markers.** Finished episodes get a ✓ and half-watched ones a progress bar.
+
+![Episodes with watched markers](docs/screenshots/watched.jpg)
+
 - **Up next.** Near the end of an episode (at the credits, when known) a card shows the next
   episode with a 10-second countdown: **Play now**, or **Cancel** / Back to stay.
 - **Subtitle sync shortcut.** Subtitles out of time? While playing, press **Channel up/down**
@@ -97,7 +105,14 @@ theme, subtitle and streaming-server settings, all usable with the remote.
   carry on on your phone, PC or Fire TV, and the other way round. The TV refreshes the row when
   you come back to the home screen.
 
+### Themes
+Purple, gold, teal, red, blue or green: **Settings → Colour theme** recolours the whole app.
+
+![Gold theme](docs/screenshots/theme-gold.jpg)
+
 ### And more
+- **Search by actor.** With a TMDB key, search shows matching actors and directors first; each
+  opens their profile.
 - **In-app updater.** Settings shows the installed and newest version; one press updates.
 - **Your Stremio account.** Sign in with a code (on your phone at link.stremio.com) or by email.
   Add-ons, library and "Continue watching" come from your account, and progress syncs back.
