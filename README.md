@@ -85,6 +85,7 @@ theme, subtitle and streaming-server settings, all usable with the remote.
   no Arabic text).
 
 ### And more
+- **In-app updater.** Settings shows the installed and newest version; one press updates.
 - **Your Stremio account.** Sign in with a code (on your phone at link.stremio.com) or by email.
   Add-ons, library and "Continue watching" come from your account, and progress syncs back.
 - **Ratings.** IMDb out of the box; Rotten Tomatoes, Metacritic, Letterboxd and Trakt with a
@@ -194,7 +195,9 @@ Leave Developer Mode on from now on, or TizenBrew won't open.
    shown on the TV, or sign in with email.
 3. Your add-ons and library load from your account. Pick something and play.
 
-TizenBrew picks up updates to Stremio Kai automatically.
+**Updating:** open **Settings → Updates**. It shows your installed version and the newest one on
+GitHub with what changed; **Check for update → Update now** installs it and reloads the app. The
+app also checks once a day and tells you when there's something new.
 
 ### Troubleshooting
 
