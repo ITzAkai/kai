@@ -106,6 +106,24 @@ function poll(wait) {
   }, wait);
 }
 
+// TizenBrew starts the service once, when it opens the app; if that failed (download error,
+// crash) it stays off. TizenBrew's own channel on the TV can start it again: returns true if asked.
+function startService() {
+  const m = location.pathname.match(/\/module\/([^/]+)\//);
+  if (!m || typeof WebSocket === 'undefined') return false;
+  try {
+    const ws = new WebSocket('ws://127.0.0.1:8081');
+    ws.onopen = () => {
+      ws.send(JSON.stringify({ type: 6, payload: { fullName: decodeURIComponent(m[1]), serviceFile: 'dist/remote-service.js' } }));
+      setTimeout(() => ws.close(), 1000);
+    };
+    ws.onerror = () => {};
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
+
 export function start() {
   if (started) return;
   started = true;
@@ -114,15 +132,17 @@ export function start() {
     .then((r) => {
       if (r) last = r.last || 0;
     })
-    .catch(() => {})
+    .catch(() => startService())
     .then(() => poll(0));
 }
 
-// { ip, port, pin, url } for Settings, or null when the service isn't running.
+// { ip, port, pin, url } for Settings, or null when the service isn't running (after one restart try).
 export function info() {
-  return request(BASE + '/api/info', 4000)
-    .then((r) => (r && r.ip ? { ip: r.ip, port: r.port, pin: r.pin, url: 'http://' + r.ip + ':' + r.port + '/#pin=' + r.pin } : null))
-    .catch(() => null);
+  const get = () =>
+    request(BASE + '/api/info', 4000)
+      .then((r) => (r && r.ip ? { ip: r.ip, port: r.port, pin: r.pin, url: 'http://' + r.ip + ':' + r.port + '/#pin=' + r.pin } : null))
+      .catch(() => null);
+  return get().then((i) => (i || !startService() ? i : new Promise((r) => setTimeout(r, 5000)).then(get)));
 }
 
 // QR code as an image (GIF data URL), readable from across the room.

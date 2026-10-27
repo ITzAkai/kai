@@ -52,7 +52,7 @@ export const EN = {
   "Esse título ainda não tem página no Stremio.": "This title doesn't have a Stremio page yet.",
   "Não foi possível carregar este perfil.": "Couldn't load this profile.",
   'Controle pelo celular': 'Phone remote',
-  'O controle pelo celular funciona quando o app é aberto pelo TizenBrew.': 'The phone remote works when the app is opened from TizenBrew.',
+  'O controle pelo celular não está rodando. Feche o app e abra de novo pelo TizenBrew.': "The phone remote isn't running. Close the app and open it again from TizenBrew.",
   'Aponte a câmera do celular para o código': "Point your phone's camera at the code",
   'Ou abra no navegador do celular (mesmo Wi-Fi):': "Or open this in your phone's browser (same Wi-Fi):",
   'PIN: {pin}': 'PIN: {pin}',

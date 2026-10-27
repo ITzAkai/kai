@@ -4823,7 +4823,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     "Esse título ainda não tem página no Stremio.": "This title doesn't have a Stremio page yet.",
     "Não foi possível carregar este perfil.": "Couldn't load this profile.",
     "Controle pelo celular": "Phone remote",
-    "O controle pelo celular funciona quando o app é aberto pelo TizenBrew.": "The phone remote works when the app is opened from TizenBrew.",
+    "O controle pelo celular não está rodando. Feche o app e abra de novo pelo TizenBrew.": "The phone remote isn't running. Close the app and open it again from TizenBrew.",
     "Aponte a câmera do celular para o código": "Point your phone's camera at the code",
     "Ou abra no navegador do celular (mesmo Wi-Fi):": "Or open this in your phone's browser (same Wi-Fi):",
     "PIN: {pin}": "PIN: {pin}",
@@ -5257,7 +5257,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     "Esse título ainda não tem página no Stremio.": "لا توجد صفحة لهذا العنوان في Stremio بعد.",
     "Não foi possível carregar este perfil.": "تعذّر تحميل هذا الملف الشخصي.",
     "Controle pelo celular": "التحكم بالهاتف",
-    "O controle pelo celular funciona quando o app é aberto pelo TizenBrew.": "يعمل التحكم بالهاتف عند فتح التطبيق من TizenBrew.",
+    "O controle pelo celular não está rodando. Feche o app e abra de novo pelo TizenBrew.": "التحكم بالهاتف لا يعمل. أغلق التطبيق وافتحه مرة أخرى من TizenBrew.",
     "Aponte a câmera do celular para o código": "وجّه كاميرا الهاتف نحو الرمز",
     "Ou abra no navegador do celular (mesmo Wi-Fi):": "أو افتح هذا العنوان في متصفح الهاتف (نفس شبكة Wi-Fi):",
     "PIN: {pin}": "الرمز السري: {pin}",
@@ -6107,14 +6107,11 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       focusFirst();
       return true;
     }
-    var all2 = candidates(layer.root).filter(function (e) {
-      return e !== cur;
-    });
     var group = cur.closest("[data-group]");
     var horizontal = dir === "left" || dir === "right";
     if (group && horizontal === !group.hasAttribute("data-vertical")) {
-      var inGroup = all2.filter(function (e) {
-        return group.contains(e);
+      var inGroup = candidates(group).filter(function (e) {
+        return e !== cur;
       });
       var g = pick(inGroup, cur, dir);
       if (g) {
@@ -6123,6 +6120,9 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       }
       if (group.hasAttribute("data-trap")) return false;
     }
+    var all2 = candidates(layer.root).filter(function (e) {
+      return e !== cur;
+    });
     var best = pick(all2, cur, dir);
     if (!best) return false;
     var bg = best.closest("[data-group]");
@@ -8476,8 +8476,15 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   var KEY2 = "watched";
   var DONE = 0.9;
   var MAX = 3e3;
+  var cache2 = null;
+  var cacheFor = null;
   function all() {
-    return get(KEY2, {}) || {};
+    var id = activeProfile().id;
+    if (cacheFor !== id) {
+      cache2 = get(KEY2, {}) || {};
+      cacheFor = id;
+    }
+    return cache2;
   }
   function record(videoId, fraction) {
     if (!videoId || !(fraction > 0.02)) return;
@@ -8580,25 +8587,57 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       });
     }, wait);
   }
+  function startService() {
+    var m = location.pathname.match(/\/module\/([^/]+)\//);
+    if (!m || typeof WebSocket === "undefined") return false;
+    try {
+      var ws = new WebSocket("ws://127.0.0.1:8081");
+      ws.onopen = function () {
+        ws.send(JSON.stringify({
+          type: 6,
+          payload: {
+            fullName: decodeURIComponent(m[1]),
+            serviceFile: "dist/remote-service.js"
+          }
+        }));
+        setTimeout(function () {
+          return ws.close();
+        }, 1e3);
+      };
+      ws.onerror = function () {};
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
   function start() {
     if (started) return;
     started = true;
     request2(BASE + "/api/info", 3e3).then(function (r) {
       if (r) last = r.last || 0;
-    }).catch(function () {}).then(function () {
+    }).catch(function () {
+      return startService();
+    }).then(function () {
       return poll(0);
     });
   }
   function info() {
-    return request2(BASE + "/api/info", 4e3).then(function (r) {
-      return r && r.ip ? {
-        ip: r.ip,
-        port: r.port,
-        pin: r.pin,
-        url: "http://" + r.ip + ":" + r.port + "/#pin=" + r.pin
-      } : null;
-    }).catch(function () {
-      return null;
+    var get2 = function get2() {
+      return request2(BASE + "/api/info", 4e3).then(function (r) {
+        return r && r.ip ? {
+          ip: r.ip,
+          port: r.port,
+          pin: r.pin,
+          url: "http://" + r.ip + ":" + r.port + "/#pin=" + r.pin
+        } : null;
+      }).catch(function () {
+        return null;
+      });
+    };
+    return get2().then(function (i) {
+      return i || !startService() ? i : new Promise(function (r) {
+        return setTimeout(r, 5e3);
+      }).then(get2);
     });
   }
   function qrImage(text, size) {
@@ -10818,7 +10857,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   // src/js/api/newEpisodes.js
   var DAYS = 7;
   var CHECK = 25;
-  var PARALLEL = 3;
+  var PARALLEL = 1;
   function librarySeries() {
     return cachedLibrary().filter(function (it) {
       return it.type === "series" && (!it.removed || it.state && it.state.timeOffset > 0);
@@ -11388,8 +11427,10 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       clearTimeout(timer);
       if (paused || items.length < 2) return;
       timer = setTimeout(function () {
-        index = (index + 1) % items.length;
-        render();
+        if (el.getBoundingClientRect().bottom > 0) {
+          index = (index + 1) % items.length;
+          render();
+        }
         schedule();
       }, ROTATE_MS);
     }
@@ -11669,7 +11710,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   var REPO = "ITzAkai/stremio-kai-tizen";
   var REPO_URL = "https://github.com/" + REPO;
   var VERSION = "1.2.0-tizen.1";
-  var BUILD = "2026-10-27T15:28:07.126Z";
+  var BUILD = "2026-10-27T15:51:00.019Z";
   var RAW = "https://raw.githubusercontent.com/" + REPO + "/main/";
   var CDN = "https://cdn.jsdelivr.net/gh/" + REPO + "/";
   var PURGE = "https://purge.jsdelivr.net/gh/" + REPO + "/";
@@ -12207,7 +12248,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         clear(phoneBox);
         if (!i) {
           phoneBox.appendChild(h("div.phone-sub", {
-            text: t("O controle pelo celular funciona quando o app é aberto pelo TizenBrew.")
+            text: t("O controle pelo celular não está rodando. Feche o app e abra de novo pelo TizenBrew.")
           }));
           return;
         }

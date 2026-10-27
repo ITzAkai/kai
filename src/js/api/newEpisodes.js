@@ -8,7 +8,7 @@ import * as store from '../lib/store.js';
 
 const DAYS = 7;
 const CHECK = 25;
-const PARALLEL = 3;
+const PARALLEL = 1; // in the background: one at a time keeps navigation responsive
 
 function librarySeries() {
   return stremio

@@ -52,7 +52,7 @@ export const AR = {
   "Esse título ainda não tem página no Stremio.": "لا توجد صفحة لهذا العنوان في Stremio بعد.",
   "Não foi possível carregar este perfil.": "تعذّر تحميل هذا الملف الشخصي.",
   'Controle pelo celular': 'التحكم بالهاتف',
-  'O controle pelo celular funciona quando o app é aberto pelo TizenBrew.': 'يعمل التحكم بالهاتف عند فتح التطبيق من TizenBrew.',
+  'O controle pelo celular não está rodando. Feche o app e abra de novo pelo TizenBrew.': 'التحكم بالهاتف لا يعمل. أغلق التطبيق وافتحه مرة أخرى من TizenBrew.',
   'Aponte a câmera do celular para o código': 'وجّه كاميرا الهاتف نحو الرمز',
   'Ou abra no navegador do celular (mesmo Wi-Fi):': 'أو افتح هذا العنوان في متصفح الهاتف (نفس شبكة Wi-Fi):',
   'PIN: {pin}': 'الرمز السري: {pin}',

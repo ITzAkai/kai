@@ -196,11 +196,10 @@ export function move(dir) {
     focusFirst();
     return true;
   }
-  const all = candidates(layer.root).filter((e) => e !== cur);
   const group = cur.closest('[data-group]');
   const horizontal = dir === 'left' || dir === 'right';
   if (group && horizontal === !group.hasAttribute('data-vertical')) {
-    const inGroup = all.filter((e) => group.contains(e));
+    const inGroup = candidates(group).filter((e) => e !== cur);
     const g = pick(inGroup, cur, dir);
     if (g) {
       focus(g);
@@ -208,6 +207,7 @@ export function move(dir) {
     }
     if (group.hasAttribute('data-trap')) return false;
   }
+  const all = candidates(layer.root).filter((e) => e !== cur);
   let best = pick(all, cur, dir);
   if (!best) return false;
   const bg = best.closest('[data-group]');

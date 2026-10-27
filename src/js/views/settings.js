@@ -240,7 +240,7 @@ export function SettingsView() {
     phone.info().then((i) => {
       clear(phoneBox);
       if (!i) {
-        phoneBox.appendChild(h('div.phone-sub', { text: t('O controle pelo celular funciona quando o app é aberto pelo TizenBrew.') }));
+        phoneBox.appendChild(h('div.phone-sub', { text: t('O controle pelo celular não está rodando. Feche o app e abra de novo pelo TizenBrew.') }));
         return;
       }
       phoneBox.appendChild(h('img.phone-qr', { src: phone.qrImage(i.url, 300), alt: '' }));

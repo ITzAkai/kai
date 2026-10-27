@@ -386,8 +386,11 @@ function buildHero() {
     clearTimeout(timer);
     if (paused || items.length < 2) return;
     timer = setTimeout(() => {
-      index = (index + 1) % items.length;
-      render();
+      // Scrolled down to the rows: keep still, a fade there only costs smoothness.
+      if (el.getBoundingClientRect().bottom > 0) {
+        index = (index + 1) % items.length;
+        render();
+      }
       schedule();
     }, ROTATE_MS);
   }
