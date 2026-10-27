@@ -46,20 +46,31 @@ export function cached() {
   return (store.get('newEpisodes', []) || []).filter((e) => !watched.isWatched(e.videoId) && Date.now() - e.released <= DAYS * 86400000);
 }
 
-// Resolves to the list, newest release first (after the add-ons are loaded).
+// Resolves to the list, newest release first (after the add-ons are loaded); rejects if stopped.
+let run = 0;
 export function load() {
-  return addons.load().then(scan).then((list) => {
-    store.set('newEpisodes', list.slice(0, 40));
-    return list;
-  });
+  const my = ++run;
+  return addons
+    .load()
+    .then(() => scan(my))
+    .then((list) => {
+      if (my !== run) throw new Error('stopped');
+      store.set('newEpisodes', list.slice(0, 40));
+      return list;
+    });
 }
 
-function scan() {
+// A video started: its downloads and memory come first.
+export function stop() {
+  run++;
+}
+
+function scan(my) {
   const series = librarySeries();
   const out = [];
   let i = 0;
   const worker = () => {
-    if (i >= series.length) return Promise.resolve();
+    if (i >= series.length || my !== run) return Promise.resolve();
     const it = series[i++];
     return addons
       .fetchMeta('series', it._id)

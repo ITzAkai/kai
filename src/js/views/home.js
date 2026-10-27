@@ -233,6 +233,8 @@ export function HomeView() {
     onScroll: () => loadNearby(),
     // Chamado quando um vídeo começa: solta as fileiras (o catálogo volta do cache ao retornar).
     freeMemory: () => {
+      newEpisodes.stop();
+      newLoadedAt = 0; // check again once the video is closed
       pending = [];
       clear(rows);
       loadedBoard = false;

@@ -10892,18 +10892,26 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       return !isWatched(e.videoId) && Date.now() - e.released <= DAYS * 864e5;
     });
   }
+  var run = 0;
   function load4() {
-    return load().then(scan2).then(function (list2) {
+    var my = ++run;
+    return load().then(function () {
+      return scan2(my);
+    }).then(function (list2) {
+      if (my !== run) throw new Error("stopped");
       set("newEpisodes", list2.slice(0, 40));
       return list2;
     });
   }
-  function scan2() {
+  function stop() {
+    run++;
+  }
+  function scan2(my) {
     var series = librarySeries();
     var out = [];
     var i = 0;
     var _worker = function worker() {
-      if (i >= series.length) return Promise.resolve();
+      if (i >= series.length || my !== run) return Promise.resolve();
       var it = series[i++];
       return fetchMeta("series", it._id).then(function (meta) {
         recent(meta, it).forEach(function (e) {
@@ -11250,6 +11258,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       },
       // Chamado quando um vídeo começa: solta as fileiras (o catálogo volta do cache ao retornar).
       freeMemory: function freeMemory() {
+        stop();
+        newLoadedAt = 0;
         pending2 = [];
         clear(rows);
         loadedBoard = false;
@@ -11515,9 +11525,9 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     el.appendChild(scroller);
     var token = 0;
     input.__submit = function (q) {
-      return run(q);
+      return run2(q);
     };
-    function run(q) {
+    function run2(q) {
       var query = (q || "").trim();
       clear(results);
       if (query.length < 2) {
@@ -11603,7 +11613,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         });
       });
     }
-    run("");
+    run2("");
     return {
       el: el,
       onShow: function onShow() {
@@ -11618,7 +11628,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       // From the phone remote: fill the box and run the search.
       search: function search(q) {
         input.value = q;
-        run(q);
+        run2(q);
       }
     };
   }
@@ -11710,7 +11720,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   var REPO = "ITzAkai/stremio-kai-tizen";
   var REPO_URL = "https://github.com/" + REPO;
   var VERSION = "1.2.0-tizen.1";
-  var BUILD = "2026-10-27T15:51:00.019Z";
+  var BUILD = "2026-10-27T16:28:05.431Z";
   var RAW = "https://raw.githubusercontent.com/" + REPO + "/main/";
   var CDN = "https://cdn.jsdelivr.net/gh/" + REPO + "/";
   var PURGE = "https://purge.jsdelivr.net/gh/" + REPO + "/";
