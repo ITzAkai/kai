@@ -7,8 +7,17 @@ const KEY = 'watched';
 const DONE = 0.9;
 const MAX = 3000;
 
+// Kept in memory: episode lists check hundreds of ids in a row, and parsing the stored list
+// for each one froze the TV.
+let cache = null;
+let cacheFor = null;
 function all() {
-  return store.get(KEY, {}) || {};
+  const id = store.activeProfile().id;
+  if (cacheFor !== id) {
+    cache = store.get(KEY, {}) || {};
+    cacheFor = id;
+  }
+  return cache;
 }
 
 // Remembers progress (0..1) for a video id; at 90% it counts as watched.

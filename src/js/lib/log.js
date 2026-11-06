@@ -6,7 +6,7 @@ let flushing = false;
 // Esconde chaves de debrid/API que aparecem nas URLs dos addons (ex.: Torrentio).
 function redact(text) {
   return text.replace(
-    /((?:realdebrid|alldebrid|premiumize|debridlink|easydebrid|offcloud|torbox|putio|apikey|api_key|token|authKey)(?:=|%3D|:))[A-Za-z0-9._-]{8,}/gi,
+    /((?:realdebrid|alldebrid|premiumize|debridlink|easydebrid|offcloud|torbox|putio|apikey|api_key|token|authKey)(?:=|%3D|:|\/))[A-Za-z0-9._-]{8,}/gi,
     '$1***'
   );
 }

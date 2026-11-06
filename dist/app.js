@@ -4709,7 +4709,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   var buffer = [];
   var flushing = false;
   function redact(text) {
-    return text.replace(/((?:realdebrid|alldebrid|premiumize|debridlink|easydebrid|offcloud|torbox|putio|apikey|api_key|token|authKey)(?:=|%3D|:))[A-Za-z0-9._-]{8,}/gi, "$1***");
+    return text.replace(/((?:realdebrid|alldebrid|premiumize|debridlink|easydebrid|offcloud|torbox|putio|apikey|api_key|token|authKey)(?:=|%3D|:|\/))[A-Za-z0-9._-]{8,}/gi, "$1***");
   }
   function send(level, args) {
     var raw = Array.prototype.map.call(args, function (a) {
@@ -4823,7 +4823,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     "Esse título ainda não tem página no Stremio.": "This title doesn't have a Stremio page yet.",
     "Não foi possível carregar este perfil.": "Couldn't load this profile.",
     "Controle pelo celular": "Phone remote",
-    "O controle pelo celular funciona quando o app é aberto pelo TizenBrew.": "The phone remote works when the app is opened from TizenBrew.",
+    "O controle pelo celular não está rodando. Feche o app e abra de novo pelo TizenBrew.": "The phone remote isn't running. Close the app and open it again from TizenBrew.",
     "Aponte a câmera do celular para o código": "Point your phone's camera at the code",
     "Ou abra no navegador do celular (mesmo Wi-Fi):": "Or open this in your phone's browser (same Wi-Fi):",
     "PIN: {pin}": "PIN: {pin}",
@@ -5088,6 +5088,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     "MDBList · Tendências (Snoak)": "MDBList · Trending (Snoak)",
     "Tema OLED (preto puro)": "OLED theme (pure black)",
     "Fundo totalmente preto": "Fully black background",
+    "Modo desempenho": "Performance mode",
+    "Mais rápido na TV: sem animações, sem Novos episódios e sem sincronizar em segundo plano": "Faster on the TV: no animations, no New episodes and no background syncing",
     "Rolagem animada": "Animated scrolling",
     "Mais bonita, porém mais pesada na TV": "Prettier, but heavier on the TV",
     "Legendas e áudio": "Subtitles and audio",
@@ -5257,7 +5259,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     "Esse título ainda não tem página no Stremio.": "لا توجد صفحة لهذا العنوان في Stremio بعد.",
     "Não foi possível carregar este perfil.": "تعذّر تحميل هذا الملف الشخصي.",
     "Controle pelo celular": "التحكم بالهاتف",
-    "O controle pelo celular funciona quando o app é aberto pelo TizenBrew.": "يعمل التحكم بالهاتف عند فتح التطبيق من TizenBrew.",
+    "O controle pelo celular não está rodando. Feche o app e abra de novo pelo TizenBrew.": "التحكم بالهاتف لا يعمل. أغلق التطبيق وافتحه مرة أخرى من TizenBrew.",
     "Aponte a câmera do celular para o código": "وجّه كاميرا الهاتف نحو الرمز",
     "Ou abra no navegador do celular (mesmo Wi-Fi):": "أو افتح هذا العنوان في متصفح الهاتف (نفس شبكة Wi-Fi):",
     "PIN: {pin}": "الرمز السري: {pin}",
@@ -5522,6 +5524,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     "MDBList · Tendências (Snoak)": "MDBList · الرائج (Snoak)",
     "Tema OLED (preto puro)": "سمة OLED (أسود خالص)",
     "Fundo totalmente preto": "خلفية سوداء بالكامل",
+    "Modo desempenho": "وضع الأداء",
+    "Mais rápido na TV: sem animações, sem Novos episódios e sem sincronizar em segundo plano": "أسرع على التلفاز: بدون حركات، بدون الحلقات الجديدة وبدون مزامنة في الخلفية",
     "Rolagem animada": "تمرير متحرك",
     "Mais bonita, porém mais pesada na TV": "أجمل، لكنها أثقل على التلفاز",
     "Legendas e áudio": "الترجمة والصوت",
@@ -6107,14 +6111,11 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       focusFirst();
       return true;
     }
-    var all2 = candidates(layer.root).filter(function (e) {
-      return e !== cur;
-    });
     var group = cur.closest("[data-group]");
     var horizontal = dir === "left" || dir === "right";
     if (group && horizontal === !group.hasAttribute("data-vertical")) {
-      var inGroup = all2.filter(function (e) {
-        return group.contains(e);
+      var inGroup = candidates(group).filter(function (e) {
+        return e !== cur;
       });
       var g = pick(inGroup, cur, dir);
       if (g) {
@@ -6123,6 +6124,9 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       }
       if (group.hasAttribute("data-trap")) return false;
     }
+    var all2 = candidates(layer.root).filter(function (e) {
+      return e !== cur;
+    });
     var best = pick(all2, cur, dir);
     if (!best) return false;
     var bg = best.closest("[data-group]");
@@ -6350,7 +6354,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   function set(key, value) {
     rawSet(profileKey(activeProfile().id, key), value);
   }
-  var DEVICE_KEYS = ["serverUrl", "tmdbKey", "mdblistKey", "smoothScroll", "devlogUrl", "lastUpdateCheck", "askProfile", "wizardDone", "language"];
+  var DEVICE_KEYS = ["serverUrl", "tmdbKey", "mdblistKey", "smoothScroll", "perfMode", "devlogUrl", "lastUpdateCheck", "askProfile", "wizardDone", "language"];
   var DEFAULT_SETTINGS = {
     // TV
     serverUrl: "",
@@ -6358,11 +6362,13 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     mdblistKey: true ? "" : "",
     smoothScroll: false,
     // rolagem animada (mais bonita, mais pesada na TV)
+    perfMode: true,
+    // Performance mode: no animations, no New episodes row, no background sync
     smartChoice: true,
     // Watch picks the best source and plays it
     theme: "purple",
     // see lib/theme.js
-    devlogUrl: true ? "http://192.168.68.108:8099/log" : "",
+    devlogUrl: true ? "" : "",
     language: "auto",
     // 'auto' (TV language: Arabic or English) | 'en' | 'ar'
     askProfile: true,
@@ -8476,8 +8482,15 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   var KEY2 = "watched";
   var DONE = 0.9;
   var MAX = 3e3;
+  var cache2 = null;
+  var cacheFor = null;
   function all() {
-    return get(KEY2, {}) || {};
+    var id = activeProfile().id;
+    if (cacheFor !== id) {
+      cache2 = get(KEY2, {}) || {};
+      cacheFor = id;
+    }
+    return cache2;
   }
   function record(videoId, fraction) {
     if (!videoId || !(fraction > 0.02)) return;
@@ -8580,25 +8593,61 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       });
     }, wait);
   }
+  function startService() {
+    var m = location.pathname.match(/\/module\/([^/]+)\//);
+    if (!m || typeof WebSocket === "undefined") return false;
+    try {
+      var ws = new WebSocket("ws://127.0.0.1:8081");
+      ws.onopen = function () {
+        ws.send(JSON.stringify({
+          type: 6,
+          payload: {
+            fullName: decodeURIComponent(m[1]),
+            serviceFile: "dist/remote-service.js"
+          }
+        }));
+        setTimeout(function () {
+          return ws.close();
+        }, 1e3);
+      };
+      ws.onerror = function () {};
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
   function start() {
     if (started) return;
     started = true;
     request2(BASE + "/api/info", 3e3).then(function (r) {
       if (r) last = r.last || 0;
-    }).catch(function () {}).then(function () {
+    }).catch(function () {
+      setTimeout(function () {
+        return request2(BASE + "/api/info", 4e3).catch(function () {
+          return startService();
+        });
+      }, 15e3);
+    }).then(function () {
       return poll(0);
     });
   }
   function info() {
-    return request2(BASE + "/api/info", 4e3).then(function (r) {
-      return r && r.ip ? {
-        ip: r.ip,
-        port: r.port,
-        pin: r.pin,
-        url: "http://" + r.ip + ":" + r.port + "/#pin=" + r.pin
-      } : null;
-    }).catch(function () {
-      return null;
+    var get2 = function get2() {
+      return request2(BASE + "/api/info", 4e3).then(function (r) {
+        return r && r.ip ? {
+          ip: r.ip,
+          port: r.port,
+          pin: r.pin,
+          url: "http://" + r.ip + ":" + r.port + "/#pin=" + r.pin
+        } : null;
+      }).catch(function () {
+        return null;
+      });
+    };
+    return get2().then(function (i) {
+      return i || !startService() ? i : new Promise(function (r) {
+        return setTimeout(r, 5e3);
+      }).then(get2);
     });
   }
   function qrImage(text, size) {
@@ -8961,7 +9010,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     });
     var nowTimer = setInterval(function () {
       return alive && !videoEl.paused && sendNowPlaying();
-    }, 5e3);
+    }, 15e3);
     var UP_NEXT_SECONDS = 25;
     var UP_NEXT_COUNT = 10;
     var upNextTimer = null;
@@ -9844,7 +9893,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
             if (!videoEl.paused) saveProgress2();
           }, SAVE_MS);
           watchTimer = setInterval(watchdog, 2e3);
-          if ("http://192.168.68.108:8099/log") statusTimer = setInterval(function () {
+          if ("") statusTimer = setInterval(function () {
             return !videoEl.paused && diag("status");
           }, 1e4);
         }
@@ -10538,17 +10587,21 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
             if (!isPlayableType(s)) return;
             var needs = needsServer(s);
             if (needs && !serverOk) return;
-            var warn = streamBadges(s).some(function (b) {
+            var badges = streamBadges(s);
+            var warn = badges.some(function (b) {
               return b.warn;
+            });
+            var heavy = badges.some(function (b) {
+              return b.t === "4K" || b.t === "HDR";
             });
             out.push({
               s: s,
-              key: [needs ? 1 : 0, warn ? 1 : 0, gi, si]
+              key: [needs ? 1 : 0, warn ? 1 : 0, heavy ? 1 : 0, gi, si]
             });
           });
         });
         out.sort(function (x, y) {
-          for (var i = 0; i < 4; i++) if (x.key[i] !== y.key[i]) return x.key[i] - y.key[i];
+          for (var i = 0; i < 5; i++) if (x.key[i] !== y.key[i]) return x.key[i] - y.key[i];
           return 0;
         });
         return out.map(function (c) {
@@ -10819,7 +10872,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   // src/js/api/newEpisodes.js
   var DAYS = 7;
   var CHECK = 25;
-  var PARALLEL = 3;
+  var PARALLEL = 1;
   function librarySeries() {
     return cachedLibrary().filter(function (it) {
       return it.type === "series" && (!it.removed || it.state && it.state.timeOffset > 0);
@@ -10854,18 +10907,26 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       return !isWatched(e.videoId) && Date.now() - e.released <= DAYS * 864e5;
     });
   }
+  var run = 0;
   function load4() {
-    return load().then(scan2).then(function (list2) {
+    var my = ++run;
+    return load().then(function () {
+      return scan2(my);
+    }).then(function (list2) {
+      if (my !== run) throw new Error("stopped");
       set("newEpisodes", list2.slice(0, 40));
       return list2;
     });
   }
-  function scan2() {
+  function stop() {
+    run++;
+  }
+  function scan2(my) {
     var series = librarySeries();
     var out = [];
     var i = 0;
     var _worker = function worker() {
-      if (i >= series.length) return Promise.resolve();
+      if (i >= series.length || my !== run) return Promise.resolve();
       var it = series[i++];
       return fetchMeta("series", it._id).then(function (meta) {
         recent(meta, it).forEach(function (e) {
@@ -10993,12 +11054,12 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       }).catch(function () {});
     }
     var syncTimer = setInterval(function () {
-      if (!el.classList.contains("hidden")) syncContinue();
+      if (!el.classList.contains("hidden") && !perf()) syncContinue();
     }, 3e5);
-    var newList = cached();
+    var newList = perf() ? [] : cached();
     var newLoadedAt = 0;
     function loadNew(force) {
-      if (!force && Date.now() - newLoadedAt < 30 * 6e4) return;
+      if (perf() || !force && Date.now() - newLoadedAt < 30 * 6e4) return;
       newLoadedAt = Date.now();
       load4().then(function (list2) {
         newList = list2;
@@ -11212,6 +11273,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       },
       // Chamado quando um vídeo começa: solta as fileiras (o catálogo volta do cache ao retornar).
       freeMemory: function freeMemory() {
+        stop();
+        newLoadedAt = 0;
         pending2 = [];
         clear(rows);
         loadedBoard = false;
@@ -11287,6 +11350,9 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       row: row,
       load: load5
     };
+  }
+  function perf() {
+    return settings().perfMode !== false;
   }
   function typeLabel(type) {
     return {
@@ -11387,10 +11453,12 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
     function schedule() {
       clearTimeout(timer);
-      if (paused || items.length < 2) return;
+      if (paused || items.length < 2 || perf()) return;
       timer = setTimeout(function () {
-        index = (index + 1) % items.length;
-        render();
+        if (el.getBoundingClientRect().bottom > 0) {
+          index = (index + 1) % items.length;
+          render();
+        }
         schedule();
       }, ROTATE_MS);
     }
@@ -11475,9 +11543,9 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     el.appendChild(scroller);
     var token = 0;
     input.__submit = function (q) {
-      return run(q);
+      return run2(q);
     };
-    function run(q) {
+    function run2(q) {
       var query = (q || "").trim();
       clear(results);
       if (query.length < 2) {
@@ -11563,7 +11631,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         });
       });
     }
-    run("");
+    run2("");
     return {
       el: el,
       onShow: function onShow() {
@@ -11578,7 +11646,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       // From the phone remote: fill the box and run the search.
       search: function search(q) {
         input.value = q;
-        run(q);
+        run2(q);
       }
     };
   }
@@ -11667,14 +11735,13 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   }
 
   // src/js/api/update.js
-  var REPO = "ITzAkai/stremio-kai-tizen";
+  var REPO = "ITzAkai/kai";
   var REPO_URL = "https://github.com/" + REPO;
   var VERSION = "1.2.0";
-  var BUILD = "2026-10-27T17:56:08.374Z";
+  var BUILD = "2026-11-06T18:06:07.124Z";
   var RAW = "https://raw.githubusercontent.com/" + REPO + "/main/";
-  var CDN = "https://cdn.jsdelivr.net/gh/" + REPO + "/";
   var PURGE = "https://purge.jsdelivr.net/gh/" + REPO + "/";
-  var FILES = ["package.json", "dist/index.html", "dist/app.js", "dist/app.css", "dist/remote-service.js", "dist/build.json"];
+  var FILES = ["package.json", "dist/index.html", "dist/loader.js", "dist/app.js", "dist/app.css", "dist/remote-service.js", "dist/build.json"];
   function latest() {
     var bust = "?t=" + Date.now();
     return Promise.all([getJSON(RAW + "dist/build.json" + bust, {
@@ -11704,34 +11771,17 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       return info2.build && info2.build !== BUILD && Date.parse(info2.build) > Date.parse(BUILD) ? info2 : null;
     });
   }
-  function apply2(info2) {
+  function apply2() {
     return Promise.all(FILES.map(function (f) {
       return getJSON(PURGE + f, {
-        timeout: 2e4,
+        timeout: 8e3,
         quiet: true
       }).catch(function () {
         return null;
       });
     })).then(function () {
-      var tries = 0;
-      var _poll = function poll2() {
-        return getJSON(CDN + "dist/build.json?t=" + Date.now(), {
-          timeout: 15e3,
-          quiet: true
-        }).catch(function () {
-          return {};
-        }).then(function (b) {
-          if (b.build === info2.build) {
-            window.location.reload();
-            return true;
-          }
-          if (++tries >= 6) return false;
-          return new Promise(function (r) {
-            return setTimeout(r, 1e4);
-          }).then(_poll);
-        });
-      };
-      return _poll();
+      window.location.reload();
+      return true;
     });
   }
   function shouldAutoCheck() {
@@ -11913,7 +11963,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     });
     if (!th || th === BASE2) return;
     var x = new XMLHttpRequest();
-    x.open("GET", "app.css");
+    x.open("GET", (window.__KAI_BASE__ || "") + "app.css");
     x.onload = function () {
       if (x.status !== 200) return;
       var style = document.createElement("style");
@@ -12208,7 +12258,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         clear(phoneBox);
         if (!i) {
           phoneBox.appendChild(h("div.phone-sub", {
-            text: t("O controle pelo celular funciona quando o app é aberto pelo TizenBrew.")
+            text: t("O controle pelo celular não está rodando. Feche o app e abra de novo pelo TizenBrew.")
           }));
           return;
         }
@@ -12343,6 +12393,15 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         });
         render();
       }, toggle(s.smartChoice !== false)));
+      body.appendChild(row(t("Modo desempenho"), t("Mais rápido na TV: sem animações, sem Novos episódios e sem sincronizar em segundo plano"), "", function () {
+        var on = settings().perfMode === false;
+        saveSettings({
+          perfMode: on
+        });
+        document.body.classList.toggle("perf", on);
+        dropTab("home");
+        render();
+      }, toggle(settings().perfMode !== false)));
       body.appendChild(row(t("Rolagem animada"), t("Mais bonita, porém mais pesada na TV"), "", function () {
         var on = !settings().smoothScroll;
         saveSettings({
@@ -13164,6 +13223,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     var s = settings();
     document.body.classList.toggle("oled", !!s.oled);
     apply3(s.theme);
+    document.body.classList.toggle("perf", s.perfMode !== false);
     log.info("Perfil", activeProfile().name);
     if (isLoggedIn()) {
       refreshUser().catch(function () {});
@@ -13195,7 +13255,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     });
   }
   function devLaunch() {
-    if (!window.PalmSystem) return;
+    if (true) return;
     var params = {};
     try {
       params = JSON.parse(window.PalmSystem.launchParams || "{}") || {};
